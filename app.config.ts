@@ -7,7 +7,7 @@ export default defineConfig({
     appDirectory: 'src/app',
   },
   server: {
-    preset: 'vercel',
+    preset: 'netlify',
   },
   vite: {
     plugins: [
