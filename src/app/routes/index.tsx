@@ -6,6 +6,8 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   return (
-    <div className='min-h-screen bg-[#121212] text-[#eaeaea]'>Hello World</div>
+    <div className='min-h-screen bg-[#121212] text-[#eaeaea] font-poke'>
+      Hello World
+    </div>
   )
 }
