@@ -18,8 +18,8 @@ function Home() {
           </div>
 
           <div className='content bg-[#4F60B0] h-full p-2'>
-            <div className='border-2 border-[#686868] bg-[#f0f9f8] h-full space-y-4 p-2 text-[12px] poke-shadow flex flex-col'>
-              <div className='flex-grow'>
+            <div className='border-2 border-[#686868] bg-[#f0f9f8] h-full p-2 text-[12px] poke-shadow flex flex-col'>
+              <div className='flex-grow space-y-4'>
                 <p>
                   In the world which you are about to enter, you will embark on
                   a grand adventure with you as the hero.
