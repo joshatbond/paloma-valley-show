@@ -6,6 +6,9 @@ export default defineConfig({
   tsr: {
     appDirectory: 'src/app',
   },
+  server: {
+    preset: 'vercel',
+  },
   vite: {
     plugins: [
       tailwindcss(),
