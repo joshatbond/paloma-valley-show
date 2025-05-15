@@ -1,0 +1,26 @@
+# Prettier Options
+arrowParens: avoid
+bracketSpacing: true
+bracketLine: false
+htmlWhitespaceSensitivity: ignore
+plugins:
+  [
+    '@trivago/prettier-plugin-sort-imports',
+    'prettier-plugin-astro',
+    'prettier-plugin-tailwindcss',
+  ]
+printWidth: 80
+semi: false
+singleAttributePerLine: false
+singleQuote: true
+tabWidth: 2
+trailingComma: es5
+useTabs: false
+
+# Tailwind CSS Options
+tailwindFunctions: ['clsx', 'cx']
+
+# Plugin Sorting Options
+importOrder: ['^~/(.*)$', '^[../]', '^[./]']
+importOrderSeparation: true
+importOrderSortSpecifiers: true
