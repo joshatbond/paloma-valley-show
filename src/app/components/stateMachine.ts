@@ -7,8 +7,6 @@ export const machine = setup({
   },
   actions: {},
   guards: {
-    showReady: ({ context }) => context.assetsLoaded,
-    isPhase0: ({ context }) => context.currentPhase >= 0,
     isPhase1: ({ context }) => context.currentPhase >= 1,
     isPhase2: ({ context }) => context.currentPhase === 2,
     isPollActive: ({ context: { pollStarted, pollDuration } }) =>
@@ -19,26 +17,8 @@ export const machine = setup({
 }).createMachine({
   id: 'pokeBand',
   states: {
-    beforeShow: {
-      on: {
-        next: { target: 'phase0' },
-      },
-    },
     phase0: {
       states: {
-        loadingAssets: {
-          on: {
-            next: [
-              { target: 'idle', guard: 'showReady' },
-              { target: 'loadingAssets' },
-            ],
-          },
-        },
-        idle: {
-          on: {
-            next: { target: 'introduction' },
-          },
-        },
         introduction: {
           states: {
             screen1: {
@@ -76,10 +56,8 @@ export const machine = setup({
           },
         },
       },
-      initial: 'loadingAssets',
-      on: {
-        next: { target: 'phase1' },
-      },
+      initial: 'introduction',
+      on: { next: { target: 'phase1' } },
     },
     phase1: {
       states: {
@@ -203,20 +181,15 @@ export const machine = setup({
       initial: 'playVideo',
     },
   },
-  initial: 'beforeShow',
+  initial: 'phase0',
   context: {
-    assetsLoaded: false,
-    currentPhase: -1,
+    currentPhase: 0,
     pollDuration: 60e3,
     pollStarted: null,
   },
 })
 
 type Context = {
-  /**
-   * Indicates whether all assets required for the show have been loaded
-   */
-  assetsLoaded: boolean
   /**
    * Current phase of the show
    */
