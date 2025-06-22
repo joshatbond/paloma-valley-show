@@ -260,7 +260,7 @@ export const machine = setup({
   initial: 'phase0',
   context: {
     currentPhase: 0,
-    pollDuration: 12e3,
+    pollDuration: 60e3,
     pollStarted: null,
   },
 })
