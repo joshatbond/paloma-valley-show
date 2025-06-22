@@ -1,11 +1,25 @@
-import { setup } from 'xstate'
+import { assign, setup } from 'xstate'
 
 export const machine = setup({
   types: {
     context: {} as Context,
     events: {} as Events,
   },
-  actions: {},
+  actions: {
+    phaseUpdate: assign(({ context, event }) => {
+      if (event.type !== 'updatePhase') return context
+
+      const nextPhase = event.phase ? event.phase : context.currentPhase + 1
+      return {
+        currentPhase: nextPhase,
+        pollStarted: event.startTime
+          ? event.startTime
+          : nextPhase === 1
+            ? Date.now()
+            : context.pollStarted,
+      }
+    }),
+  },
   guards: {
     isPhase1: ({ context }) => context.currentPhase >= 1,
     isPhase2: ({ context }) => context.currentPhase === 2,
@@ -24,19 +38,26 @@ export const machine = setup({
             screen1: {
               on: {
                 next: { target: 'screen2' },
+                updatePhase: { actions: 'phaseUpdate' },
               },
             },
             screen2: {
               on: {
                 next: { target: 'screen3' },
+                updatePhase: { actions: 'phaseUpdate' },
               },
             },
             screen3: {
               on: {
                 next: { target: 'screen4' },
+                updatePhase: { actions: 'phaseUpdate' },
               },
             },
-            screen4: {},
+            screen4: {
+              on: {
+                updatePhase: { actions: 'phaseUpdate' },
+              },
+            },
           },
           initial: 'screen1',
           on: {
@@ -44,20 +65,29 @@ export const machine = setup({
               { target: 'readyPhase1', guard: 'isPhase1' },
               { target: 'waitingPhase1' },
             ],
+            updatePhase: { actions: 'phaseUpdate' },
           },
         },
-        readyPhase1: {},
+        readyPhase1: {
+          on: {
+            updatePhase: { actions: 'phaseUpdate' },
+          },
+        },
         waitingPhase1: {
           on: {
             next: [
               { target: 'readyPhase1', guard: 'isPhase1' },
               { target: 'waitingPhase1' },
             ],
+            updatePhase: { actions: 'phaseUpdate', target: 'readyPhase1' },
           },
         },
       },
       initial: 'introduction',
-      on: { next: { target: 'phase1' } },
+      on: {
+        next: { target: 'phase1' },
+        updatePhase: { actions: 'phaseUpdate' },
+      },
     },
     phase1: {
       states: {
@@ -66,14 +96,20 @@ export const machine = setup({
             screen1: {
               on: {
                 next: { target: 'screen2' },
+                updatePhase: { actions: 'phaseUpdate' },
               },
             },
             screen2: {
               on: {
                 next: { target: 'screen3' },
+                updatePhase: { actions: 'phaseUpdate' },
               },
             },
-            screen3: {},
+            screen3: {
+              on: {
+                updatePhase: { actions: 'phaseUpdate' },
+              },
+            },
           },
           initial: 'screen1',
           on: {
@@ -82,6 +118,7 @@ export const machine = setup({
               { target: 'pollClosed', guard: 'isPollConcluded' },
               { target: 'introduction' },
             ],
+            updatePhase: { actions: 'phaseUpdate' },
           },
         },
         starter1: {
@@ -90,17 +127,27 @@ export const machine = setup({
               on: {
                 next: { target: 'description' },
                 navRight: { target: '#pokeBand.phase1.starter2' },
+                updatePhase: { actions: 'phaseUpdate' },
               },
             },
             description: {
-              on: { next: { target: 'confirmChoice' } },
+              on: {
+                next: { target: 'confirmChoice' },
+                updatePhase: { actions: 'phaseUpdate' },
+              },
             },
             confirmChoice: {
-              on: { back: { target: 'introduction' } },
+              on: {
+                back: { target: 'introduction' },
+                updatePhase: { actions: 'phaseUpdate' },
+              },
             },
           },
           initial: 'introduction',
-          on: { next: { target: 'poll' } },
+          on: {
+            next: { target: 'poll' },
+            updatePhase: { actions: 'phaseUpdate' },
+          },
         },
         starter2: {
           states: {
@@ -109,17 +156,27 @@ export const machine = setup({
                 next: { target: 'description' },
                 navLeft: { target: '#pokeBand.phase1.starter1' },
                 navRight: { target: '#pokeBand.phase1.starter3' },
+                updatePhase: { actions: 'phaseUpdate' },
               },
             },
             description: {
-              on: { next: { target: 'confirmChoice' } },
+              on: {
+                next: { target: 'confirmChoice' },
+                updatePhase: { actions: 'phaseUpdate' },
+              },
             },
             confirmChoice: {
-              on: { back: { target: 'introduction' } },
+              on: {
+                back: { target: 'introduction' },
+                updatePhase: { actions: 'phaseUpdate' },
+              },
             },
           },
           initial: 'introduction',
-          on: { next: { target: 'poll' } },
+          on: {
+            next: { target: 'poll' },
+            updatePhase: { actions: 'phaseUpdate' },
+          },
         },
         starter3: {
           states: {
@@ -127,17 +184,27 @@ export const machine = setup({
               on: {
                 next: { target: 'description' },
                 navLeft: { target: '#pokeBand.phase1.starter2' },
+                updatePhase: { actions: 'phaseUpdate' },
               },
             },
             description: {
-              on: { next: { target: 'confirmChoice' } },
+              on: {
+                next: { target: 'confirmChoice' },
+                updatePhase: { actions: 'phaseUpdate' },
+              },
             },
             confirmChoice: {
-              on: { back: { target: 'introduction' } },
+              on: {
+                back: { target: 'introduction' },
+                updatePhase: { actions: 'phaseUpdate' },
+              },
             },
           },
           initial: 'introduction',
-          on: { next: { target: 'poll' } },
+          on: {
+            next: { target: 'poll' },
+            updatePhase: { actions: 'phaseUpdate' },
+          },
         },
         poll: {
           on: {
@@ -145,12 +212,20 @@ export const machine = setup({
               { target: 'pollClosed', guard: 'isPollConcluded' },
               { target: 'poll' },
             ],
+            updatePhase: { actions: 'phaseUpdate' },
           },
         },
         pollClosed: {
-          on: { next: { target: 'rivalSelect' } },
+          on: {
+            next: { target: 'rivalSelect' },
+            updatePhase: { actions: 'phaseUpdate' },
+          },
         },
-        rivalSelect: {},
+        rivalSelect: {
+          on: {
+            updatePhase: { actions: 'phaseUpdate' },
+          },
+        },
       },
       initial: 'introduction',
       on: {
@@ -158,6 +233,7 @@ export const machine = setup({
           { target: 'phase2', guard: 'isPhase2' },
           { target: '#pokeBand.phase1.rivalSelect' },
         ],
+        updatePhase: { actions: 'phaseUpdate' },
       },
     },
     phase2: {
@@ -184,7 +260,7 @@ export const machine = setup({
   initial: 'phase0',
   context: {
     currentPhase: 0,
-    pollDuration: 60e3,
+    pollDuration: 132e3,
     pollStarted: null,
   },
 })
@@ -203,6 +279,15 @@ type Context = {
    */
   pollDuration: number
 }
-type Events = {
-  type: 'back' | 'navLeft' | 'navRight' | 'next'
-}
+type Events =
+  | {
+      type: 'back'
+    }
+  | {
+      type: 'navLeft'
+    }
+  | {
+      type: 'navRight'
+    }
+  | { type: 'next' }
+  | { type: 'updatePhase'; phase?: number; startTime?: number | null }

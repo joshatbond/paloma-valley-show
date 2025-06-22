@@ -9,5 +9,23 @@ export const get = query({
 export const setActiveState = mutation({
   args: { id: v.id('appState'), state: v.boolean() },
   handler: async (ctx, args) =>
-    await ctx.db.patch(args.id, { showIsActive: args.state }),
+    await ctx.db.patch(args.id, {
+      showIsActive: args.state,
+      currentPhase: args.state ? 0 : -1,
+      pollStarted: null,
+    }),
+})
+export const updatePhaseState = mutation({
+  args: { id: v.id('appState'), state: v.number() },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(
+      args.id,
+      args.state < 2
+        ? {
+            currentPhase: args.state,
+            pollStarted: args.state === 1 ? Date.now() : null,
+          }
+        : { currentPhase: args.state }
+    )
+  },
 })

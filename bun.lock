@@ -10,6 +10,7 @@
         "@tanstack/react-router": "^1.82.1",
         "@tanstack/react-router-with-query": "^1.82.1",
         "@tanstack/start": "^1.82.1",
+        "@xstate/react": "6.0.0",
         "convex": "^1.23.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -350,6 +351,8 @@
     "@vinxi/server-functions": ["@vinxi/server-functions@0.4.3", "", { "dependencies": { "@vinxi/plugin-directives": "0.4.3", "acorn": "^8.10.0", "acorn-loose": "^8.3.0", "acorn-typescript": "^1.4.3", "astring": "^1.8.6", "magicast": "^0.2.10", "recast": "^0.23.4" }, "peerDependencies": { "vinxi": "^0.4.3" } }, "sha512-kVYrOrCMHwGvHRwpaeW2/PE7URcGtz4Rk/hIHa2xjt5PGopzzB/Y5GC8YgZjtqSRqo0ElAKsEik7UE6CXH3HXA=="],
 
     "@vitejs/plugin-react": ["@vitejs/plugin-react@4.3.3", "", { "dependencies": { "@babel/core": "^7.25.2", "@babel/plugin-transform-react-jsx-self": "^7.24.7", "@babel/plugin-transform-react-jsx-source": "^7.24.7", "@types/babel__core": "^7.20.5", "react-refresh": "^0.14.2" }, "peerDependencies": { "vite": "^4.2.0 || ^5.0.0" } }, "sha512-NooDe9GpHGqNns1i8XDERg0Vsg5SSYRhRxxyTGogUdkdNt47jal+fbuYi+Yfq6pzRCKXyoPcWisfxE6RIM3GKA=="],
+
+    "@xstate/react": ["@xstate/react@6.0.0", "", { "dependencies": { "use-isomorphic-layout-effect": "^1.1.2", "use-sync-external-store": "^1.2.0" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "xstate": "^5.20.0" }, "optionalPeers": ["xstate"] }, "sha512-xXlLpFJxqLhhmecAXclBECgk+B4zYSrDTl8hTfPZBogkn82OHKbm9zJxox3Z/YXoOhAQhKFTRLMYGdlbhc6T9A=="],
 
     "abbrev": ["abbrev@1.1.1", "", {}, "sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q=="],
 
@@ -1180,6 +1183,8 @@
     "uqr": ["uqr@0.1.2", "", {}, "sha512-MJu7ypHq6QasgF5YRTjqscSzQp/W11zoUk6kvmlH+fmWEs63Y0Eib13hYFwAzagRJcVY8WVnlV+eBDUGMJ5IbA=="],
 
     "urlpattern-polyfill": ["urlpattern-polyfill@8.0.2", "", {}, "sha512-Qp95D4TPJl1kC9SKigDcqgyM2VDVO4RiJc2d4qe5GrYm+zbIQCWWKAFaJNQ4BhdFeDGwBmAxqJBwWSJDb9T3BQ=="],
+
+    "use-isomorphic-layout-effect": ["use-isomorphic-layout-effect@1.2.1", "", { "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-tpZZ+EX0gaghDAiFR37hj5MgY6ZN55kLiPkJsKxBMZ6GZdOSPJXiOzPM984oPYZ5AnehYx5WQp1+ME8I/P/pRA=="],
 
     "use-sync-external-store": ["use-sync-external-store@1.2.2", "", { "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0" } }, "sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw=="],
 
