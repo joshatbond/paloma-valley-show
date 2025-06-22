@@ -26,7 +26,7 @@ export const machine = setup({
     isPollActive: ({ context: { pollStarted, pollDuration } }) =>
       pollStarted && Date.now() < pollStarted + pollDuration ? true : false,
     isPollConcluded: ({ context: { pollStarted, pollDuration } }) =>
-      pollStarted && Date.now() >= pollStarted + pollDuration ? true : false,
+      Date.now() - pollStarted! - pollDuration - 2e3 > 0 ? false : true,
   },
 }).createMachine({
   id: 'pokeBand',
@@ -260,7 +260,7 @@ export const machine = setup({
   initial: 'phase0',
   context: {
     currentPhase: 0,
-    pollDuration: 132e3,
+    pollDuration: 12e3,
     pollStarted: null,
   },
 })
