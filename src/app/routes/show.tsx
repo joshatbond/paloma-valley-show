@@ -1,19 +1,24 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useActor } from '@xstate/react'
 import { machine } from '../components/stateMachine'
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { convexQuery } from '@convex-dev/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
 import { api } from '~/server/convex/_generated/api'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export const Route = createFileRoute('/show')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
-  const [state, send, ref] = useActor(machine)
   const navigation = useNavigate()
+  const [state, send, ref] = useActor(machine)
+  const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
+  const { mutate: confirmStarter } = useMutation({
+    mutationFn: useConvexMutation(api.appState.selectStarter),
+  })
+
+  const selectedStarter = useRef<'one' | 'two' | 'three' | null>(null)
 
   useEffect(() => {
     if (data.currentPhase > 0 && ref.getSnapshot().context.currentPhase === 0) {
@@ -29,6 +34,10 @@ function RouteComponent() {
       send({ type: 'updatePhase' })
     }
   }, [data, state, send])
+
+  if (!data.showId) {
+    navigation({ to: '/' })
+  }
 
   let Game = <Phase0Intro1 />
   if (state.matches({ phase0: { introduction: 'screen1' } })) {
@@ -54,24 +63,35 @@ function RouteComponent() {
   } else if (state.matches({ phase1: { starter1: 'description' } })) {
     Game = <Phase1Starter1Description />
   } else if (state.matches({ phase1: { starter1: 'confirmChoice' } })) {
+    selectedStarter.current = 'one'
     Game = <Phase1Starter1ConfirmChoice />
   } else if (state.matches({ phase1: { starter2: 'introduction' } })) {
     Game = <Phase1Starter2Intro />
   } else if (state.matches({ phase1: { starter2: 'description' } })) {
     Game = <Phase1Starter2Description />
   } else if (state.matches({ phase1: { starter2: 'confirmChoice' } })) {
+    selectedStarter.current = 'two'
     Game = <Phase1Starter2ConfirmChoice />
   } else if (state.matches({ phase1: { starter3: 'introduction' } })) {
     Game = <Phase1Starter3Intro />
   } else if (state.matches({ phase1: { starter3: 'description' } })) {
     Game = <Phase1Starter3Description />
   } else if (state.matches({ phase1: { starter3: 'confirmChoice' } })) {
+    selectedStarter.current = 'three'
     Game = <Phase1Starter3ConfirmChoice />
   } else if (state.matches({ phase1: 'poll' })) {
+    if (selectedStarter.current) {
+      confirmStarter({
+        showId: data.showId!,
+        selection: selectedStarter.current,
+      })
+      selectedStarter.current = null
+    }
     Game = (
       <Phase1Poll
         pollDuration={ref.getSnapshot().context.pollDuration}
         pollStarted={data.pollStarted}
+        showId={data.showId!}
         next={() => send({ type: 'next' })}
       />
     )
@@ -95,10 +115,6 @@ function RouteComponent() {
     Game = <Phase2Epilogue6 />
   } else {
     Game = <Phase2Epilogue7 />
-  }
-
-  if (!data.showId) {
-    navigation({ to: '/' })
   }
 
   return (
@@ -192,9 +208,13 @@ function Phase1Starter3ConfirmChoice() {
 function Phase1Poll(props: {
   pollStarted: number | null
   pollDuration: number
+  showId: number
   next: () => void
 }) {
   const [clock, clockAssign] = useState(props.pollDuration)
+  const { data } = useQuery(
+    convexQuery(api.appState.pollState, { showId: props.showId })
+  )
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout
@@ -220,10 +240,31 @@ function Phase1Poll(props: {
     return () => clearTimeout(timeoutId)
   }, [props.pollStarted, props.pollDuration, clock])
 
+  const totalItems = data ? data.reduce((a, v) => a + v, 0) : 1
   return (
     <div>
       <p>Time left: {clock}s</p>
-      <p>Poll Results</p>
+      {data ? (
+        <div>
+          <p>Poll Results</p>
+          <div className='flex gap-4 justify-between'>
+            {data.map((v, i) => (
+              <div
+                key={i}
+                className='grid place-content-center poll-item size-10 border'
+                style={{
+                  '--fill-percentage': `${(v / totalItems) * 100}%`,
+                  '--fill-color': i === 0 ? 'red' : i === 1 ? 'green' : 'blue',
+                }}
+              >
+                {i + 1}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <p>Waiting for results!</p>
+      )}
     </div>
   )
 }
