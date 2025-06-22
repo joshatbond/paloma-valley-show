@@ -16,7 +16,7 @@ function Home() {
       <p>Paloma Valley High School Marching Band</p>
       <p>presents</p>
       <h2>PokéBand</h2>
-      {data.showIsActive && <ShowLoader />}
+      {data.showId && <ShowLoader />}
       <Link to='/program'>View the program</Link>
     </main>
   )

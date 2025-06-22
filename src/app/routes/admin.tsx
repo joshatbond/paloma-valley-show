@@ -17,10 +17,13 @@ function RouteComponent() {
       <button
         className='border'
         onClick={() =>
-          toggleShowState({ id: data._id, state: !data.showIsActive })
+          toggleShowState({
+            id: data._id,
+            state: data.showId ? null : Date.now(),
+          })
         }
       >
-        Toggle Show State {data.showIsActive ? 'Off' : 'On'}
+        Toggle Show State {data.showId ? 'Off' : 'On'}
       </button>
       <button
         className='border'

@@ -97,7 +97,7 @@ function RouteComponent() {
     Game = <Phase2Epilogue7 />
   }
 
-  if (!data.showIsActive) {
+  if (!data.showId) {
     navigation({ to: '/' })
   }
 
