@@ -138,11 +138,11 @@ function RouteComponent() {
           <button onClick={() => send({ type: 'navRight' })}>Right</button>
         </div>
 
-        <div className='col-start-6 row-start-3 col-span-1 row-span-1 grid place-content-center border rounded-full'>
+        <div className='col-start-7 row-start-3 col-span-1 row-span-1 grid place-content-center border rounded-full'>
           <button onClick={() => send({ type: 'next' })}>A</button>
         </div>
 
-        <div className='col-start-7 row-start-3 col-span-1 row-span-1 grid place-content-center border rounded-full'>
+        <div className='col-start-6 row-start-3 col-span-1 row-span-1 grid place-content-center border rounded-full'>
           <button onClick={() => send({ type: 'back' })}>B</button>
         </div>
         <div className='col-start-8 row-start-5 col-span-1 row-span-1'></div>
