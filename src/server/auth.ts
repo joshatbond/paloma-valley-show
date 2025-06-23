@@ -18,6 +18,5 @@ export const adminAuth = createServerFn()
     return auth.data
   })
   .handler(async ({ data }) => {
-    console.log(ADMIN_PASSWORD, ADMIN_USERNAME, data)
     return data.password === ADMIN_PASSWORD && data.username === ADMIN_USERNAME
   })
