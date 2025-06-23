@@ -123,27 +123,57 @@ function RouteComponent() {
 
       <div className='row-start-2 grid grid-cols-[1fr_48px_48px_48px_2fr_48px_48px_1fr] grid-rows-[1fr_48px_48px_48px_1fr]'>
         <div className='col-start-3 row-start-2 col-span-1 row-span-1 grid place-content-center border'>
-          <button onClick={() => send({ type: 'navLeft' })}>Up</button>
+          <button
+            className='select-none size-full'
+            onClick={() => send({ type: 'navLeft' })}
+          >
+            Up
+          </button>
         </div>
 
         <div className='col-start-3 row-start-4 col-span-1 row-span-1 grid place-content-center border'>
-          <button onClick={() => send({ type: 'navRight' })}>Down</button>
+          <button
+            className='select-none size-full'
+            onClick={() => send({ type: 'navRight' })}
+          >
+            Down
+          </button>
         </div>
 
         <div className=' col-start-2 row-start-3 col-span-1 row-span-1 grid place-content-center border'>
-          <button onClick={() => send({ type: 'navLeft' })}>Left</button>
+          <button
+            className='select-none size-full'
+            onClick={() => send({ type: 'navLeft' })}
+          >
+            Left
+          </button>
         </div>
 
         <div className='col-start-4 row-start-3 col-span-1 row-span-1 grid place-content-center border'>
-          <button onClick={() => send({ type: 'navRight' })}>Right</button>
+          <button
+            className='select-none size-full'
+            onClick={() => send({ type: 'navRight' })}
+          >
+            Right
+          </button>
         </div>
 
         <div className='col-start-7 row-start-3 col-span-1 row-span-1 grid place-content-center border rounded-full'>
-          <button onClick={() => send({ type: 'next' })}>A</button>
+          <button
+            className='select-none size-full'
+            onClick={() => send({ type: 'next' })}
+          >
+            A
+          </button>
         </div>
 
         <div className='col-start-6 row-start-3 col-span-1 row-span-1 grid place-content-center border rounded-full'>
-          <button onClick={() => send({ type: 'back' })}>B</button>
+          <button
+            className='select-none size-full'
+            onClick={() => send({ type: 'back' })}
+          >
+            B
+          </button>
         </div>
         <div className='col-start-8 row-start-5 col-span-1 row-span-1'></div>
       </div>
