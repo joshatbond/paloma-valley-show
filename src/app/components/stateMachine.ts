@@ -23,10 +23,14 @@ export const machine = setup({
   guards: {
     isPhase1: ({ context }) => context.currentPhase >= 1,
     isPhase2: ({ context }) => context.currentPhase === 2,
-    isPollActive: ({ context: { pollStarted, pollDuration } }) =>
-      pollStarted && Date.now() < pollStarted + pollDuration ? true : false,
-    isPollConcluded: ({ context: { pollStarted, pollDuration } }) =>
-      Date.now() - pollStarted! - pollDuration - 2e3 > 0 ? false : true,
+    isPollActive: ({ context: { pollStarted, pollDuration } }) => {
+      const endTime = pollStarted! + pollDuration
+      return Date.now() < endTime ? true : false
+    },
+    isPollConcluded: ({ context: { pollStarted, pollDuration } }) => {
+      const endTime = pollStarted! + pollDuration - 2e3
+      return Date.now() > endTime ? true : false
+    },
   },
 }).createMachine({
   id: 'pokeBand',
@@ -116,7 +120,7 @@ export const machine = setup({
             next: [
               { target: 'starter1', guard: 'isPollActive' },
               { target: 'pollClosed', guard: 'isPollConcluded' },
-              { target: 'introduction' },
+              { target: '#pokeBand.phase1.introduction.screen3' },
             ],
             updatePhase: { actions: 'phaseUpdate' },
           },
