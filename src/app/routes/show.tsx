@@ -5,6 +5,7 @@ import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
 import { api } from '~/server/convex/_generated/api'
 import { useEffect, useRef, useState } from 'react'
+import { useTimer } from '../hooks/useTimer'
 
 export const Route = createFileRoute('/show')({
   component: RouteComponent,
@@ -241,39 +242,18 @@ function Phase1Poll(props: {
   showId: number
   next: () => void
 }) {
-  const [clock, clockAssign] = useState(props.pollDuration)
+  const timeLeft = useTimer({
+    duration: props.pollDuration,
+    startTime: props.pollStarted,
+  })
   const { data } = useQuery(
     convexQuery(api.appState.pollState, { showId: props.showId })
   )
 
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout
-
-    const currentTime = Date.now()
-    const pollEndTime = props.pollStarted
-      ? props.pollStarted + props.pollDuration
-      : Infinity
-
-    if (clock <= 0 || (props.pollStarted && currentTime >= pollEndTime)) {
-      clockAssign(0)
-      props.next()
-      return
-    }
-    if (clock !== Math.floor((pollEndTime - currentTime) / 1000)) {
-      clockAssign(Math.floor((pollEndTime - currentTime) / 1000))
-    }
-
-    timeoutId = setTimeout(() => {
-      clockAssign((p) => p - 1)
-    }, 1000)
-
-    return () => clearTimeout(timeoutId)
-  }, [props.pollStarted, props.pollDuration, clock])
-
   const totalItems = data ? data.reduce((a, v) => a + v, 0) : 1
   return (
     <div>
-      <p>Time left: {clock}s</p>
+      <p>Time left: {timeLeft}s</p>
       {data ? (
         <div>
           <p>Poll Results</p>

@@ -169,7 +169,7 @@ function AuthForm(props: { setAdminStatus: (flag: boolean) => void }) {
 function Poll(props: { pollStarted: number }) {
   const timeLeft = useTimer({
     duration: pollDuration,
-    pollStarted: props.pollStarted,
+    startTime: props.pollStarted,
   })
 
   return (
