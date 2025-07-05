@@ -110,7 +110,7 @@ function AuthForm(props: { setAdminStatus: (flag: boolean) => void }) {
           props.setAdminStatus(response)
           if (response === false) {
             errorStateAssign('Invalid User')
-            haptics.doubleTap()
+            haptics.pulse({ count: 3, gap: 50 })
           }
         } catch (e) {
           if (e instanceof Error) errorStateAssign(e.message)

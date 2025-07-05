@@ -24,7 +24,7 @@ const HAPTIC_DURATION = 100
  */
 export function useHaptic(duration = HAPTIC_DURATION): {
   once: () => void
-  doubleTap: () => void
+  pulse: (props: { count: number; gap: number }) => Promise<() => void>
 } {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const labelRef = useRef<HTMLLabelElement | null>(null)
@@ -55,23 +55,60 @@ export function useHaptic(duration = HAPTIC_DURATION): {
   }, [])
 
   const triggerHaptic = useCallback(() => {
-    if (isIOS) {
-      labelRef.current?.click()
+    if (!isIOS && navigator?.vibrate) {
+      navigator.vibrate(duration)
     } else {
-      if (navigator?.vibrate) {
-        navigator.vibrate(duration)
-      } else {
-        labelRef.current?.click()
-      }
+      labelRef.current?.click()
     }
   }, [isIOS])
 
-  const twice = useCallback(() => {
-    setTimeout(() => {
-      triggerHaptic()
-    }, duration + 20)
-    triggerHaptic()
-  }, [isIOS])
+  const pulseHaptics = useCallback(
+    async ({ count, gap }: { count: number; gap: number }) => {
+      let isMounted = true
 
-  return { once: triggerHaptic, doubleTap: twice }
+      const internalPulseCb = () => {
+        if (!isMounted) return
+        triggerHaptic()
+      }
+
+      try {
+        await pulse(count, duration + gap, internalPulseCb)
+      } catch (error) {
+      } finally {
+      }
+
+      return () => {
+        isMounted = false
+      }
+    },
+    [isIOS]
+  )
+
+  return { once: triggerHaptic, pulse: pulseHaptics }
+}
+
+/**
+ * Delays execution for a specified number of milliseconds.
+ * @param ms The number of milliseconds to wait.
+ * @returns A Promise that resolves after the specified delay.
+ */
+async function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function pulse(times: number, gap: number, cb: () => void) {
+  if (
+    times < 0 ||
+    gap < 0 ||
+    !Number.isInteger(times) ||
+    !Number.isInteger(gap)
+  )
+    return
+
+  for (let i = 0; i < times; i++) {
+    cb()
+    if (i < times - 1) {
+      await delay(gap)
+    }
+  }
 }
