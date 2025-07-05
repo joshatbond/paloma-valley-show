@@ -27,7 +27,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwindcss": "^4.1.6",
-    "use-haptic": "^1.1.11",
     "vinxi": "^0.4.3",
     "xstate": "^5.20.0",
     "zod": "^3.25.67"

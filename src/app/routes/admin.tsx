@@ -7,7 +7,7 @@ import { PropsWithChildren, useState } from 'react'
 import { Button } from '../components/ui/button'
 import { pollDuration } from '../components/stateMachine'
 import { useTimer } from '../hooks/useTimer'
-import { useHaptic } from 'use-haptic'
+import { useHaptic } from '~/app/hooks/useHaptic'
 
 export const Route = createFileRoute('/admin')({
   component: RouteComponent,
@@ -94,7 +94,7 @@ function Card(props: PropsWithChildren<{ title: string }>) {
 }
 
 function AuthForm(props: { setAdminStatus: (flag: boolean) => void }) {
-  const { triggerHaptic } = useHaptic()
+  const haptics = useHaptic()
   const [errorState, errorStateAssign] = useState('')
   const [username, usernameAssign] = useState('')
   const [password, passwordAssign] = useState('')
@@ -104,16 +104,13 @@ function AuthForm(props: { setAdminStatus: (flag: boolean) => void }) {
       className='w-full flex flex-col gap-6'
       onSubmit={async (event) => {
         event.preventDefault()
-        triggerHaptic()
+        haptics.once()
         try {
           const response = await adminAuth({ data: { username, password } })
           props.setAdminStatus(response)
           if (response === false) {
             errorStateAssign('Invalid User')
-            triggerHaptic()
-            setTimeout(() => {
-              triggerHaptic()
-            }, 120)
+            haptics.doubleTap()
           }
         } catch (e) {
           if (e instanceof Error) errorStateAssign(e.message)
