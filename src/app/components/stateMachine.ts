@@ -1,5 +1,5 @@
 import { assign, setup } from 'xstate'
-
+export const pollDuration = 132e3 // 2 minutes, 12 seconds
 export const machine = setup({
   types: {
     context: {} as Context,
@@ -264,7 +264,7 @@ export const machine = setup({
   initial: 'phase0',
   context: {
     currentPhase: 0,
-    pollDuration: 60e3,
+    pollDuration,
     pollStarted: null,
   },
 })
