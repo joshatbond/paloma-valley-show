@@ -18,6 +18,37 @@
     transparent var(--fill-percentage, 0%)
   );
 }
+.poke-button {
+  background: linear-gradient(145deg, #651d32, #4d1627);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.poke-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: skewX(-20deg);
+  transition: all 0.3s ease;
+}
+
+.poke-button:hover::before {
+  left: 100%;
+}
+
+.poke-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.poke-button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(145deg, #4d1627, #651d32);
+}
 
 @theme {
   --font-poke: 'Pokemon';

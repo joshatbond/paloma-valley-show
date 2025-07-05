@@ -20,7 +20,13 @@ export const Route = createRootRouteWithContext<{
         title: 'Wildcat Brigade',
       },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap',
+      },
+    ],
   }),
   notFoundComponent: () => <div>Route not found</div>,
   component: RootComponent,
