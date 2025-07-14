@@ -59,6 +59,7 @@ export function useGameMachine() {
   const currentState = statesMap
     .filter(([_, value]) => state.matches(value))
     .pop()?.[0]
+
   return [currentState, send, ref] as const
 }
 
