@@ -56,11 +56,6 @@ export function useHaptic(duration = HAPTIC_DURATION): {
       document.body.appendChild(label)
       labelRef.current = label
     }
-
-    return () => {
-      if (inputRef.current) document.body.removeChild(inputRef.current)
-      if (labelRef.current) document.body.removeChild(labelRef.current)
-    }
   }, [])
 
   const triggerHaptic = useCallback(() => {
