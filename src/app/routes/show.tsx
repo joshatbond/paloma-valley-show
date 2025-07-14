@@ -137,7 +137,9 @@ function RouteComponent() {
 
   return (
     <main className='min-h-screen grid grid-rows-[1fr_auto]'>
-      <div className='grid place-content-center border-b'>{Game}</div>
+      <div className='bg-[#222] text-white px-8 py-4 grid'>
+        <div className='grid place-content-center bg-black rounded'>{Game}</div>
+      </div>
 
       <div className='relative bg-[#f9cb1c]'>
         <div className='flex justify-center'>
