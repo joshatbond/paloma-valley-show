@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 export function useTimer(props: {
   duration: number
   startTime: number | null
+  endTime?: number
 }) {
   const [timeLeft, timeLeftAssign] = useState(props.duration)
 
@@ -10,9 +11,11 @@ export function useTimer(props: {
     let timeoutId: NodeJS.Timeout
 
     const currentTime = Date.now()
-    const pollEndTime = props.startTime
-      ? props.startTime + props.duration
-      : Infinity
+    const pollEndTime = props.endTime
+      ? props.endTime
+      : props.startTime
+        ? props.startTime + props.duration
+        : Infinity
 
     if (timeLeft <= 0 || (props.startTime && currentTime >= pollEndTime)) {
       timeLeftAssign(0)
@@ -29,7 +32,7 @@ export function useTimer(props: {
     }, 1000)
 
     return () => clearTimeout(timeoutId)
-  }, [props.startTime, props.duration, timeLeft])
+  }, [props.startTime, props.duration, props.endTime, timeLeft])
 
   return timeLeft
 }

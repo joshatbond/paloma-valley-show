@@ -69,7 +69,7 @@ function RouteComponent() {
           )}
 
           {data.currentPhase === 1 && data.pollStarted ? (
-            <Poll pollStarted={data.pollStarted} />
+            <Poll pollStarted={data.pollStarted} pollEnded={data.pollEnded} />
           ) : null}
         </Card>
       ) : (
@@ -170,18 +170,29 @@ function AuthForm(props: { setAdminStatus: (flag: boolean) => void }) {
   )
 }
 
-function Poll(props: { pollStarted: number }) {
+function Poll(props: { pollStarted: number; pollEnded?: number }) {
   const timeLeft = useTimer({
     duration: pollDuration,
     startTime: props.pollStarted,
+    endTime: props.pollEnded,
   })
 
   return (
     <div className='self-stretch flex gap-3 p-3 rounded-lg bg-white/10 justify-between'>
-      <span className='text-gray-100 text-base font-semibold'>Poll Timer</span>
-      <span className='text-gray-100 text-base font-semibold'>
-        {timeLeft}s left
-      </span>
+      {props.pollEnded || timeLeft <= 0 ? (
+        <span className='text-gray-100 text-base font-semibold'>
+          Poll Ended!
+        </span>
+      ) : (
+        <>
+          <span className='text-gray-100 text-base font-semibold'>
+            Poll Timer
+          </span>
+          <span className='text-gray-100 text-base font-semibold'>
+            {timeLeft}s left
+          </span>
+        </>
+      )}
     </div>
   )
 }

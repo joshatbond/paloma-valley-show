@@ -44,6 +44,7 @@ export const updatePhaseState = mutation({
         ? {
             currentPhase: args.state,
             pollStarted: args.state === 1 ? Date.now() : null,
+            pollEnded: args.state === 2 ? Date.now() : undefined,
           }
         : { currentPhase: args.state }
     )
