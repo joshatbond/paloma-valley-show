@@ -259,7 +259,7 @@ function Phase1Poll(props: {
   const { data } = useQuery(
     convexQuery(api.appState.pollState, { showId: props.showId })
   )
-  if (props.pollEnded) props.next()
+  if (props.pollEnded || timeLeft <= 0) props.next()
 
   const totalItems = data ? data.reduce((a, v) => a + v, 0) : 1
 
