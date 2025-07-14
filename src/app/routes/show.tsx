@@ -152,6 +152,7 @@ function RouteComponent() {
               className='object-contain max-h-[430px]'
               src='/images/controller.jpg'
             />
+            <div className='absolute inset-0'></div>
 
             <button
               className='absolute w-[13%] h-[14%] left-[16%] top-[21%] select-none'
