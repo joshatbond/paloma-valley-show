@@ -40,16 +40,22 @@ export const updatePhaseState = mutation({
   handler: async (ctx, args) => {
     await ctx.db.patch(
       args.id,
-      args.state < 2
+      args.state === 0
         ? {
-            currentPhase: args.state,
-            pollStarted: args.state === 1 ? Date.now() : null,
-            pollEnded: undefined,
+            currentPhase: -1,
+            showId: null,
+            pollStarted: null,
           }
-        : {
-            currentPhase: args.state,
-            pollEnded: Date.now(),
-          }
+        : args.state === 1
+          ? {
+              currentPhase: args.state,
+              pollStarted: Date.now(),
+              pollEnded: undefined,
+            }
+          : {
+              currentPhase: args.state,
+              pollEnded: Date.now(),
+            }
     )
   },
 })
