@@ -6,6 +6,7 @@ import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
 import { api } from '~/server/convex/_generated/api'
 import { useEffect, useRef, useState } from 'react'
 import { useTimer } from '../hooks/useTimer'
+import { useHaptic } from '../hooks/useHaptic'
 
 export const Route = createFileRoute('/show')({
   component: RouteComponent,
@@ -18,6 +19,7 @@ function RouteComponent() {
   const { mutate: confirmStarter } = useMutation({
     mutationFn: useConvexMutation(api.appState.selectStarter),
   })
+  const haptics = useHaptic()
 
   const selectedStarter = useRef<'one' | 'two' | 'three' | null>(null)
 
@@ -36,9 +38,7 @@ function RouteComponent() {
     }
   }, [data, state, send])
 
-  if (!data.showId) {
-    navigation({ to: '/' })
-  }
+  if (!data.showId) navigation({ to: '/' })
 
   let Game = <Phase0Intro1 />
   if (state.matches({ phase0: { introduction: 'screen1' } })) {
@@ -118,65 +118,66 @@ function RouteComponent() {
     Game = <Phase2Epilogue7 />
   }
 
+  const navLeft = () => {
+    haptics.once()
+    send({ type: 'navLeft' })
+  }
+  const navRight = () => {
+    haptics.once()
+    send({ type: 'navRight' })
+  }
+  const goNext = () => {
+    haptics.once()
+    send({ type: 'next' })
+  }
+  const goBack = () => {
+    haptics.once()
+    send({ type: 'back' })
+  }
+
   return (
-    <main className='min-h-screen grid grid-rows-2'>
+    <main className='min-h-screen grid grid-rows-[1fr_auto]'>
       <div className='grid place-content-center border-b'>{Game}</div>
 
-      <div className='row-start-2 grid grid-cols-[1fr_48px_48px_48px_2fr_48px_48px_1fr] grid-rows-[1fr_48px_48px_48px_1fr]'>
-        <div className='col-start-3 row-start-2 col-span-1 row-span-1 grid place-content-center border'>
-          <button
-            className='select-none size-full'
-            onClick={() => send({ type: 'navLeft' })}
-          >
-            Up
-          </button>
-        </div>
+      <div className='relative bg-[#f9cb1c]'>
+        <div className='flex justify-center'>
+          <div className='relative'>
+            <img
+              className='object-contain max-h-[430px]'
+              src='/images/controller.jpg'
+            />
 
-        <div className='col-start-3 row-start-4 col-span-1 row-span-1 grid place-content-center border'>
-          <button
-            className='select-none size-full'
-            onClick={() => send({ type: 'navRight' })}
-          >
-            Down
-          </button>
-        </div>
+            <button
+              className='absolute w-[13%] h-[14%] left-[16%] top-[21%] select-none'
+              onClick={navLeft}
+            />
 
-        <div className=' col-start-2 row-start-3 col-span-1 row-span-1 grid place-content-center border'>
-          <button
-            className='select-none size-full'
-            onClick={() => send({ type: 'navLeft' })}
-          >
-            Left
-          </button>
-        </div>
+            <button
+              className='absolute w-[13%] h-[14%] left-[16%] top-[53%] select-none size-full'
+              onClick={navRight}
+            />
 
-        <div className='col-start-4 row-start-3 col-span-1 row-span-1 grid place-content-center border'>
-          <button
-            className='select-none size-full'
-            onClick={() => send({ type: 'navRight' })}
-          >
-            Right
-          </button>
-        </div>
+            <button
+              className='absolute w-[13%] h-[17%]  left-[2%] top-[36%] select-none size-full'
+              onClick={navLeft}
+            />
 
-        <div className='col-start-7 row-start-3 col-span-1 row-span-1 grid place-content-center border rounded-full'>
-          <button
-            className='select-none size-full'
-            onClick={() => send({ type: 'next' })}
-          >
-            A
-          </button>
-        </div>
+            <button
+              className='absolute w-[13%] h-[17%]  left-[30%] top-[36%] select-none size-full'
+              onClick={navRight}
+            />
 
-        <div className='col-start-6 row-start-3 col-span-1 row-span-1 grid place-content-center border rounded-full'>
-          <button
-            className='select-none size-full'
-            onClick={() => send({ type: 'back' })}
-          >
-            B
-          </button>
+            <button
+              className='absolute top-[22%] left-[75%] w-[21%] h-[25%] rounded-full select-none'
+              onClick={goNext}
+            />
+
+            <button
+              className='absolute top-[44%] left-[54%] w-[21%] h-[25%] rounded-full select-none'
+              onClick={goBack}
+            />
+          </div>
         </div>
-        <div className='col-start-8 row-start-5 col-span-1 row-span-1'></div>
       </div>
     </main>
   )
