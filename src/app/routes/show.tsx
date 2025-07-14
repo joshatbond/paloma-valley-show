@@ -1,12 +1,11 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useActor } from '@xstate/react'
-import { machine } from '../components/stateMachine'
 import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
 import { api } from '~/server/convex/_generated/api'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useRef } from 'react'
 import { useTimer } from '../hooks/useTimer'
 import { useHaptic } from '../hooks/useHaptic'
+import { useGameMachine } from '../hooks/useGameMachine'
 
 export const Route = createFileRoute('/show')({
   component: RouteComponent,
@@ -14,135 +13,53 @@ export const Route = createFileRoute('/show')({
 
 function RouteComponent() {
   const navigation = useNavigate()
-  const [state, send, ref] = useActor(machine)
+  const [state, send, ref] = useGameMachine()
   const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
-  const { mutate: confirmStarter } = useMutation({
-    mutationFn: useConvexMutation(api.appState.selectStarter),
-  })
   const haptics = useHaptic()
 
-  const selectedStarter = useRef<'one' | 'two' | 'three' | null>(null)
-
-  useEffect(() => {
-    if (data.pollEnded && ref.getSnapshot().context.pollEnded === null) {
-      send({ type: 'pollEnded', endTime: data.pollEnded })
-    }
-    if (data.currentPhase > 0 && ref.getSnapshot().context.currentPhase === 0) {
-      send({
-        type: 'updatePhase',
-        phase: data.currentPhase,
-        startTime: data.pollStarted,
-      })
-    } else if (
-      data.currentPhase === 2 &&
-      ref.getSnapshot().context.currentPhase === 1
-    ) {
-      send({ type: 'updatePhase' })
-    }
-  }, [data, state, send])
-
-  if (!data.showId) navigation({ to: '/' })
-
-  let Game = <Phase0Intro1 />
-  if (state.matches({ phase0: { introduction: 'screen1' } })) {
-    Game = <Phase0Intro1 />
-  } else if (state.matches({ phase0: { introduction: 'screen2' } })) {
-    Game = <Phase0Intro2 />
-  } else if (state.matches({ phase0: { introduction: 'screen3' } })) {
-    Game = <Phase0Intro3 />
-  } else if (state.matches({ phase0: { introduction: 'screen4' } })) {
-    Game = <Phase0Intro4 />
-  } else if (state.matches({ phase0: 'waitingPhase1' })) {
-    Game = <Phase0Waiting />
-  } else if (state.matches({ phase0: 'readyPhase1' })) {
-    Game = <Phase0Ready />
-  } else if (state.matches({ phase1: { introduction: 'screen1' } })) {
-    Game = <Phase1Intro1 />
-  } else if (state.matches({ phase1: { introduction: 'screen2' } })) {
-    Game = <Phase1Intro2 />
-  } else if (state.matches({ phase1: { introduction: 'screen3' } })) {
-    Game = <Phase1Intro3 />
-  } else if (state.matches({ phase1: { starter1: 'introduction' } })) {
-    Game = <Phase1Starter1Intro />
-  } else if (state.matches({ phase1: { starter1: 'description' } })) {
-    Game = <Phase1Starter1Description />
-  } else if (state.matches({ phase1: { starter1: 'confirmChoice' } })) {
-    selectedStarter.current = 'one'
-    Game = <Phase1Starter1ConfirmChoice />
-  } else if (state.matches({ phase1: { starter2: 'introduction' } })) {
-    Game = <Phase1Starter2Intro />
-  } else if (state.matches({ phase1: { starter2: 'description' } })) {
-    Game = <Phase1Starter2Description />
-  } else if (state.matches({ phase1: { starter2: 'confirmChoice' } })) {
-    selectedStarter.current = 'two'
-    Game = <Phase1Starter2ConfirmChoice />
-  } else if (state.matches({ phase1: { starter3: 'introduction' } })) {
-    Game = <Phase1Starter3Intro />
-  } else if (state.matches({ phase1: { starter3: 'description' } })) {
-    Game = <Phase1Starter3Description />
-  } else if (state.matches({ phase1: { starter3: 'confirmChoice' } })) {
-    selectedStarter.current = 'three'
-    Game = <Phase1Starter3ConfirmChoice />
-  } else if (state.matches({ phase1: 'poll' })) {
-    if (selectedStarter.current) {
-      confirmStarter({
-        showId: data.showId!,
-        selection: selectedStarter.current,
-      })
-      selectedStarter.current = null
-    }
-    Game = (
-      <Phase1Poll
-        pollDuration={ref.getSnapshot().context.pollDuration}
-        pollStarted={data.pollStarted}
-        pollEnded={data.pollEnded}
-        showId={data.showId!}
-        next={() => send({ type: 'next' })}
-      />
-    )
-  } else if (state.matches({ phase1: 'pollClosed' })) {
-    Game = <Phase1PollClosed />
-  } else if (state.matches({ phase1: 'rivalSelect' })) {
-    Game = <Phase1RivalSelect />
-  } else if (state.matches({ phase2: 'playVideo' })) {
-    Game = <Phase2Battle />
-  } else if (state.matches({ phase2: { epilogue: 'screen1' } })) {
-    Game = <Phase2Epilogue1 />
-  } else if (state.matches({ phase2: { epilogue: 'screen2' } })) {
-    Game = <Phase2Epilogue2 />
-  } else if (state.matches({ phase2: { epilogue: 'screen3' } })) {
-    Game = <Phase2Epilogue3 />
-  } else if (state.matches({ phase2: { epilogue: 'screen4' } })) {
-    Game = <Phase2Epilogue4 />
-  } else if (state.matches({ phase2: { epilogue: 'screen5' } })) {
-    Game = <Phase2Epilogue5 />
-  } else if (state.matches({ phase2: { epilogue: 'screen6' } })) {
-    Game = <Phase2Epilogue6 />
-  } else {
-    Game = <Phase2Epilogue7 />
+  if (!data.showId) {
+    navigation({ to: '/' })
+    return
+  }
+  if (data.pollEnded && ref.getSnapshot().context.pollEnded === null) {
+    send({ type: 'pollEnded', endTime: data.pollEnded })
+  }
+  if (data.currentPhase > 0 && ref.getSnapshot().context.currentPhase === 0) {
+    send({
+      type: 'updatePhase',
+      phase: data.currentPhase,
+      startTime: data.pollStarted,
+    })
+  } else if (
+    data.currentPhase === 2 &&
+    ref.getSnapshot().context.currentPhase === 1
+  ) {
+    send({ type: 'updatePhase' })
   }
 
-  const navLeft = () => {
-    haptics.once()
-    send({ type: 'navLeft' })
-  }
-  const navRight = () => {
-    haptics.once()
-    send({ type: 'navRight' })
-  }
-  const goNext = () => {
-    haptics.once()
-    send({ type: 'next' })
-  }
-  const goBack = () => {
-    haptics.once()
-    send({ type: 'back' })
-  }
+  const nav = useCallback(
+    (type: 'navLeft' | 'navRight' | 'next' | 'back') => () => {
+      haptics.once()
+      send({ type })
+    },
+    [send]
+  )
 
   return (
     <main className='min-h-screen grid grid-rows-[1fr_auto]'>
       <div className='bg-[#222] text-white px-8 py-4 grid'>
-        <div className='grid place-content-center bg-black rounded'>{Game}</div>
+        <div className='grid place-content-center bg-black rounded'>
+          <Game
+            state={state}
+            poll={{
+              id: data.showId,
+              start: data.pollStarted,
+              end: data.pollEnded,
+              duration: ref.getSnapshot().context.pollDuration,
+              next: nav('next'),
+            }}
+          />
+        </div>
       </div>
 
       <div className='relative bg-[#f9cb1c]'>
@@ -156,38 +73,134 @@ function RouteComponent() {
 
             <button
               className='absolute w-[13%] h-[14%] left-[16%] top-[21%] select-none'
-              onClick={navLeft}
+              onClick={nav('navLeft')}
             />
 
             <button
               className='absolute w-[13%] h-[14%] left-[16%] top-[53%] select-none size-full'
-              onClick={navRight}
+              onClick={nav('navRight')}
             />
 
             <button
               className='absolute w-[13%] h-[17%]  left-[2%] top-[36%] select-none size-full'
-              onClick={navLeft}
+              onClick={nav('navLeft')}
             />
 
             <button
               className='absolute w-[13%] h-[17%]  left-[30%] top-[36%] select-none size-full'
-              onClick={navRight}
+              onClick={nav('navRight')}
             />
 
             <button
               className='absolute top-[22%] left-[75%] w-[21%] h-[25%] rounded-full select-none'
-              onClick={goNext}
+              onClick={nav('next')}
             />
 
             <button
               className='absolute top-[44%] left-[54%] w-[21%] h-[25%] rounded-full select-none'
-              onClick={goBack}
+              onClick={nav('back')}
             />
           </div>
         </div>
       </div>
     </main>
   )
+}
+
+function Game(props: {
+  poll: {
+    id: number
+    duration: number
+    start: number | null
+    end?: number
+    next: () => void
+  }
+  state: ReturnType<typeof useGameMachine>[0]
+}) {
+  const selectedStarter = useRef<'one' | 'two' | 'three' | null>(null)
+  const { mutate: confirmStarter } = useMutation({
+    mutationFn: useConvexMutation(api.appState.selectStarter),
+  })
+
+  switch (props.state) {
+    case 'phase0.introduction.screen1':
+      return <Phase0Intro1 />
+    case 'phase0.introduction.screen2':
+      return <Phase0Intro2 />
+    case 'phase0.introduction.screen3':
+      return <Phase0Intro3 />
+    case 'phase0.introduction.screen4':
+      return <Phase0Intro4 />
+    case 'phase0.waitingPhase1':
+      return <Phase0Waiting />
+    case 'phase0.readyPhase1':
+      return <Phase0Ready />
+    case 'phase1.introduction.screen1':
+      return <Phase1Intro1 />
+    case 'phase1.introduction.screen2':
+      return <Phase1Intro2 />
+    case 'phase1.introduction.screen3':
+      return <Phase1Intro3 />
+    case 'phase1.starter1.introduction':
+      return <Phase1Starter1Intro />
+    case 'phase1.starter2.introduction':
+      return <Phase1Starter2Intro />
+    case 'phase1.starter3.introduction':
+      return <Phase1Starter3Intro />
+    case 'phase1.starter1.description':
+      return <Phase1Starter1Description />
+    case 'phase1.starter2.description':
+      return <Phase1Starter2Description />
+    case 'phase1.starter3.description':
+      return <Phase1Starter3Description />
+    case 'phase1.starter1.confirmChoice':
+      selectedStarter.current = 'one'
+      return <Phase1Starter1ConfirmChoice />
+    case 'phase1.starter2.confirmChoice':
+      selectedStarter.current = 'two'
+      return <Phase1Starter2ConfirmChoice />
+    case 'phase1.starter3.confirmChoice':
+      selectedStarter.current = 'three'
+      return <Phase1Starter3ConfirmChoice />
+    case 'phase1.poll':
+      if (selectedStarter.current) {
+        confirmStarter({
+          showId: props.poll.id,
+          selection: selectedStarter.current,
+        })
+      }
+      return (
+        <Phase1Poll
+          showId={props.poll.id}
+          pollDuration={props.poll.duration}
+          pollStarted={props.poll.start}
+          pollEnded={props.poll.end}
+          next={props.poll.next}
+        />
+      )
+    case 'phase1.pollClosed':
+      return <Phase1PollClosed />
+    case 'phase1.rivalSelect':
+      return <Phase1RivalSelect />
+    case 'phase2.playVideo':
+      return <Phase2Battle />
+    case 'phase2.epilogue.screen1':
+      return <Phase2Epilogue1 />
+    case 'phase2.epilogue.screen2':
+      return <Phase2Epilogue2 />
+    case 'phase2.epilogue.screen3':
+      return <Phase2Epilogue3 />
+    case 'phase2.epilogue.screen4':
+      return <Phase2Epilogue4 />
+    case 'phase2.epilogue.screen5':
+      return <Phase2Epilogue5 />
+    case 'phase2.epilogue.screen6':
+      return <Phase2Epilogue6 />
+    case 'phase2.epilogue.screen7':
+      return <Phase2Epilogue7 />
+    default:
+      return null
+  }
 }
 
 function Phase0Intro1() {
