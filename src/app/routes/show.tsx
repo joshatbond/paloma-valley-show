@@ -20,8 +20,6 @@ function RouteComponent() {
   })
   const haptics = useHaptic()
 
-  const selectedStarter = useRef<'one' | 'two' | 'three' | null>(null)
-
   useEffect(() => {
     if (data.pollEnded && ref.getSnapshot().context.pollEnded === null) {
       send({ type: 'pollEnded', endTime: data.pollEnded })
@@ -42,95 +40,36 @@ function RouteComponent() {
 
   if (!data.showId) navigation({ to: '/' })
 
-  const nav = (type: 'navLeft' | 'navRight' | 'back' | 'next') => () => {
-    console.log(`nav triggered: ${type}`)
-    haptics.once()
-    send({ type })
-  }
-
-  let Game = <Phase0Intro1 />
-  if (state === 'phase0.introduction.screen1') {
-    Game = <Phase0Intro1 />
-  } else if (state === 'phase0.introduction.screen2') {
-    Game = <Phase0Intro2 />
-  } else if (state === 'phase0.introduction.screen3') {
-    Game = <Phase0Intro3 />
-  } else if (state === 'phase0.introduction.screen4') {
-    Game = <Phase0Intro4 />
-  } else if (state === 'phase0.waitingPhase1') {
-    Game = <Phase0Waiting />
-  } else if (state === 'phase0.readyPhase1') {
-    Game = <Phase0Ready />
-  } else if (state === 'phase1.introduction.screen1') {
-    Game = <Phase1Intro1 />
-  } else if (state === 'phase1.introduction.screen2') {
-    Game = <Phase1Intro2 />
-  } else if (state === 'phase1.introduction.screen3') {
-    Game = <Phase1Intro3 />
-  } else if (state === 'phase1.starter1.introduction') {
-    Game = <Phase1Starter1Intro />
-  } else if (state === 'phase1.starter2.introduction') {
-    Game = <Phase1Starter2Intro />
-  } else if (state === 'phase1.starter3.introduction') {
-    Game = <Phase1Starter3Intro />
-  } else if (state === 'phase1.starter1.description') {
-    Game = <Phase1Starter1Description />
-  } else if (state === 'phase1.starter2.description') {
-    Game = <Phase1Starter2Description />
-  } else if (state === 'phase1.starter3.description') {
-    Game = <Phase1Starter3Description />
-  } else if (state === 'phase1.starter1.confirmChoice') {
-    selectedStarter.current = 'one'
-    Game = <Phase1Starter1ConfirmChoice />
-  } else if (state === 'phase1.starter2.confirmChoice') {
-    selectedStarter.current = 'two'
-    Game = <Phase1Starter2ConfirmChoice />
-  } else if (state === 'phase1.starter3.confirmChoice') {
-    selectedStarter.current = 'three'
-    Game = <Phase1Starter3ConfirmChoice />
-  } else if (state === 'phase1.poll') {
-    if (selectedStarter.current) {
-      confirmStarter({
-        showId: data.showId!,
-        selection: selectedStarter.current,
-      })
-      selectedStarter.current = null
+  const nav =
+    (
+      type: Exclude<
+        Parameters<typeof send>[0]['type'],
+        'pollEnded' | 'updatePhase'
+      >
+    ) =>
+    () => {
+      haptics.once()
+      send({ type })
     }
-    Game = (
-      <Phase1Poll
-        pollDuration={ref.getSnapshot().context.pollDuration}
-        pollStarted={data.pollStarted}
-        pollEnded={data.pollEnded}
-        showId={data.showId!}
-        next={nav('next')}
-      />
-    )
-  } else if (state === 'phase1.pollClosed') {
-    Game = <Phase1PollClosed />
-  } else if (state === 'phase1.rivalSelect') {
-    Game = <Phase1RivalSelect />
-  } else if (state === 'phase2.playVideo') {
-    Game = <Phase2Battle />
-  } else if (state === 'phase2.epilogue.screen1') {
-    Game = <Phase2Epilogue1 />
-  } else if (state === 'phase2.epilogue.screen2') {
-    Game = <Phase2Epilogue2 />
-  } else if (state === 'phase2.epilogue.screen3') {
-    Game = <Phase2Epilogue3 />
-  } else if (state === 'phase2.epilogue.screen4') {
-    Game = <Phase2Epilogue4 />
-  } else if (state === 'phase2.epilogue.screen5') {
-    Game = <Phase2Epilogue5 />
-  } else if (state === 'phase2.epilogue.screen6') {
-    Game = <Phase2Epilogue6 />
-  } else {
-    Game = <Phase2Epilogue7 />
-  }
 
   return (
     <main className='min-h-screen grid grid-rows-[1fr_auto]'>
       <div className='bg-[#222] text-white px-8 py-4 grid'>
-        <div className='grid place-content-center bg-black rounded'>{Game}</div>
+        <div className='grid place-content-center bg-black rounded'>
+          <Game
+            poll={{
+              duration: ref.getSnapshot().context.pollDuration,
+              start: data.pollStarted,
+              end: data.pollEnded,
+              id: data.showId!,
+              onNext: nav('next'),
+            }}
+            state={state}
+            onStarterSelect={(
+              selection: (typeof api.appState.selectStarter)['_args']['selection']
+            ) => confirmStarter({ showId: data.showId!, selection })}
+          />
+        </div>
       </div>
 
       <div className='relative bg-[#f9cb1c]'>
@@ -176,6 +115,94 @@ function RouteComponent() {
       </div>
     </main>
   )
+}
+
+function Game(props: {
+  poll: {
+    duration: number
+    end?: number
+    id: number
+    start: number | null
+    onNext: () => void
+  }
+  state: ReturnType<typeof useGameMachine>[0]
+  onStarterSelect: (
+    selection: (typeof api.appState.selectStarter)['_args']['selection']
+  ) => void
+}) {
+  const selectedStarter = useRef<
+    (typeof api.appState.selectStarter)['_args']['selection'] | null
+  >(null)
+
+  switch (props.state) {
+    case 'phase0.introduction.screen1':
+      return <Phase0Intro1 />
+    case 'phase0.introduction.screen2':
+      return <Phase0Intro2 />
+    case 'phase0.introduction.screen3':
+      return <Phase0Intro3 />
+    case 'phase0.introduction.screen4':
+      return <Phase0Intro4 />
+    case 'phase0.waitingPhase1':
+      return <Phase0Waiting />
+    case 'phase0.readyPhase1':
+      return <Phase0Ready />
+    case 'phase1.introduction.screen1':
+      return <Phase1Intro1 />
+    case 'phase1.introduction.screen2':
+      return <Phase1Intro2 />
+    case 'phase1.introduction.screen3':
+      return <Phase1Intro3 />
+    case 'phase1.starter1.introduction':
+      return <Phase1Starter1Intro />
+    case 'phase1.starter2.introduction':
+      return <Phase1Starter2Intro />
+    case 'phase1.starter3.introduction':
+      return <Phase1Starter3Intro />
+    case 'phase1.starter1.description':
+      return <Phase1Starter1Description />
+    case 'phase1.starter2.description':
+      return <Phase1Starter2Description />
+    case 'phase1.starter3.description':
+      return <Phase1Starter3Description />
+    case 'phase1.starter1.confirmChoice':
+      selectedStarter.current = 'one'
+      return <Phase1Starter1ConfirmChoice />
+    case 'phase1.starter2.confirmChoice':
+      selectedStarter.current = 'two'
+      return <Phase1Starter2ConfirmChoice />
+    case 'phase1.starter3.confirmChoice':
+      selectedStarter.current = 'three'
+      return <Phase1Starter3ConfirmChoice />
+    case 'phase1.poll':
+      if (selectedStarter.current) {
+        props.onStarterSelect(selectedStarter.current)
+        selectedStarter.current = null
+      }
+      return <Phase1Poll {...props.poll} />
+    case 'phase1.pollClosed':
+      return <Phase1PollClosed />
+    case 'phase1.rivalSelect':
+      return <Phase1RivalSelect />
+    case 'phase2.playVideo':
+      return <Phase2Battle />
+    case 'phase2.epilogue.screen1':
+      return <Phase2Epilogue1 />
+    case 'phase2.epilogue.screen2':
+      return <Phase2Epilogue2 />
+    case 'phase2.epilogue.screen3':
+      return <Phase2Epilogue3 />
+    case 'phase2.epilogue.screen4':
+      return <Phase2Epilogue4 />
+    case 'phase2.epilogue.screen5':
+      return <Phase2Epilogue5 />
+    case 'phase2.epilogue.screen6':
+      return <Phase2Epilogue6 />
+    case 'phase2.epilogue.screen7':
+      return <Phase2Epilogue7 />
+    default:
+      return null
+  }
 }
 
 function Phase0Intro1() {
@@ -233,21 +260,21 @@ function Phase1Starter3ConfirmChoice() {
   return <p>phase 1: Starter 3 Confirm Choice</p>
 }
 function Phase1Poll(props: {
-  pollStarted: number | null
-  pollDuration: number
-  pollEnded?: number
-  showId: number
-  next: () => void
+  duration: number
+  end?: number
+  id: number
+  start: number | null
+  onNext: () => void
 }) {
   const timeLeft = useTimer({
-    duration: props.pollDuration,
-    startTime: props.pollStarted,
-    endTime: props.pollEnded,
+    duration: props.duration,
+    startTime: props.start,
+    endTime: props.end,
   })
   const { data } = useQuery(
-    convexQuery(api.appState.pollState, { showId: props.showId })
+    convexQuery(api.appState.pollState, { showId: props.id })
   )
-  if (props.pollEnded || timeLeft <= 0) props.next()
+  if (props.end || timeLeft <= 0) props.onNext()
 
   const totalItems = data ? data.reduce((a, v) => a + v, 0) : 1
 
