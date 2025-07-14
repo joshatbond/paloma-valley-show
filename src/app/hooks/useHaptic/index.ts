@@ -31,26 +31,35 @@ export function useHaptic(duration = HAPTIC_DURATION): {
   const isIOS = useMemo(() => detectiOS(), [])
 
   useEffect(() => {
-    // Create and append input element
-    const input = document.createElement('input')
-    input.type = 'checkbox'
-    input.id = 'haptic-switch'
-    input.setAttribute('switch', '')
-    input.style.display = 'none'
-    document.body.appendChild(input)
-    inputRef.current = input
+    const inputEl = document.getElementById('haptic-switch')
+    const labelEl = document.getElementById('haptic-label')
 
-    // Create and append label element
-    const label = document.createElement('label')
-    label.htmlFor = 'haptic-switch'
-    label.style.display = 'none'
-    document.body.appendChild(label)
-    labelRef.current = label
+    if (inputEl) {
+      inputRef.current = inputEl as HTMLInputElement
+    } else {
+      const input = document.createElement('input')
+      input.type = 'checkbox'
+      input.id = 'haptic-switch'
+      input.setAttribute('switch', '')
+      input.style.display = 'none'
+      document.body.appendChild(input)
+      inputRef.current = input
+    }
 
-    // Cleanup function
+    if (labelEl) {
+      labelRef.current = labelEl as HTMLLabelElement
+    } else {
+      const label = document.createElement('label')
+      label.htmlFor = 'haptic-switch'
+      label.id = 'haptic-label'
+      label.style.display = 'none'
+      document.body.appendChild(label)
+      labelRef.current = label
+    }
+
     return () => {
-      document.body.removeChild(input)
-      document.body.removeChild(label)
+      if (inputRef.current) document.body.removeChild(inputRef.current)
+      if (labelRef.current) document.body.removeChild(labelRef.current)
     }
   }, [])
 
