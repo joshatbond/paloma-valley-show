@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { Button } from '../ui/button'
 
 export function ShowLoader() {
   const [isLoading, isLoadingAssign] = useState(true)
@@ -10,13 +11,13 @@ export function ShowLoader() {
     }, 1000)
   }, [])
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
   return (
     <div>
-      <Link to='/show'>View the show</Link>
+      <Link to='/show'>
+        <Button className={`w-full ${isLoading && 'bg-[#9c9c9c]'}`}>
+          {isLoading ? 'Loading...' : 'View the Show'}
+        </Button>
+      </Link>
     </div>
   )
 }
