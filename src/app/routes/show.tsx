@@ -20,6 +20,20 @@ function RouteComponent() {
   })
   const haptics = useHaptic()
 
+  if (!data.showId) navigation({ to: '/' })
+
+  const nav =
+    (
+      type: Exclude<
+        Parameters<typeof send>[0]['type'],
+        'pollEnded' | 'updatePhase'
+      >
+    ) =>
+    () => {
+      haptics.once()
+      send({ type })
+    }
+
   useEffect(() => {
     if (data.pollEnded && ref.getSnapshot().context.pollEnded === null) {
       send({ type: 'pollEnded', endTime: data.pollEnded })
@@ -38,19 +52,13 @@ function RouteComponent() {
     }
   }, [data, state, send])
 
-  if (!data.showId) navigation({ to: '/' })
+  useEffect(() => {
+    document.documentElement.style.backgroundColor = '#222'
 
-  const nav =
-    (
-      type: Exclude<
-        Parameters<typeof send>[0]['type'],
-        'pollEnded' | 'updatePhase'
-      >
-    ) =>
-    () => {
-      haptics.once()
-      send({ type })
+    return () => {
+      document.documentElement.style.backgroundColor = ''
     }
+  }, [])
 
   return (
     <main className='min-h-screen grid grid-rows-[1fr_auto]'>
