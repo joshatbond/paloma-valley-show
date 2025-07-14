@@ -24,6 +24,9 @@ function RouteComponent() {
   const selectedStarter = useRef<'one' | 'two' | 'three' | null>(null)
 
   useEffect(() => {
+    if (data.pollEnded && ref.getSnapshot().context.pollEnded === null) {
+      send({ type: 'pollEnded', endTime: data.pollEnded })
+    }
     if (data.currentPhase > 0 && ref.getSnapshot().context.currentPhase === 0) {
       send({
         type: 'updatePhase',
@@ -92,6 +95,7 @@ function RouteComponent() {
       <Phase1Poll
         pollDuration={ref.getSnapshot().context.pollDuration}
         pollStarted={data.pollStarted}
+        pollEnded={data.pollEnded}
         showId={data.showId!}
         next={() => send({ type: 'next' })}
       />
@@ -242,18 +246,22 @@ function Phase1Starter3ConfirmChoice() {
 function Phase1Poll(props: {
   pollStarted: number | null
   pollDuration: number
+  pollEnded?: number
   showId: number
   next: () => void
 }) {
   const timeLeft = useTimer({
     duration: props.pollDuration,
     startTime: props.pollStarted,
+    endTime: props.pollEnded,
   })
   const { data } = useQuery(
     convexQuery(api.appState.pollState, { showId: props.showId })
   )
+  if (props.pollEnded) props.next()
 
   const totalItems = data ? data.reduce((a, v) => a + v, 0) : 1
+
   return (
     <div>
       <p>Time left: {timeLeft}s</p>

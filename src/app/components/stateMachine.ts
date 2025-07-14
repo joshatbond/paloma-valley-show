@@ -19,16 +19,26 @@ export const machine = setup({
             : context.pollStarted,
       }
     }),
+    endPoll: assign(({ context, event }) => {
+      if (event.type !== 'pollEnded') return context
+
+      return {
+        ...context,
+        pollEnded: event.endTime,
+      }
+    }),
   },
   guards: {
     isPhase1: ({ context }) => context.currentPhase >= 1,
     isPhase2: ({ context }) => context.currentPhase === 2,
-    isPollActive: ({ context: { pollStarted, pollDuration } }) => {
-      const endTime = pollStarted! + pollDuration
+    isPollActive: ({ context: { pollEnded, pollStarted, pollDuration } }) => {
+      const endTime = pollEnded ? pollEnded : pollStarted! + pollDuration
       return Date.now() < endTime ? true : false
     },
-    isPollConcluded: ({ context: { pollStarted, pollDuration } }) => {
-      const endTime = pollStarted! + pollDuration - 2e3
+    isPollConcluded: ({
+      context: { pollEnded, pollStarted, pollDuration },
+    }) => {
+      const endTime = pollEnded ? pollEnded : pollStarted! + pollDuration - 2e3
       return Date.now() > endTime ? true : false
     },
   },
@@ -43,23 +53,27 @@ export const machine = setup({
               on: {
                 next: { target: 'screen2' },
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
             screen2: {
               on: {
                 next: { target: 'screen3' },
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
             screen3: {
               on: {
                 next: { target: 'screen4' },
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
             screen4: {
               on: {
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
           },
@@ -70,11 +84,13 @@ export const machine = setup({
               { target: 'waitingPhase1' },
             ],
             updatePhase: { actions: 'phaseUpdate' },
+            pollEnded: { actions: 'endPoll' },
           },
         },
         readyPhase1: {
           on: {
             updatePhase: { actions: 'phaseUpdate' },
+            pollEnded: { actions: 'endPoll' },
           },
         },
         waitingPhase1: {
@@ -91,6 +107,7 @@ export const machine = setup({
       on: {
         next: { target: 'phase1' },
         updatePhase: { actions: 'phaseUpdate' },
+        pollEnded: { actions: 'endPoll' },
       },
     },
     phase1: {
@@ -101,17 +118,20 @@ export const machine = setup({
               on: {
                 next: { target: 'screen2' },
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
             screen2: {
               on: {
                 next: { target: 'screen3' },
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
             screen3: {
               on: {
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
           },
@@ -123,91 +143,131 @@ export const machine = setup({
               { target: '#pokeBand.phase1.introduction.screen3' },
             ],
             updatePhase: { actions: 'phaseUpdate' },
+            pollEnded: { actions: 'endPoll' },
           },
         },
         starter1: {
           states: {
             introduction: {
               on: {
-                next: { target: 'description' },
+                next: [
+                  { target: 'description', guard: 'isPollActive' },
+                  { target: '#pokeBand.phase1.pollClosed' },
+                ],
                 navRight: { target: '#pokeBand.phase1.starter2' },
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
             description: {
               on: {
-                next: { target: 'confirmChoice' },
+                next: [
+                  { target: 'confirmChoice', guard: 'isPollActive' },
+                  { target: '#pokeBand.phase1.pollClosed' },
+                ],
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
             confirmChoice: {
               on: {
                 back: { target: 'introduction' },
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
           },
           initial: 'introduction',
           on: {
-            next: { target: 'poll' },
+            next: [
+              { target: 'poll', guard: 'isPollActive' },
+              { target: '#pokeBand.phase1.pollClosed' },
+            ],
             updatePhase: { actions: 'phaseUpdate' },
+            pollEnded: { actions: 'endPoll' },
           },
         },
         starter2: {
           states: {
             introduction: {
               on: {
-                next: { target: 'description' },
+                next: [
+                  { target: 'description', guard: 'isPollActive' },
+                  { target: '#pokeBand.phase1.pollClosed' },
+                ],
                 navLeft: { target: '#pokeBand.phase1.starter1' },
                 navRight: { target: '#pokeBand.phase1.starter3' },
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
             description: {
               on: {
-                next: { target: 'confirmChoice' },
+                next: [
+                  { target: 'confirmChoice', guard: 'isPollActive' },
+                  { target: '#pokeBand.phase1.pollClosed' },
+                ],
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
             confirmChoice: {
               on: {
                 back: { target: 'introduction' },
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
           },
           initial: 'introduction',
           on: {
-            next: { target: 'poll' },
+            next: [
+              { target: 'poll', guard: 'isPollActive' },
+              { target: '#pokeBand.phase1.pollClosed' },
+            ],
             updatePhase: { actions: 'phaseUpdate' },
+            pollEnded: { actions: 'endPoll' },
           },
         },
         starter3: {
           states: {
             introduction: {
               on: {
-                next: { target: 'description' },
+                next: [
+                  { target: 'description', guard: 'isPollActive' },
+                  { target: '#pokeBand.phase1.pollClosed' },
+                ],
                 navLeft: { target: '#pokeBand.phase1.starter2' },
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
             description: {
               on: {
-                next: { target: 'confirmChoice' },
+                next: [
+                  { target: 'confirmChoice', guard: 'isPollActive' },
+                  { target: '#pokeBand.phase1.pollClosed' },
+                ],
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
             confirmChoice: {
               on: {
                 back: { target: 'introduction' },
                 updatePhase: { actions: 'phaseUpdate' },
+                pollEnded: { actions: 'endPoll' },
               },
             },
           },
           initial: 'introduction',
           on: {
-            next: { target: 'poll' },
+            next: [
+              { target: 'poll', guard: 'isPollActive' },
+              { target: '#pokeBand.phase1.pollClosed' },
+            ],
             updatePhase: { actions: 'phaseUpdate' },
+            pollEnded: { actions: 'endPoll' },
           },
         },
         poll: {
@@ -217,17 +277,20 @@ export const machine = setup({
               { target: 'poll' },
             ],
             updatePhase: { actions: 'phaseUpdate' },
+            pollEnded: { actions: 'endPoll' },
           },
         },
         pollClosed: {
           on: {
             next: { target: 'rivalSelect' },
             updatePhase: { actions: 'phaseUpdate' },
+            pollEnded: { actions: 'endPoll' },
           },
         },
         rivalSelect: {
           on: {
             updatePhase: { actions: 'phaseUpdate' },
+            pollEnded: { actions: 'endPoll' },
           },
         },
       },
@@ -238,6 +301,7 @@ export const machine = setup({
           { target: '#pokeBand.phase1.rivalSelect' },
         ],
         updatePhase: { actions: 'phaseUpdate' },
+        pollEnded: { actions: 'endPoll' },
       },
     },
     phase2: {
@@ -266,6 +330,7 @@ export const machine = setup({
     currentPhase: 0,
     pollDuration,
     pollStarted: null,
+    pollEnded: null,
   },
 })
 
@@ -278,6 +343,10 @@ type Context = {
    * A timestamp indicating when the poll started, defaults to null before the poll starts
    */
   pollStarted: number | null
+  /**
+   * A timestamp indicating when the poll ended, should only be set if admin overrides poll state
+   */
+  pollEnded: number | null
   /**
    * How long the poll should last in milliseconds
    */
@@ -295,3 +364,4 @@ type Events =
     }
   | { type: 'next' }
   | { type: 'updatePhase'; phase?: number; startTime?: number | null }
+  | { type: 'pollEnded'; endTime: number }
