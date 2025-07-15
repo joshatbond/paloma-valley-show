@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+
 import { Button } from '../ui/button'
 
 export function ShowLoader() {
@@ -13,7 +14,7 @@ export function ShowLoader() {
 
   return (
     <div>
-      <Link to='/show'>
+      <Link to="/show">
         <Button className={`w-full ${isLoading && 'bg-[#9c9c9c]'}`}>
           {isLoading ? 'Loading...' : 'View the Show'}
         </Button>

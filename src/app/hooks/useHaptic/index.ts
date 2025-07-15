@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
+
 import { detectiOS } from './utils'
 
 const HAPTIC_DURATION = 100
@@ -97,7 +98,7 @@ export function useHaptic(duration = HAPTIC_DURATION): {
  * @returns A Promise that resolves after the specified delay.
  */
 async function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 async function pulse(times: number, gap: number, cb: () => void) {

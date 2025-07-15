@@ -1,11 +1,14 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { api } from '~/server/convex/_generated/api'
-import { Controller } from '../components/ui/controller'
-import { Carousel } from '../components/ui/carousel'
 import { useEffect, useMemo, useState } from 'react'
+
+import { api } from '~/server/convex/_generated/api'
+
+import { Carousel } from '../components/ui/carousel'
+import { Controller } from '../components/ui/controller'
 import { useHaptic } from '../hooks/useHaptic'
+
 const backgroundUrls = ['/images/bg-1.png', '/images/bg-2.png']
 
 export const Route = createFileRoute('/')({
@@ -26,43 +29,43 @@ function Home() {
   }, [data])
 
   return (
-    <main className='min-h-screen grid grid-rows-[1fr_auto]'>
-      <div className='bg-[#222] text-white px-8 py-4 grid'>
-        <div className='relative overflow-clip flex flex-col pt-8 h-full bg-black rounded'>
-          <div className='absolute inset-x-0 top-[20%] bottom-[20%]'>
-            <img src={bgSrc} className='h-full object-cover w-screen' />
-            <div className='absolute inset-0 bg-gradient-to-t from-black to-transparent'></div>
+    <main className="grid min-h-screen grid-rows-[1fr_auto]">
+      <div className="grid bg-[#222] px-8 py-4 text-white">
+        <div className="relative flex h-full flex-col overflow-clip rounded bg-black pt-8">
+          <div className="absolute inset-x-0 top-[20%] bottom-[20%]">
+            <img src={bgSrc} className="h-full w-screen object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
           </div>
-          <div className='absolute inset-x-2 bottom-2 h-[20vh]'>
+          <div className="absolute inset-x-2 bottom-2 h-[20vh]">
             <Carousel />
           </div>
 
-          <div className='relative flex justify-center'>
-            <img src='/images/logo.png' className='w-[75%]' />
+          <div className="relative flex justify-center">
+            <img src="/images/logo.png" className="w-[75%]" />
           </div>
 
-          <div className='relative flex-grow'>
-            <div className='p-2 pl-4 w-fit h-full'>
-              <div className='grid gap-2 grid-cols-[repeat(2,auto)] grid-rows-[repeat(2,auto)]'>
-                <label className='relative col-start-1 row-start-1 row-span-2 inline-block w-4'>
+          <div className="relative flex-grow">
+            <div className="h-full w-fit p-2 pl-4">
+              <div className="grid grid-cols-[repeat(2,auto)] grid-rows-[repeat(2,auto)] gap-2">
+                <label className="relative col-start-1 row-span-2 row-start-1 inline-block w-4">
                   <input
-                    type='checkbox'
-                    id='sound-effects'
-                    className='sr-only peer'
+                    type="checkbox"
+                    id="sound-effects"
+                    className="peer sr-only"
                     checked={!showSelected}
                     onChange={() => {}}
                   />
-                  <span className='absolute peer-checked:translate-y-3/5 cursor-pointer inset-0 transition-all duration-50 ease-accel rounded-full'>
-                    <img src='/images/arrow.png' className='-rotate-90 w-4' />
+                  <span className="ease-accel absolute inset-0 cursor-pointer rounded-full transition-all duration-50 peer-checked:translate-y-3/5">
+                    <img src="/images/arrow.png" className="w-4 -rotate-90" />
                   </span>
                 </label>
 
                 <p
-                  className={`font-poke text-xs w-fit col-start-2 row-start-1 ${data.showId ? 'text-white' : 'text-neutral-500'}`}
+                  className={`font-poke col-start-2 row-start-1 w-fit text-xs ${data.showId ? 'text-white' : 'text-neutral-500'}`}
                 >
                   Start Show
                 </p>
-                <p className='font-poke text-xs w-fit col-start-2 row-start-2'>
+                <p className="font-poke col-start-2 row-start-2 w-fit text-xs">
                   See Program
                 </p>
               </div>

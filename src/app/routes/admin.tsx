@@ -1,13 +1,15 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
-import { api } from '~/server/convex/_generated/api'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { adminAuth } from '~/server/auth'
+import { createFileRoute } from '@tanstack/react-router'
 import { PropsWithChildren, useState } from 'react'
-import { Button } from '../components/ui/button'
-import { pollDuration } from '../components/stateMachine'
-import { useTimer } from '../hooks/useTimer'
+
 import { useHaptic } from '~/app/hooks/useHaptic'
+import { adminAuth } from '~/server/auth'
+import { api } from '~/server/convex/_generated/api'
+
+import { pollDuration } from '../components/stateMachine'
+import { Button } from '../components/ui/button'
+import { useTimer } from '../hooks/useTimer'
 
 export const Route = createFileRoute('/admin')({
   component: RouteComponent,
@@ -20,21 +22,21 @@ function RouteComponent() {
   const nextPhase = useConvexMutation(api.appState.updatePhaseState)
 
   return (
-    <main className='font-inter bg-gradient-to-br from-gray-800 via-gray-900 to-green-900 flex justify-center items-center min-h-screen p-4 box-border'>
+    <main className="font-inter box-border flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-800 via-gray-900 to-green-900 p-4">
       {isAuthed ? (
-        <Card title='Admin Panel'>
-          <div className='self-stretch flex items-center justify-between p-3 rounded-lg bg-white/10'>
+        <Card title="Admin Panel">
+          <div className="flex items-center justify-between self-stretch rounded-lg bg-white/10 p-3">
             <label
-              htmlFor='sound-effects'
-              className='text-gray-100 text-base font-semibold'
+              htmlFor="sound-effects"
+              className="text-base font-semibold text-gray-100"
             >
               Show is Active?
             </label>
-            <label className='toggle-switch relative inline-block w-[60px] h-[34px]'>
+            <label className="toggle-switch relative inline-block h-[34px] w-[60px]">
               <input
-                type='checkbox'
-                id='sound-effects'
-                className='opacity-0 w-0 h-0'
+                type="checkbox"
+                id="sound-effects"
+                className="h-0 w-0 opacity-0"
                 checked={!!data.showId}
                 onChange={() =>
                   toggleShowState({
@@ -43,19 +45,19 @@ function RouteComponent() {
                   })
                 }
               />
-              <span className='slider absolute cursor-pointer inset-0 transition-all duration-400 rounded-full'></span>
+              <span className="slider absolute inset-0 cursor-pointer rounded-full transition-all duration-400"></span>
             </label>
           </div>
 
           {data.currentPhase >= 0 && (
-            <div className='self-stretch flex items-center justify-between p-3 rounded-lg bg-white/10'>
-              <span className='text-gray-100 text-base font-semibold'>
+            <div className="flex items-center justify-between self-stretch rounded-lg bg-white/10 p-3">
+              <span className="text-base font-semibold text-gray-100">
                 Current Phase:{' '}
-                <span id='current-phase'>{data.currentPhase}</span>
+                <span id="current-phase">{data.currentPhase}</span>
               </span>
               <button
-                id='next-phase-button'
-                className='poke-button px-4 py-2 border-2 border-[#3a131f] cursor-pointer font-bold uppercase rounded-full transition-all duration-200 ease-in-out flex items-center justify-center gap-2 text-lg text-white relative overflow-hidden shadow-md hover:translate-y-[-3px] hover:shadow-lg active:translate-y-0 active:shadow-sm'
+                id="next-phase-button"
+                className="poke-button relative flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full border-2 border-[#3a131f] px-4 py-2 text-lg font-bold text-white uppercase shadow-md transition-all duration-200 ease-in-out hover:translate-y-[-3px] hover:shadow-lg active:translate-y-0 active:shadow-sm"
                 onClick={() =>
                   nextPhase({
                     id: data._id,
@@ -73,8 +75,8 @@ function RouteComponent() {
           ) : null}
         </Card>
       ) : (
-        <Card title='Gym Leader Login'>
-          <AuthForm setAdminStatus={(f) => isAuthedAssign(f)} />
+        <Card title="Gym Leader Login">
+          <AuthForm setAdminStatus={f => isAuthedAssign(f)} />
         </Card>
       )}
     </main>
@@ -83,8 +85,8 @@ function RouteComponent() {
 
 function Card(props: PropsWithChildren<{ title: string }>) {
   return (
-    <div className='flex flex-col gap-6 items-center w-full max-w-[450px] p-4 rounded-2xl shadow-xl md:p-6 md:rounded-xl bg-white/20 backdrop-blur-md border border-white/30'>
-      <h1 className='text-3xl font-bold text-white mb-4 w-full text-center md:text-[1.75rem]'>
+    <div className="flex w-full max-w-[450px] flex-col items-center gap-6 rounded-2xl border border-white/30 bg-white/20 p-4 shadow-xl backdrop-blur-md md:rounded-xl md:p-6">
+      <h1 className="mb-4 w-full text-center text-3xl font-bold text-white md:text-[1.75rem]">
         {props.title}
       </h1>
 
@@ -101,8 +103,8 @@ function AuthForm(props: { setAdminStatus: (flag: boolean) => void }) {
 
   return (
     <form
-      className='w-full flex flex-col gap-6'
-      onSubmit={async (event) => {
+      className="flex w-full flex-col gap-6"
+      onSubmit={async event => {
         event.preventDefault()
         haptics.once()
         try {
@@ -117,55 +119,55 @@ function AuthForm(props: { setAdminStatus: (flag: boolean) => void }) {
         }
       }}
     >
-      <div className='flex flex-col'>
+      <div className="flex flex-col">
         <label
-          htmlFor='username'
-          className='text-gray-200 text-sm font-semibold mb-1'
+          htmlFor="username"
+          className="mb-1 text-sm font-semibold text-gray-200"
         >
           Username
         </label>
         <input
-          className='p-3 border border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-[#651d32] focus:border-transparent text-white w-full bg-white/10 placeholder-gray-300'
-          type='text'
+          className="w-full rounded-md border border-gray-400 bg-white/10 p-3 text-white placeholder-gray-300 focus:border-transparent focus:ring-2 focus:ring-[#651d32] focus:outline-none"
+          type="text"
           required
-          id='username'
-          name='username'
-          placeholder='Enter your username'
-          autoComplete='username'
-          onChange={(e) => {
+          id="username"
+          name="username"
+          placeholder="Enter your username"
+          autoComplete="username"
+          onChange={e => {
             usernameAssign(e.currentTarget.value)
           }}
         />
       </div>
 
-      <div className='flex flex-col'>
+      <div className="flex flex-col">
         <label
-          htmlFor='password'
-          className='text-gray-200 text-sm font-semibold mb-1'
+          htmlFor="password"
+          className="mb-1 text-sm font-semibold text-gray-200"
         >
           Password
         </label>
         <input
-          className='p-3 border border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-[#651d32] focus:border-transparent text-white w-full bg-white/10 placeholder-gray-300'
-          name='password'
-          id='password'
-          type='password'
+          className="w-full rounded-md border border-gray-400 bg-white/10 p-3 text-white placeholder-gray-300 focus:border-transparent focus:ring-2 focus:ring-[#651d32] focus:outline-none"
+          name="password"
+          id="password"
+          type="password"
           required
-          placeholder='Enter your password'
-          autoComplete='current-password'
-          onChange={(e) => {
+          placeholder="Enter your password"
+          autoComplete="current-password"
+          onChange={e => {
             passwordAssign(e.currentTarget.value)
           }}
         />
       </div>
 
       {errorState && (
-        <div className='text-red-400 text-sm font-medium text-center bg-red-800/20 p-2 rounded-md'>
+        <div className="rounded-md bg-red-800/20 p-2 text-center text-sm font-medium text-red-400">
           {errorState}
         </div>
       )}
 
-      <Button type='submit'>Submit</Button>
+      <Button type="submit">Submit</Button>
     </form>
   )
 }
@@ -178,17 +180,17 @@ function Poll(props: { pollStarted: number; pollEnded?: number }) {
   })
 
   return (
-    <div className='self-stretch flex gap-3 p-3 rounded-lg bg-white/10 justify-between'>
+    <div className="flex justify-between gap-3 self-stretch rounded-lg bg-white/10 p-3">
       {props.pollEnded || timeLeft <= 0 ? (
-        <span className='text-gray-100 text-base font-semibold'>
+        <span className="text-base font-semibold text-gray-100">
           Poll Ended!
         </span>
       ) : (
         <>
-          <span className='text-gray-100 text-base font-semibold'>
+          <span className="text-base font-semibold text-gray-100">
             Poll Timer
           </span>
-          <span className='text-gray-100 text-base font-semibold'>
+          <span className="text-base font-semibold text-gray-100">
             {timeLeft}s left
           </span>
         </>

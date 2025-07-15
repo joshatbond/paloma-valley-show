@@ -1,22 +1,22 @@
-import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
+import useEmblaCarousel from 'embla-carousel-react'
 
 const urls = ['conductor', 'drums', 'trumpet', 'tuba'].map(
-  (s) => `/images/${s}.png`
+  s => `/images/${s}.png`
 )
 
 export function Carousel() {
   const [emblaRef] = useEmblaCarousel({}, [Autoplay({ delay: 6000 })])
 
   return (
-    <div className='overflow-hidden' ref={emblaRef}>
-      <div className='flex h-[20vh]'>
-        {urls.map((url) => (
+    <div className="overflow-hidden" ref={emblaRef}>
+      <div className="flex h-[20vh]">
+        {urls.map(url => (
           <div
             key={url}
-            className='shrink-0 grow-0 basis-full flex justify-end'
+            className="flex shrink-0 grow-0 basis-full justify-end"
           >
-            <img className='object-contain max-w-[25vw]' src={url} />
+            <img className="max-w-[25vw] object-contain" src={url} />
           </div>
         ))}
       </div>

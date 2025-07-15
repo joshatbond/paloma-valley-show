@@ -4,11 +4,7 @@ bracketSpacing: true
 bracketLine: false
 htmlWhitespaceSensitivity: ignore
 plugins:
-  [
-    '@trivago/prettier-plugin-sort-imports',
-    'prettier-plugin-astro',
-    'prettier-plugin-tailwindcss',
-  ]
+  ['@trivago/prettier-plugin-sort-imports', 'prettier-plugin-tailwindcss']
 printWidth: 80
 semi: false
 singleAttributePerLine: false

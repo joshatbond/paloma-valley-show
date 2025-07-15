@@ -1,12 +1,14 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
-import { api } from '~/server/convex/_generated/api'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
-import { useTimer } from '../hooks/useTimer'
-import { useHaptic } from '../hooks/useHaptic'
-import { useGameMachine } from '../hooks/useGameMachine'
+
+import { api } from '~/server/convex/_generated/api'
+
 import { Controller } from '../components/ui/controller'
+import { useGameMachine } from '../hooks/useGameMachine'
+import { useHaptic } from '../hooks/useHaptic'
+import { useTimer } from '../hooks/useTimer'
 
 export const Route = createFileRoute('/show')({
   component: RouteComponent,
@@ -62,9 +64,9 @@ function RouteComponent() {
   }, [])
 
   return (
-    <main className='min-h-screen grid grid-rows-[1fr_auto]'>
-      <div className='bg-[#222] text-white px-8 py-4 grid'>
-        <div className='grid place-content-center bg-black rounded'>
+    <main className="grid min-h-screen grid-rows-[1fr_auto]">
+      <div className="grid bg-[#222] px-8 py-4 text-white">
+        <div className="grid place-content-center rounded bg-black">
           <Game
             poll={{
               duration: ref.getSnapshot().context.pollDuration,
@@ -260,11 +262,11 @@ function Phase1Poll(props: {
       {data ? (
         <div>
           <p>Poll Results</p>
-          <div className='flex gap-4 justify-between'>
+          <div className="flex justify-between gap-4">
             {data.map((v, i) => (
               <div
                 key={i}
-                className='grid place-content-center poll-item size-10 border'
+                className="poll-item grid size-10 place-content-center border"
                 style={{
                   '--fill-percentage': `${(v / totalItems) * 100}%`,
                   '--fill-color': i === 0 ? 'red' : i === 1 ? 'green' : 'blue',
@@ -313,7 +315,7 @@ function Phase2Epilogue7() {
   return (
     <div>
       <p>phase 2: Epilogue 7</p>
-      <Link to='/program'>View our program</Link>
+      <Link to="/program">View our program</Link>
     </div>
   )
 }

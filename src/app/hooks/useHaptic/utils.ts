@@ -13,7 +13,7 @@ export const detectiOS = (): boolean => {
 
   const toMatch = [/iPhone/i, /iPad/i, /iPod/i]
 
-  return toMatch.some((toMatchItem) => {
+  return toMatch.some(toMatchItem => {
     return RegExp(toMatchItem).exec(navigator.userAgent)
   })
 }
@@ -28,7 +28,7 @@ export const detectAndroid = (): boolean => {
   }
   const toMatch = [/Android/i, /webOS/i, /BlackBerry/i, /Windows Phone/i]
 
-  return toMatch.some((toMatchItem) => {
+  return toMatch.some(toMatchItem => {
     return RegExp(toMatchItem).exec(navigator.userAgent)
   })
 }

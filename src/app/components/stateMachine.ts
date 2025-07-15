@@ -1,4 +1,5 @@
 import { assign, setup } from 'xstate'
+
 export const pollDuration = 132e3 // 2 minutes, 12 seconds
 export const machine = setup({
   types: {

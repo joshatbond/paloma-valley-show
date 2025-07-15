@@ -28,7 +28,7 @@ export function useTimer(props: {
     }
 
     timeoutId = setTimeout(() => {
-      timeLeftAssign((p) => p - 1)
+      timeLeftAssign(p => p - 1)
     }, 1000)
 
     return () => clearTimeout(timeoutId)

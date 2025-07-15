@@ -1,4 +1,5 @@
 import { useActor } from '@xstate/react'
+
 import { machine } from '../components/stateMachine'
 
 const states = {

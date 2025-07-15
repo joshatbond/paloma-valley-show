@@ -2,6 +2,7 @@ import { QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext } from '@tanstack/react-router'
 import { Outlet, ScrollRestoration } from '@tanstack/react-router'
 import { Meta, Scripts } from '@tanstack/start'
+
 import appCss from '~/app/app.css?url'
 
 export const Route = createRootRouteWithContext<{
