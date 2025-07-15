@@ -1,13 +1,12 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { api } from '~/server/convex/_generated/api'
-import { ShowLoader } from '~/app/components/show/loader'
-import { Button } from '../components/ui/button'
 import { Controller } from '../components/ui/controller'
 import { Carousel } from '../components/ui/carousel'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useHaptic } from '../hooks/useHaptic'
+const backgroundUrls = ['/images/bg-1.png', '/images/bg-2.png']
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -18,6 +17,9 @@ function Home() {
   const navigation = useNavigate()
   const haptics = useHaptic()
   const [showSelected, showSelectedAssign] = useState(false)
+  const bgSrc = useMemo(() => {
+    return Math.random() > 0.5 ? backgroundUrls[0] : backgroundUrls[1]
+  }, [])
 
   useEffect(() => {
     showSelectedAssign(!!data.showId)
@@ -27,16 +29,20 @@ function Home() {
     <main className='min-h-screen grid grid-rows-[1fr_auto]'>
       <div className='bg-[#222] text-white px-8 py-4 grid'>
         <div className='relative overflow-clip flex flex-col pt-8 h-full bg-black rounded'>
+          <div className='absolute inset-x-0 top-[20%] bottom-[20%]'>
+            <img src={bgSrc} className='h-full object-cover w-screen' />
+            <div className='absolute inset-0 bg-gradient-to-t from-black to-transparent'></div>
+          </div>
           <div className='absolute inset-x-2 bottom-2 h-[20vh]'>
             <Carousel />
           </div>
 
-          <div className='flex justify-center'>
+          <div className='relative flex justify-center'>
             <img src='/images/logo.png' className='w-[75%]' />
           </div>
 
           <div className='relative flex-grow'>
-            <div className='bg-black p-2 pl-4 w-fit h-full'>
+            <div className='p-2 pl-4 w-fit h-full'>
               <div className='grid gap-2 grid-cols-[repeat(2,auto)] grid-rows-[repeat(2,auto)]'>
                 <label className='relative col-start-1 row-start-1 row-span-2 inline-block w-4'>
                   <input
