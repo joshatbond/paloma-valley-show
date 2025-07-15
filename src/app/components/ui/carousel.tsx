@@ -6,7 +6,7 @@ const urls = ['conductor', 'drums', 'trumpet', 'tuba'].map(
 )
 
 export function Carousel() {
-  const [emblaRef] = useEmblaCarousel({}, [Autoplay()])
+  const [emblaRef] = useEmblaCarousel({}, [Autoplay({ delay: 6000 })])
 
   return (
     <div className='overflow-hidden' ref={emblaRef}>
@@ -16,7 +16,7 @@ export function Carousel() {
             key={url}
             className='shrink-0 grow-0 basis-full flex justify-end'
           >
-            <img className='object-contain' src={url} />
+            <img className='object-contain max-w-[25vw]' src={url} />
           </div>
         ))}
       </div>
