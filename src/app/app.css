@@ -87,3 +87,6 @@ input:checked + .slider:before {
   --font-poke: 'Pokemon';
   --ease-accel: cubic-bezier(0.33, 0, 1, 1);
 }
+@utility render-pixelated {
+  image-rendering: pixelated;
+}
