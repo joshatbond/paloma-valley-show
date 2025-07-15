@@ -85,4 +85,5 @@ input:checked + .slider:before {
 
 @theme {
   --font-poke: 'Pokemon';
+  --ease-accel: cubic-bezier(0.33, 0, 1, 1);
 }
