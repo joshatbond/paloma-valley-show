@@ -42,6 +42,7 @@ function Home() {
 
           <div className="relative flex justify-center">
             <img src="/images/logo.png" className="w-[75%]" />
+            <div className="absolute inset-0"></div>
           </div>
 
           <div className="relative flex-grow">
@@ -61,11 +62,11 @@ function Home() {
                 </label>
 
                 <p
-                  className={`font-poke col-start-2 row-start-1 w-fit text-xs ${data.showId ? 'text-white' : 'text-neutral-500'}`}
+                  className={`font-poke text-shadow-full col-start-2 row-start-1 w-fit text-xs select-none ${data.showId ? 'text-white' : 'text-neutral-500'}`}
                 >
                   Start Show
                 </p>
-                <p className="font-poke col-start-2 row-start-2 w-fit text-xs">
+                <p className="font-poke text-shadow-full col-start-2 row-start-2 w-fit text-xs select-none">
                   See Program
                 </p>
               </div>

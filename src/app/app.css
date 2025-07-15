@@ -30,6 +30,8 @@
   --shadow-poke-btn: 0 5px 15px rgba(0, 0, 0, 0.2);
   --shadow-poke-btn-depress: 0 3px 10px rgba(0, 0, 0, 0.2);
   --shadow-poke-btn-elevate: 0 8px 20px rgba(0, 0, 0, 0.3);
+  --text-shadow-full:
+    2px 0 1px black, -2px 0 1px black, 0 2px 1px black, 0 -2px 1px black;
 }
 @utility render-pixelated {
   image-rendering: pixelated;
