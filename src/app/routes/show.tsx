@@ -84,8 +84,8 @@ function RouteComponent() {
       <Controller
         onUp={nav('navRight')}
         onDown={nav('navLeft')}
-        onLeft={nav('navRight')}
-        onRight={nav('navLeft')}
+        onLeft={nav('navLeft')}
+        onRight={nav('navRight')}
         onA={nav('next')}
         onB={nav('back')}
       />
