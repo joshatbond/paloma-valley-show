@@ -36,7 +36,7 @@ function RouteComponent() {
               <input
                 type="checkbox"
                 id="sound-effects"
-                className="h-0 w-0 opacity-0"
+                className="peer sr-only"
                 checked={!!data.showId}
                 onChange={() =>
                   toggleShowState({
@@ -45,7 +45,7 @@ function RouteComponent() {
                   })
                 }
               />
-              <span className="slider absolute inset-0 cursor-pointer rounded-full transition-all duration-400"></span>
+              <span className="bg-maroon-700 peer-focus:shadow-green-toggle peer-checked:bg-green-toggle absolute inset-0 cursor-pointer rounded-full duration-400 peer-focus:shadow-2xs before:absolute before:bottom-[4px] before:left-[4px] before:h-[26px] before:w-[26px] before:rounded-full before:bg-white before:transition-all peer-checked:before:translate-x-[26px]"></span>
             </label>
           </div>
 
@@ -57,7 +57,7 @@ function RouteComponent() {
               </span>
               <button
                 id="next-phase-button"
-                className="poke-button relative flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full border-2 border-[#3a131f] px-4 py-2 text-lg font-bold text-white uppercase shadow-md transition-all duration-200 ease-in-out hover:translate-y-[-3px] hover:shadow-lg active:translate-y-0 active:shadow-sm"
+                className="border-maroon-800 active:shadow-poke-btn-depress hover:shadow-poke-btn-elevate relative flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full border-2 bg-(image:--gradient-poke-btn) px-4 py-2 text-lg font-bold text-white uppercase transition-all duration-200 ease-in-out before:absolute before:top-0 before:-left-full before:h-full before:w-full before:-skew-x-[20deg] before:bg-white/20 before:transition-all before:duration-300 before:ease-in-out hover:-translate-y-[3px] hover:before:left-full active:translate-y-0"
                 onClick={() =>
                   nextPhase({
                     id: data._id,

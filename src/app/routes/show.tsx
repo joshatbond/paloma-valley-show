@@ -266,7 +266,7 @@ function Phase1Poll(props: {
             {data.map((v, i) => (
               <div
                 key={i}
-                className="poll-item grid size-10 place-content-center border"
+                className="grid size-10 place-content-center border bg-(image:--gradient-poll)"
                 style={{
                   '--fill-percentage': `${(v / totalItems) * 100}%`,
                   '--fill-color': i === 0 ? 'red' : i === 1 ? 'green' : 'blue',

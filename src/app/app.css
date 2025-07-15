@@ -8,84 +8,28 @@
   src: url('/fonts/poke.ttf');
 }
 
-.poke-shadow {
-  text-shadow: 2px 2px 1px #d0d0c8;
-}
-.poll-item {
-  background-image: linear-gradient(
-    to top,
-    var(--fill-color, blue) var(--fill-percent, 0%),
-    transparent var(--fill-percentage, 0%)
-  );
-}
-.poke-button {
-  background: linear-gradient(145deg, #651d32, #4d1627);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.poke-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.2);
-  transform: skewX(-20deg);
-  transition: all 0.3s ease;
-}
-
-.poke-button:hover::before {
-  left: 100%;
-}
-
-.poke-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
-
-.poke-button:active {
-  transform: translateY(0);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(145deg, #4d1627, #651d32);
-}
-
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  background-color: #4d1627;
-}
-
-.slider:before {
-  position: absolute;
-  content: '';
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #2e8b57;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2e8b57;
-}
-
-input:checked + .slider:before {
-  transform: translateX(26px);
-}
-
-@theme {
+@theme inline {
+  --color-green-toggle: oklch(56.853% 0.1187 154.977);
+  --color-maroon-800: oklch(25.281% 0.06323 3.482);
+  --color-maroon-500: oklch(35.187% 0.10434 6.519);
+  --color-maroon-700: oklch(29.52% 0.08424 4.839);
   --font-poke: 'Pokemon';
   --ease-accel: cubic-bezier(0.33, 0, 1, 1);
+  --gradient-poke-btn: linear-gradient(
+    145deg,
+    var(--color-maroon-500),
+    var(--color-maroon-700)
+  );
+  --gradient-poll: linear-gradient(
+    to top,
+    var(--fill-color, blue),
+    var(--fill-color, blue) var(--fill-percentage, 0%),
+    transparent var(--fill-percentage, 0%),
+    transparent
+  );
+  --shadow-poke-btn: 0 5px 15px rgba(0, 0, 0, 0.2);
+  --shadow-poke-btn-depress: 0 3px 10px rgba(0, 0, 0, 0.2);
+  --shadow-poke-btn-elevate: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 @utility render-pixelated {
   image-rendering: pixelated;
