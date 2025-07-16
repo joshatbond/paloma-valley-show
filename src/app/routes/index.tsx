@@ -95,6 +95,7 @@ function Home() {
         onLeft={() => {}}
         onRight={() => {}}
         onA={() => {
+          haptics.once()
           navigation({ to: showSelected ? '/show' : '/program' })
         }}
         onB={() => {}}
