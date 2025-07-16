@@ -92,12 +92,9 @@ function RouteComponent() {
         onLeft={nav('navLeft')}
         onRight={nav('navRight')}
         onA={() => {
-          console.log(`pressing A.`)
           if (isTyping.current) {
-            console.log('currently typing. Overriding')
             isTyping.current = false
           } else {
-            console.log('not typing anymore, moving to next screen')
             isTyping.current = true
             nav('next')()
           }
