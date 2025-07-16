@@ -132,7 +132,6 @@ function Game(props: {
         </Phase0IntroContainer>
       )
     case 'phase0.introduction.screen2':
-      console.log('screen2')
       props.isTyping.current = true
       return (
         <Phase0IntroContainer>
