@@ -1,7 +1,7 @@
 import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
 import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useRef } from 'react'
+import { MutableRefObject, PropsWithChildren, useEffect, useRef } from 'react'
 
 import { api } from '~/server/convex/_generated/api'
 
@@ -9,6 +9,7 @@ import { Controller } from '../components/ui/controller'
 import { useGameMachine } from '../hooks/useGameMachine'
 import { useHaptic } from '../hooks/useHaptic'
 import { useTimer } from '../hooks/useTimer'
+import { useTypewriter } from '../hooks/useTypewriter'
 
 export const Route = createFileRoute('/show')({
   component: RouteComponent,
@@ -22,6 +23,7 @@ function RouteComponent() {
     mutationFn: useConvexMutation(api.appState.selectStarter),
   })
   const haptics = useHaptic()
+  const isTyping = useRef(true)
 
   if (!data.showId) navigation({ to: '/' })
 
@@ -76,6 +78,7 @@ function RouteComponent() {
               onNext: nav('next'),
             }}
             state={state}
+            isTyping={isTyping}
             onStarterSelect={(
               selection: (typeof api.appState.selectStarter)['_args']['selection']
             ) => confirmStarter({ showId: data.showId!, selection })}
@@ -88,7 +91,17 @@ function RouteComponent() {
         onDown={nav('navLeft')}
         onLeft={nav('navLeft')}
         onRight={nav('navRight')}
-        onA={nav('next')}
+        onA={() => {
+          console.log(`pressing A.`)
+          if (isTyping.current) {
+            console.log('currently typing. Overriding')
+            isTyping.current = false
+          } else {
+            console.log('not typing anymore, moving to next screen')
+            isTyping.current = true
+            nav('next')()
+          }
+        }}
         onB={nav('back')}
       />
     </main>
@@ -96,6 +109,7 @@ function RouteComponent() {
 }
 
 function Game(props: {
+  isTyping: MutableRefObject<boolean>
   poll: {
     duration: number
     end?: number
@@ -114,13 +128,34 @@ function Game(props: {
 
   switch (props.state) {
     case 'phase0.introduction.screen1':
-      return <Phase0Intro1 />
+      props.isTyping.current = true
+      return (
+        <Phase0IntroContainer>
+          <Phase0IntroScreen1 isTyping={props.isTyping} />
+        </Phase0IntroContainer>
+      )
     case 'phase0.introduction.screen2':
-      return <Phase0Intro2 />
+      console.log('screen2')
+      props.isTyping.current = true
+      return (
+        <Phase0IntroContainer>
+          <Phase0IntroScreen2 isTyping={props.isTyping} />
+        </Phase0IntroContainer>
+      )
     case 'phase0.introduction.screen3':
-      return <Phase0Intro3 />
+      props.isTyping.current = true
+      return (
+        <Phase0IntroContainer>
+          <Phase0IntroScreen3 isTyping={props.isTyping} />
+        </Phase0IntroContainer>
+      )
     case 'phase0.introduction.screen4':
-      return <Phase0Intro4 />
+      props.isTyping.current = true
+      return (
+        <Phase0IntroContainer>
+          <Phase0IntroScreen4 isTyping={props.isTyping} />
+        </Phase0IntroContainer>
+      )
     case 'phase0.waitingPhase1':
       return <Phase0Waiting />
     case 'phase0.readyPhase1':
@@ -183,17 +218,160 @@ function Game(props: {
   }
 }
 
-function Phase0Intro1() {
-  return <p>phase 0: Intro Screen 1</p>
+const phase0Intro = {
+  screen1: {
+    line1: 'Hello there!',
+    line2: 'Welcome to the world of Pokémon!',
+  },
+  screen2: {
+    line1: 'My name is Oak-',
+    line2: 'people call me the Pokémon Professor',
+  },
+  screen3: {
+    line1: "Today, you're not just here",
+    line2: 'to watch a show...',
+  },
+  screen4: {
+    line1: "You're here to begin your",
+    line2: 'very own journey!',
+  },
 }
-function Phase0Intro2() {
-  return <p>phase 0: Intro Screen 2</p>
+function Phase0IntroContainer(props: PropsWithChildren) {
+  return (
+    <div className="relative h-full w-full">
+      <img src="/images/phase_0_bg.png" className="render-pixelated" />
+
+      <div className="absolute inset-x-0 bottom-0">
+        <div className="relative px-[2%] pb-[1%]">
+          <img src="/images/exposition.png" className="render-pixelated" />
+
+          <div className="absolute inset-0 py-[0.6rem] pr-5 pl-6 text-black">
+            {props.children}
+          </div>
+
+          <div className="absolute right-[1.75rem] bottom-[0.75rem]">
+            <img src="/images/arrow.png" className="w-[12px] animate-bounce" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
-function Phase0Intro3() {
-  return <p>phase 0: Intro Screen 3</p>
+function Phase0IntroScreen1(props: { isTyping: MutableRefObject<boolean> }) {
+  const [line1, { isDone: isLine1Done }] = useTypewriter([
+    phase0Intro.screen1.line1,
+  ])
+  const [line2, { isDone: isLine2Done, start: startLine2 }] = useTypewriter(
+    [phase0Intro.screen1.line2],
+    { autoplay: false }
+  )
+
+  useEffect(() => {
+    if (isLine1Done) {
+      setTimeout(startLine2, 0.4e3)
+    }
+    if (isLine2Done) props.isTyping.current = false
+  }, [isLine1Done, isLine2Done, startLine2])
+
+  return (
+    <div className="font-poke text-[2.3vw]">
+      <p>{props.isTyping.current ? line1 : phase0Intro.screen1.line1}</p>
+      <p>
+        {!props.isTyping.current
+          ? phase0Intro.screen1.line2
+          : isLine1Done
+            ? line2
+            : ''}
+      </p>
+    </div>
+  )
 }
-function Phase0Intro4() {
-  return <p>phase 0: Intro Screen 4</p>
+function Phase0IntroScreen2(props: { isTyping: MutableRefObject<boolean> }) {
+  const [line1, { isDone: isLine1Done }] = useTypewriter([
+    phase0Intro.screen2.line1,
+  ])
+  const [line2, { isDone: isLine2Done, start: startLine2 }] = useTypewriter(
+    [phase0Intro.screen2.line2],
+    { autoplay: false }
+  )
+
+  useEffect(() => {
+    if (isLine1Done) {
+      setTimeout(startLine2, 0.4e3)
+    }
+    if (isLine2Done) props.isTyping.current = false
+  }, [isLine1Done, isLine2Done, startLine2])
+
+  return (
+    <div className="font-poke text-[2.3vw]">
+      <p>{props.isTyping.current ? line1 : phase0Intro.screen2.line1}</p>
+      <p>
+        {!props.isTyping.current
+          ? phase0Intro.screen2.line2
+          : isLine1Done
+            ? line2
+            : ''}
+      </p>
+    </div>
+  )
+}
+function Phase0IntroScreen3(props: { isTyping: MutableRefObject<boolean> }) {
+  const [line1, { isDone: isLine1Done }] = useTypewriter([
+    phase0Intro.screen3.line1,
+  ])
+  const [line2, { isDone: isLine2Done, start: startLine2 }] = useTypewriter(
+    [phase0Intro.screen3.line2],
+    { autoplay: false }
+  )
+
+  useEffect(() => {
+    if (isLine1Done) {
+      setTimeout(startLine2, 0.4e3)
+    }
+    if (isLine2Done) props.isTyping.current = false
+  }, [isLine1Done, isLine2Done, startLine2])
+
+  return (
+    <div className="font-poke text-[2.3vw]">
+      <p>{props.isTyping.current ? line1 : phase0Intro.screen3.line1}</p>
+      <p>
+        {!props.isTyping.current
+          ? phase0Intro.screen3.line2
+          : isLine1Done
+            ? line2
+            : ''}
+      </p>
+    </div>
+  )
+}
+function Phase0IntroScreen4(props: { isTyping: MutableRefObject<boolean> }) {
+  const [line1, { isDone: isLine1Done }] = useTypewriter([
+    phase0Intro.screen4.line1,
+  ])
+  const [line2, { isDone: isLine2Done, start: startLine2 }] = useTypewriter(
+    [phase0Intro.screen4.line2],
+    { autoplay: false }
+  )
+
+  useEffect(() => {
+    if (isLine1Done) {
+      setTimeout(startLine2, 0.4e3)
+    }
+    if (isLine2Done) props.isTyping.current = false
+  }, [isLine1Done, isLine2Done, startLine2])
+
+  return (
+    <div className="font-poke text-[2.3vw]">
+      <p>{props.isTyping.current ? line1 : phase0Intro.screen4.line1}</p>
+      <p>
+        {!props.isTyping.current
+          ? phase0Intro.screen4.line2
+          : isLine1Done
+            ? line2
+            : ''}
+      </p>
+    </div>
+  )
 }
 function Phase0Waiting() {
   return <p>phase 0: Waiting for phase 1</p>
@@ -202,13 +380,18 @@ function Phase0Ready() {
   return <p>phase 0: Ready for phase 1</p>
 }
 function Phase1Intro1() {
-  return <p>phase 1: Intro Screen 1</p>
+  return <p>Every great Trainer needs a partner. </p>
 }
 function Phase1Intro2() {
-  return <p>phase 1: Intro Screen 2</p>
+  return (
+    <div>
+      <p>So before we begin, I have an</p>
+      <p>important question for you: </p>
+    </div>
+  )
 }
 function Phase1Intro3() {
-  return <p>phase 1: Intro Screen 3</p>
+  return <p>Which Pokémon will you choose?</p>
 }
 function Phase1Starter1Intro() {
   return <p>phase 1: Starter 1 Intro</p>
@@ -266,7 +449,7 @@ function Phase1Poll(props: {
             {data.map((v, i) => (
               <div
                 key={i}
-                className="grid size-10 place-content-center border bg-(image:--gradient-poll)"
+                className="gradient-poll grid size-10 place-content-center border"
                 style={{
                   '--fill-percentage': `${(v / totalItems) * 100}%`,
                   '--fill-color': i === 0 ? 'red' : i === 1 ? 'green' : 'blue',
