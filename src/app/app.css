@@ -20,13 +20,6 @@
     var(--color-maroon-500),
     var(--color-maroon-700)
   );
-  --gradient-poll: linear-gradient(
-    to top,
-    var(--fill-color, blue),
-    var(--fill-color, blue) var(--fill-percentage, 0%),
-    transparent var(--fill-percentage, 0%),
-    transparent
-  );
   --shadow-poke-btn: 0 5px 15px rgba(0, 0, 0, 0.2);
   --shadow-poke-btn-depress: 0 3px 10px rgba(0, 0, 0, 0.2);
   --shadow-poke-btn-elevate: 0 8px 20px rgba(0, 0, 0, 0.3);
@@ -35,4 +28,13 @@
 }
 @utility render-pixelated {
   image-rendering: pixelated;
+}
+.gradient-poll {
+  background-image: linear-gradient(
+    to top,
+    var(--fill-color, blue),
+    var(--fill-color, blue) var(--fill-percentage, 0%),
+    transparent var(--fill-percentage, 0%),
+    transparent
+  );
 }
