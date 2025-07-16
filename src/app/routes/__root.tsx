@@ -43,7 +43,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html>
+    <html className="bg-black">
       <head>
         <Meta />
       </head>
