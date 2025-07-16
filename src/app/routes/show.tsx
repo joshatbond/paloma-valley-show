@@ -93,6 +93,7 @@ function RouteComponent() {
         onRight={nav('navRight')}
         onA={() => {
           if (isTyping.current) {
+            haptics.once()
             isTyping.current = false
           } else {
             isTyping.current = true
