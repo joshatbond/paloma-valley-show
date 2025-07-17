@@ -376,6 +376,8 @@ function Phase0IntroScreen4(props: { isTyping: MutableRefObject<boolean> }) {
   )
 }
 function Phase0Waiting(props: { isTyping: MutableRefObject<boolean> }) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const isLooping = useRef(false)
   const [line1, { isDone }] = useTypewriter([phase0Intro.waiting.line1])
   const [ellipses, { start }] = useTypewriter(['...'], {
     totalIterations: 0,
@@ -387,14 +389,33 @@ function Phase0Waiting(props: { isTyping: MutableRefObject<boolean> }) {
     if (isDone) setTimeout(start, 0.4e3)
   }, [isDone, start])
 
+  useEffect(() => {
+    if (!videoRef.current) return
+    const handleTimeUpdate = () => {
+      if (!videoRef.current || isLooping.current) return
+      const { currentTime, duration } = videoRef.current
+
+      const threshold = 0.1
+      if (duration > 0 && currentTime >= duration - threshold) {
+        isLooping.current = true
+      }
+    }
+    videoRef.current.addEventListener('timeupdate', handleTimeUpdate)
+
+    return () =>
+      videoRef.current?.removeEventListener('timeupdate', handleTimeUpdate)
+  }, [])
+
   return (
     <div className="relative">
       <img src="/images/phase_0_bg.png" className="opacity-0" />
       <video
+        ref={videoRef}
         width="720"
         height="540"
         autoPlay={true}
         controls={false}
+        muted={isLooping.current}
         loop={true}
         className="absolute inset-0"
         playsInline={true}
