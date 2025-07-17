@@ -124,45 +124,43 @@ function Game(props: {
     (typeof api.appState.selectStarter)['_args']['selection'] | null
   >(null)
 
+  props.isTyping.current = true
+
   switch (props.state) {
     case 'phase0.introduction.screen1':
-      props.isTyping.current = true
       return (
         <Phase0IntroContainer>
           <Phase0IntroScreen1 isTyping={props.isTyping} />
         </Phase0IntroContainer>
       )
     case 'phase0.introduction.screen2':
-      props.isTyping.current = true
       return (
         <Phase0IntroContainer>
           <Phase0IntroScreen2 isTyping={props.isTyping} />
         </Phase0IntroContainer>
       )
     case 'phase0.introduction.screen3':
-      props.isTyping.current = true
       return (
         <Phase0IntroContainer>
           <Phase0IntroScreen3 isTyping={props.isTyping} />
         </Phase0IntroContainer>
       )
     case 'phase0.introduction.screen4':
-      props.isTyping.current = true
       return (
         <Phase0IntroContainer>
           <Phase0IntroScreen4 isTyping={props.isTyping} />
         </Phase0IntroContainer>
       )
     case 'phase0.waitingPhase1':
-      return <Phase0Waiting />
+      return <Phase0Waiting isTyping={props.isTyping} />
     case 'phase0.readyPhase1':
-      return <Phase0Ready />
+      return <Phase0Ready isTyping={props.isTyping} />
     case 'phase1.introduction.screen1':
-      return <Phase1Intro1 />
+      return <Phase1Intro1 isTyping={props.isTyping} />
     case 'phase1.introduction.screen2':
-      return <Phase1Intro2 />
+      return <Phase1Intro2 isTyping={props.isTyping} />
     case 'phase1.introduction.screen3':
-      return <Phase1Intro3 />
+      return <Phase1Intro3 isTyping={props.isTyping} />
     case 'phase1.starter1.introduction':
       return <Phase1Starter1Intro />
     case 'phase1.starter2.introduction':
@@ -231,6 +229,13 @@ const phase0Intro = {
   screen4: {
     line1: "You're here to begin your",
     line2: 'very own journey!',
+  },
+  waiting: {
+    line1: 'Sit tight, the show will start soon!',
+  },
+  ready: {
+    line1: 'The show is ready to begin!',
+    line2: 'Press A to continue...',
   },
 }
 function Phase0IntroContainer(props: PropsWithChildren) {
@@ -370,25 +375,187 @@ function Phase0IntroScreen4(props: { isTyping: MutableRefObject<boolean> }) {
     </div>
   )
 }
-function Phase0Waiting() {
-  return <p>phase 0: Waiting for phase 1</p>
-}
-function Phase0Ready() {
-  return <p>phase 0: Ready for phase 1</p>
-}
-function Phase1Intro1() {
-  return <p>Every great Trainer needs a partner. </p>
-}
-function Phase1Intro2() {
+function Phase0Waiting(props: { isTyping: MutableRefObject<boolean> }) {
+  const [line1, { isDone }] = useTypewriter([phase0Intro.waiting.line1])
+  const [ellipses, { start }] = useTypewriter(['...'], {
+    totalIterations: 0,
+    typingSpeed: 1e3,
+    autoplay: false,
+  })
+
+  useEffect(() => {
+    if (isDone) setTimeout(start, 0.4e3)
+  }, [isDone, start])
+
   return (
-    <div>
-      <p>So before we begin, I have an</p>
-      <p>important question for you: </p>
+    <div className="relative">
+      <img src="/images/phase_0_bg.png" className="opacity-0" />
+      <video
+        width="720"
+        height="540"
+        autoPlay={true}
+        controls={false}
+        loop={true}
+        className="absolute inset-0"
+      >
+        <source src="/images/waiting.mp4" />
+      </video>
+
+      <div className="absolute inset-x-0 top-[calc(100%-0.5rem)]">
+        <div className="relative px-[2%] pb-[1%]">
+          <img src="/images/exposition.png" className="render-pixelated" />
+
+          <div className="font-poke absolute inset-0 py-[0.6rem] pr-5 pl-6 text-[2.3vw] text-black">
+            <p>{props.isTyping.current ? line1 : phase0Intro.waiting.line1}</p>
+            <p>{ellipses}</p>
+          </div>
+
+          <div className="absolute right-[1.75rem] bottom-[0.75rem]">
+            <img src="/images/arrow.png" className="w-[12px] animate-bounce" />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
-function Phase1Intro3() {
-  return <p>Which Pokémon will you choose?</p>
+function Phase0Ready(props: { isTyping: MutableRefObject<boolean> }) {
+  const [line1, { isDone: isLine1Done }] = useTypewriter([
+    phase0Intro.ready.line1,
+  ])
+  const [line2, { isDone: isLine2Done, start: startLine2 }] = useTypewriter(
+    [phase0Intro.ready.line2],
+    { autoplay: false }
+  )
+
+  useEffect(() => {
+    if (isLine1Done) {
+      setTimeout(startLine2, 0.4e3)
+    }
+    if (isLine2Done) props.isTyping.current = false
+  }, [isLine1Done, isLine2Done, startLine2])
+  return (
+    <div className="relative h-full w-full">
+      <img src="/images/phase_0_bg.png" className="render-pixelated" />
+
+      <div className="absolute inset-x-0 bottom-0">
+        <div className="relative px-[2%] pb-[1%]">
+          <img src="/images/exposition.png" className="render-pixelated" />
+
+          <div className="font-poke absolute inset-0 py-[0.6rem] pr-5 pl-6 text-[2.3vw] text-black">
+            <p>{props.isTyping.current ? line1 : phase0Intro.ready.line1}</p>
+            <p>
+              {!props.isTyping.current
+                ? phase0Intro.ready.line2
+                : isLine1Done
+                  ? line2
+                  : ''}
+            </p>
+          </div>
+
+          <div className="absolute right-[1.75rem] bottom-[0.75rem]">
+            <img src="/images/arrow.png" className="w-[12px] animate-bounce" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+const phase1 = {
+  intro1: {
+    line1: 'Every great Trainer needs a partner.',
+  },
+  intro2: {
+    line1: 'So before we begin, I have an',
+    line2: 'important question for you:',
+  },
+  intro3: {
+    line1: 'Which Pokémon will you choose?',
+  },
+}
+function Phase1Intro1(props: { isTyping: MutableRefObject<boolean> }) {
+  const [line1] = useTypewriter([phase1.intro1.line1])
+
+  return (
+    <div className="relative h-full w-full">
+      <img src="/images/phase_1_bg.png" className="render-pixelated" />
+
+      <div className="absolute inset-x-0 bottom-0 translate-y-4">
+        <div className="relative px-[2%] pb-[1%]">
+          <img src="/images/exposition.png" className="render-pixelated" />
+
+          <div className="font-poke absolute inset-0 py-[0.6rem] pr-5 pl-6 text-[2.3vw] text-black">
+            <p>{props.isTyping.current ? line1 : phase1.intro1.line1}</p>
+          </div>
+
+          <div className="absolute right-[1.75rem] bottom-[0.75rem]">
+            <img src="/images/arrow.png" className="w-[12px] animate-bounce" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+function Phase1Intro2(props: { isTyping: MutableRefObject<boolean> }) {
+  const [line1, { isDone: isLine1Done }] = useTypewriter([phase1.intro2.line1])
+  const [line2, { isDone: isLine2Done, start: startLine2 }] = useTypewriter(
+    [phase1.intro2.line2],
+    { autoplay: false }
+  )
+
+  useEffect(() => {
+    if (isLine1Done) {
+      setTimeout(startLine2, 0.4e3)
+    }
+    if (isLine2Done) props.isTyping.current = false
+  }, [isLine1Done, isLine2Done, startLine2])
+  return (
+    <div className="relative h-full w-full">
+      <img src="/images/phase_1_bg.png" className="render-pixelated" />
+
+      <div className="t absolute inset-x-0 bottom-0 translate-y-4">
+        <div className="relative px-[2%] pb-[1%]">
+          <img src="/images/exposition.png" className="render-pixelated" />
+
+          <div className="font-poke absolute inset-0 py-[0.6rem] pr-5 pl-6 text-[2.3vw] text-black">
+            <p>{props.isTyping.current ? line1 : phase1.intro2.line1}</p>
+            <p>
+              {!props.isTyping.current
+                ? phase1.intro2.line2
+                : isLine1Done
+                  ? line2
+                  : ''}
+            </p>
+          </div>
+
+          <div className="absolute right-[1.75rem] bottom-[0.75rem]">
+            <img src="/images/arrow.png" className="w-[12px] animate-bounce" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+function Phase1Intro3(props: { isTyping: MutableRefObject<boolean> }) {
+  const [line1] = useTypewriter([phase1.intro3.line1])
+  return (
+    <div className="relative h-full w-full">
+      <img src="/images/phase_1_bg.png" className="render-pixelated" />
+
+      <div className="t absolute inset-x-0 bottom-0 translate-y-4">
+        <div className="relative px-[2%] pb-[1%]">
+          <img src="/images/exposition.png" className="render-pixelated" />
+
+          <div className="font-poke absolute inset-0 py-[0.6rem] pr-5 pl-6 text-[2.3vw] text-black">
+            <p>{props.isTyping.current ? line1 : phase1.intro3.line1}</p>
+          </div>
+
+          <div className="absolute right-[1.75rem] bottom-[0.75rem]">
+            <img src="/images/arrow.png" className="w-[12px] animate-bounce" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 function Phase1Starter1Intro() {
   return <p>phase 1: Starter 1 Intro</p>
