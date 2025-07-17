@@ -495,7 +495,10 @@ const phase1 = {
   },
 }
 function Phase1Intro1(props: { isTyping: MutableRefObject<boolean> }) {
-  const [line1] = useTypewriter([phase1.intro1.line1])
+  const [line1, { isDone }] = useTypewriter([phase1.intro1.line1])
+  useEffect(() => {
+    if (isDone) props.isTyping.current = false
+  }, [isDone])
 
   return (
     <div className="relative h-full w-full">
@@ -558,7 +561,12 @@ function Phase1Intro2(props: { isTyping: MutableRefObject<boolean> }) {
   )
 }
 function Phase1Intro3(props: { isTyping: MutableRefObject<boolean> }) {
-  const [line1] = useTypewriter([phase1.intro3.line1])
+  const [line1, { isDone }] = useTypewriter([phase1.intro3.line1])
+
+  useEffect(() => {
+    if (isDone) props.isTyping.current = false
+  }, [isDone])
+
   return (
     <div className="relative h-full w-full">
       <img src="/images/phase_1_bg.png" className="render-pixelated" />
