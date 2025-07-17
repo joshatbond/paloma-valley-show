@@ -397,6 +397,7 @@ function Phase0Waiting(props: { isTyping: MutableRefObject<boolean> }) {
         controls={false}
         loop={true}
         className="absolute inset-0"
+        playsInline={true}
       >
         <source src="/images/waiting.mp4" />
       </video>
