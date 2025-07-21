@@ -365,4 +365,4 @@ type Events =
     }
   | { type: 'next' }
   | { type: 'updatePhase'; phase?: number; startTime?: number | null }
-  | { type: 'pollEnded'; endTime: number }
+  | { type: 'pollEnded'; endTime: number | null }

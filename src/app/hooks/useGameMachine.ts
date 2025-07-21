@@ -1,4 +1,5 @@
 import { useActor } from '@xstate/react'
+import { useEffect } from 'react'
 
 import { machine } from '../components/stateMachine'
 
@@ -55,14 +56,42 @@ const statesMap = [...createPathMap(states).entries()] as PathEntries<
   typeof states
 >[]
 
-export function useGameMachine() {
+export function useGameMachine({
+  currentPhase,
+  pollEndDate,
+  pollStartDate,
+}: {
+  currentPhase: number
+  pollEndDate: number | null
+  pollStartDate: number | null
+}) {
   const [state, send, ref] = useActor(machine)
   const currentState = statesMap
     .filter(([_, value]) => state.matches(value))
     .pop()?.[0]
 
+  useEffect(() => {
+    const context = ref.getSnapshot().context
+
+    if (context.pollEnded !== pollEndDate) {
+      send({ type: 'pollEnded', endTime: pollEndDate })
+    }
+    if (context.currentPhase !== currentPhase) {
+      send({
+        type: 'updatePhase',
+        phase: currentPhase,
+        startTime: pollStartDate,
+      })
+    }
+  }, [currentPhase, pollEndDate, send])
+
   return [currentState, send, ref] as const
 }
+
+export type State = ReturnType<typeof useGameMachine>[0]
+export type SendParams = Parameters<
+  ReturnType<typeof useGameMachine>[1]
+>[0]['type']
 
 /**
  * Creates a Map where keys are path strings and values are
