@@ -110,6 +110,14 @@ export function useTypewriter(
     return () => clearTimeout(timeoutRef.current)
   }, [started, speed, handleTyping])
 
+  useEffect(() => {
+    clearTimeout(timeoutRef.current)
+    timeoutRef.current = undefined
+    iterationCount.current = 0
+    state.current = 'init'
+    dispatch({ type: 'RESET' })
+  }, [phrases])
+
   return [
     text,
     {
