@@ -1,29 +1,30 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useMemo, useState } from 'react'
+import { createServerFn } from '@tanstack/start'
+import { useEffect, useState } from 'react'
 
 import { api } from '~/server/convex/_generated/api'
 
 import { useStore } from '../components/show/store'
 import { Carousel } from '../components/ui/carousel'
 import { Controller } from '../components/ui/controller'
-import { useHaptic } from '../hooks/useHaptic'
 
-const backgroundUrls = ['/images/bg-1.png', '/images/bg-2.png']
+const getBgURL = createServerFn({ method: 'GET' }).handler(() => {
+  const backgroundUrls = ['/images/bg-1.png', '/images/bg-2.png']
+  return Math.random() > 0.5 ? backgroundUrls[0] : backgroundUrls[1]
+})
 
 export const Route = createFileRoute('/')({
   component: Home,
+  loader: async () => await getBgURL(),
 })
 
 function Home() {
+  const bgURL = Route.useLoaderData()
   const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
   const navigation = useNavigate()
-  const haptics = useHaptic()
   const [showSelected, showSelectedAssign] = useState(false)
-  const bgSrc = useMemo(() => {
-    return Math.random() > 0.5 ? backgroundUrls[0] : backgroundUrls[1]
-  }, [])
 
   useEffect(() => {
     showSelectedAssign(!!data.showId)
@@ -34,7 +35,7 @@ function Home() {
       <div className="grid bg-[#222] px-8 py-4 text-white">
         <div className="relative flex h-full flex-col overflow-clip rounded bg-black pt-8">
           <div className="absolute inset-x-0 top-[20%] bottom-[20%]">
-            <img src={bgSrc} className="h-full w-screen object-cover" />
+            <img src={bgURL} className="h-full w-screen object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
           </div>
           <div className="absolute inset-x-2 bottom-2 h-[20vh]">
