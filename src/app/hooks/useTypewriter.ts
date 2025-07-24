@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 
+const initialState: State = {
+  text: '',
+  phraseIndex: 0,
+  isDeleting: false,
+  isDone: false,
+  isPaused: false,
+}
+
 export function useTypewriter(
   phrases: string[],
   {
@@ -36,154 +44,126 @@ export function useTypewriter(
      */
     typingSpeed?: number
   } = {}
-): [string, { isDone: boolean; start: () => void }] {
-  const [{ count, speed, text }, dispatch] = useReducer(reducer, {
-    text: '',
-    speed: typingSpeed,
-    count: 0,
-  })
-  const state = useRef<States>('init')
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
-  const iterationCount = useRef(0)
-  const prevPhrases = useRef<string[]>([])
-  const started = useRef(autoplay)
+) {
+  const [{ isDeleting, isDone, isPaused, phraseIndex, text }, dispatch] =
+    useReducer(reducer, initialState)
+  const [isStarted, isStartedAssign] = useState(autoplay)
+  const animationFrame = useRef<number>()
+  const lastUpdatedTime = useRef<number>()
+  const timeAccumulator = useRef(0)
 
-  const handleTyping = useCallback(
-    (started: boolean) => {
-      const index = count % phrases.length
-      const currentPhrase = phrases[index]
+  const animate = useCallback(
+    (timestamp: number) => {
+      if (!lastUpdatedTime.current) lastUpdatedTime.current = timestamp
 
-      // debugger
-      switch (state.current) {
-        case 'completed':
-          break
-        case 'init':
-          if (started) state.current = 'typing'
-          dispatch({ type: 'TYPE', payload: currentPhrase, speed: 0 })
-          break
-        case 'deleting':
-          dispatch({
-            type: 'DELETE',
-            payload: currentPhrase,
-            speed: deletingSpeed,
-          })
+      const deltaTime = timestamp - lastUpdatedTime.current
+      timeAccumulator.current += deltaTime
+      lastUpdatedTime.current = timestamp
 
-          if (text === '') {
-            state.current = 'typing'
-            dispatch({ type: 'COUNT' })
-          }
-          break
-        case 'pausing':
-          dispatch({ type: 'DELAY', payload: pauseDuration })
-          setTimeout(() => {
-            state.current = 'deleting'
-          }, pauseDuration)
-          break
-        case 'typing':
-          dispatch({ type: 'TYPE', payload: currentPhrase, speed: typingSpeed })
+      const currentPhrase = phrases[phraseIndex % phrases.length]
+      const currentIteration = Math.floor(phraseIndex / phrases.length)
 
-          if (text === currentPhrase) {
-            state.current = 'pausing'
+      if (isPaused && timeAccumulator.current >= pauseDuration) {
+        timeAccumulator.current = 0
+        dispatch({ type: 'START_DELETING' })
+      } else if (isDeleting && timeAccumulator.current >= deletingSpeed) {
+        timeAccumulator.current = 0
+        if (text.length > 0) dispatch({ type: 'DELETE_CHAR' })
+      } else if (timeAccumulator.current >= typingSpeed) {
+        timeAccumulator.current = 0
 
-            if (totalIterations > 0) {
-              iterationCount.current += 1
-              if (iterationCount.current / phrases.length === totalIterations) {
-                state.current = 'completed'
-              }
-            }
-          }
+        if (text.length < currentPhrase.length) {
+          dispatch({ type: 'TYPE_CHAR', payload: currentPhrase })
+        } else {
+          const isLastPhraseOfLoop = (phraseIndex + 1) % phrases.length === 0
+          const isLastIteration =
+            totalIterations > 0 && currentIteration + 1 >= totalIterations
+          const isLast = isLastIteration && isLastPhraseOfLoop
 
-          break
+          dispatch({ type: 'START_PAUSING', payload: { isLast } })
+        }
       }
+
+      animationFrame.current = requestAnimationFrame(animate)
     },
-    [deletingSpeed, pauseDuration, phrases, text, totalIterations, typingSpeed]
+    [
+      deletingSpeed,
+      isDeleting,
+      isPaused,
+      pauseDuration,
+      phraseIndex,
+      phrases,
+      totalIterations,
+      typingSpeed,
+    ]
   )
 
+  const phrasesMemo = JSON.stringify(phrases)
   useEffect(() => {
-    if (started.current && state.current !== 'completed') {
-      timeoutRef.current = setTimeout(
-        () => handleTyping(started.current),
-        speed
-      )
+    dispatch({ type: 'RESET' })
+    isStartedAssign(autoplay)
+  }, [phrasesMemo, autoplay])
+
+  useEffect(() => {
+    if (isStarted && !isDone) {
+      animationFrame.current = requestAnimationFrame(animate)
     }
 
-    return () => clearTimeout(timeoutRef.current)
-  }, [speed, started.current, handleTyping])
+    return () => {
+      if (animationFrame.current) {
+        cancelAnimationFrame(animationFrame.current)
+      }
 
-  useEffect(() => {
-    if (phrases.every(p => prevPhrases.current.includes(p))) return
-
-    clearTimeout(timeoutRef.current)
-    timeoutRef.current = undefined
-    iterationCount.current = 0
-    state.current = 'init'
-    started.current = autoplay
-    prevPhrases.current = phrases
-    dispatch({ type: 'RESET' })
-  }, [phrases, autoplay])
+      lastUpdatedTime.current = undefined
+      timeAccumulator.current = 0
+    }
+  }, [isStarted, isDone, animate])
 
   return [
     text,
     {
-      isDone: state.current === 'completed',
+      isDone: isDone,
       start: () => {
-        if (started.current) return
-
-        started.current = true
-        dispatch({ type: 'FORCED_RERENDER' })
+        if (isStarted) return
+        isStartedAssign(true)
       },
     },
-  ]
+  ] as const
 }
 
-function reducer(
-  state: {
-    speed: number
-    text: string
-    count: number
-  },
-  action: Action
-) {
+function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case 'TYPE':
-      return {
-        ...state,
-        speed: action.speed,
-        text: action.payload?.substring(0, state.text.length + 1),
-      }
-    case 'DELAY':
-      return {
-        ...state,
-        speed: action.payload,
-      }
-    case 'DELETE':
-      return {
-        ...state,
-        speed: action.speed,
-        text: action.payload?.substring(0, state.text.length - 1),
-      }
-    case 'COUNT':
-      return {
-        ...state,
-        count: state.count + 1,
-      }
+    case 'DELETE_CHAR':
+      return { ...state, text: state.text.substring(0, state.text.length - 1) }
+    case 'NEXT_PHRASE':
+      return { ...state, isDeleting: false, phraseIndex: state.phraseIndex + 1 }
     case 'RESET':
+      return { ...initialState }
+    case 'START_DELETING':
+      return { ...state, isDeleting: true, isPaused: false }
+    case 'START_PAUSING':
       return {
-        count: 0,
-        text: '',
-        speed: 80,
+        ...state,
+        ...(action.payload.isLast ? { isDone: true } : { isPaused: true }),
       }
-    case 'FORCED_RERENDER':
-      return { ...state }
-    default:
-      return state
+    case 'TYPE_CHAR':
+      return {
+        ...state,
+        text: action.payload.substring(0, state.text.length + 1),
+      }
   }
 }
-type States = 'init' | 'typing' | 'deleting' | 'pausing' | 'completed'
+type State = {
+  text: string
+  phraseIndex: number
+  isDeleting: boolean
+  isPaused: boolean
+  isDone: boolean
+}
 type Action =
-  | { type: 'DELAY'; payload: number }
-  | { type: 'TYPE'; payload: string; speed: number }
-  | { type: 'DELETE'; payload: string; speed: number }
-  | { type: 'COUNT' }
+  | { type: 'DELETE_CHAR' }
+  | { type: 'NEXT_PHRASE' }
   | { type: 'RESET' }
-  | { type: 'FORCED_RERENDER' }
+  | { type: 'START_DELETING' }
+  | { type: 'START_PAUSING'; payload: { isLast: boolean } }
+  | { type: 'TYPE_CHAR'; payload: string }
