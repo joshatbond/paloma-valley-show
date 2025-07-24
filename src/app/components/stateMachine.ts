@@ -28,6 +28,11 @@ export const machine = setup({
         pollEnded: event.endTime,
       }
     }),
+    logDevJump: ({ event }) => {
+      if (event.type === 'DEV_JUMP_TO_STATE') {
+        console.log(`DEV MODE: Jumping to state: "${event.path}"`)
+      }
+    },
   },
   guards: {
     isPhase1: ({ context }) => context.currentPhase >= 1,
@@ -42,298 +47,304 @@ export const machine = setup({
       const endTime = pollEnded ? pollEnded : pollStarted! + pollDuration - 2e3
       return Date.now() > endTime ? true : false
     },
+    isTargetingState: ({ event }, params: { path: string }) => {
+      console.log('isTargetingState guard', event.type, params)
+      if (event.type !== 'DEV_JUMP_TO_STATE') return false
+      return event.path === params.path
+    },
   },
-}).createMachine({
-  id: 'pokeBand',
-  states: {
-    phase0: {
+}).createMachine(
+  (() => {
+    return devMode({
+      id: 'pokeBand',
       states: {
-        introduction: {
+        phase0: {
           states: {
-            screen1: {
+            introduction: {
+              states: {
+                screen1: {
+                  on: {
+                    next: { target: 'screen2' },
+                    updatePhase: { actions: 'phaseUpdate' },
+                    pollEnded: { actions: 'endPoll' },
+                  },
+                },
+                screen2: {
+                  on: {
+                    next: { target: 'screen3' },
+                    updatePhase: { actions: 'phaseUpdate' },
+                    pollEnded: { actions: 'endPoll' },
+                  },
+                },
+                screen3: {
+                  on: {
+                    next: { target: 'screen4' },
+                    updatePhase: { actions: 'phaseUpdate' },
+                    pollEnded: { actions: 'endPoll' },
+                  },
+                },
+                screen4: {
+                  on: {
+                    updatePhase: { actions: 'phaseUpdate' },
+                    pollEnded: { actions: 'endPoll' },
+                  },
+                },
+              },
+              initial: 'screen1',
               on: {
-                next: { target: 'screen2' },
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
+                next: [
+                  { target: 'readyPhase1', guard: 'isPhase1' },
+                  { target: 'waitingPhase1' },
+                ],
               },
             },
-            screen2: {
+            readyPhase1: {},
+            waitingPhase1: {
               on: {
-                next: { target: 'screen3' },
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-            screen3: {
-              on: {
-                next: { target: 'screen4' },
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-            screen4: {
-              on: {
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
+                next: [
+                  { target: 'readyPhase1', guard: 'isPhase1' },
+                  { target: 'waitingPhase1' },
+                ],
               },
             },
           },
-          initial: 'screen1',
+          initial: 'introduction',
           on: {
-            next: [
-              { target: 'readyPhase1', guard: 'isPhase1' },
-              { target: 'waitingPhase1' },
-            ],
-            updatePhase: { actions: 'phaseUpdate' },
-            pollEnded: { actions: 'endPoll' },
+            next: { target: 'phase1' },
           },
         },
-        readyPhase1: {
-          on: {
-            updatePhase: { actions: 'phaseUpdate' },
-            pollEnded: { actions: 'endPoll' },
+        phase1: {
+          states: {
+            introduction: {
+              states: {
+                screen1: {
+                  on: {
+                    next: { target: 'screen2' },
+                  },
+                },
+                screen2: {
+                  on: {
+                    next: { target: 'screen3' },
+                  },
+                },
+                screen3: {},
+              },
+              initial: 'screen1',
+              on: {
+                next: [
+                  { target: 'starter1', guard: 'isPollActive' },
+                  { target: 'pollClosed', guard: 'isPollConcluded' },
+                  { target: '#pokeBand.phase1.introduction.screen3' },
+                ],
+              },
+            },
+            starter1: {
+              states: {
+                introduction: {
+                  on: {
+                    next: [
+                      { target: 'description', guard: 'isPollActive' },
+                      { target: '#pokeBand.phase1.pollClosed' },
+                    ],
+                    navRight: { target: '#pokeBand.phase1.starter2' },
+                  },
+                },
+                description: {
+                  on: {
+                    next: [
+                      { target: 'confirmChoice', guard: 'isPollActive' },
+                      { target: '#pokeBand.phase1.pollClosed' },
+                    ],
+                    updatePhase: { actions: 'phaseUpdate' },
+                    pollEnded: { actions: 'endPoll' },
+                  },
+                },
+                confirmChoice: {
+                  on: {
+                    back: { target: 'introduction' },
+                    updatePhase: { actions: 'phaseUpdate' },
+                    pollEnded: { actions: 'endPoll' },
+                  },
+                },
+              },
+              initial: 'introduction',
+              on: {
+                next: [
+                  { target: 'poll', guard: 'isPollActive' },
+                  { target: '#pokeBand.phase1.pollClosed' },
+                ],
+              },
+            },
+            starter2: {
+              states: {
+                introduction: {
+                  on: {
+                    next: [
+                      { target: 'description', guard: 'isPollActive' },
+                      { target: '#pokeBand.phase1.pollClosed' },
+                    ],
+                    navLeft: { target: '#pokeBand.phase1.starter1' },
+                    navRight: { target: '#pokeBand.phase1.starter3' },
+                  },
+                },
+                description: {
+                  on: {
+                    next: [
+                      { target: 'confirmChoice', guard: 'isPollActive' },
+                      { target: '#pokeBand.phase1.pollClosed' },
+                    ],
+                  },
+                },
+                confirmChoice: {
+                  on: {
+                    back: { target: 'introduction' },
+                  },
+                },
+              },
+              initial: 'introduction',
+              on: {
+                next: [
+                  { target: 'poll', guard: 'isPollActive' },
+                  { target: '#pokeBand.phase1.pollClosed' },
+                ],
+              },
+            },
+            starter3: {
+              states: {
+                introduction: {
+                  on: {
+                    next: [
+                      { target: 'description', guard: 'isPollActive' },
+                      { target: '#pokeBand.phase1.pollClosed' },
+                    ],
+                    navLeft: { target: '#pokeBand.phase1.starter2' },
+                  },
+                },
+                description: {
+                  on: {
+                    next: [
+                      { target: 'confirmChoice', guard: 'isPollActive' },
+                      { target: '#pokeBand.phase1.pollClosed' },
+                    ],
+                  },
+                },
+                confirmChoice: {
+                  on: {
+                    back: { target: 'introduction' },
+                  },
+                },
+              },
+              initial: 'introduction',
+              on: {
+                next: [
+                  { target: 'poll', guard: 'isPollActive' },
+                  { target: '#pokeBand.phase1.pollClosed' },
+                ],
+              },
+            },
+            poll: {
+              on: {
+                next: [
+                  { target: 'pollClosed', guard: 'isPollConcluded' },
+                  { target: 'poll' },
+                ],
+              },
+            },
+            pollClosed: {
+              on: {
+                next: { target: 'rivalSelect' },
+              },
+            },
+            rivalSelect: {
+              on: {},
+            },
           },
-        },
-        waitingPhase1: {
+          initial: 'introduction',
           on: {
             next: [
-              { target: 'readyPhase1', guard: 'isPhase1' },
-              { target: 'waitingPhase1' },
+              { target: 'phase2', guard: 'isPhase2' },
+              { target: '#pokeBand.phase1.rivalSelect' },
             ],
-            updatePhase: { actions: 'phaseUpdate', target: 'readyPhase1' },
           },
+        },
+        phase2: {
+          states: {
+            playVideo: {
+              on: { next: { target: 'epilogue' } },
+            },
+            epilogue: {
+              states: {
+                screen1: { on: { next: { target: 'screen2' } } },
+                screen2: { on: { next: { target: 'screen3' } } },
+                screen3: { on: { next: { target: 'screen4' } } },
+                screen4: { on: { next: { target: 'screen5' } } },
+                screen5: { on: { next: { target: 'screen6' } } },
+                screen6: { on: { next: { target: 'screen7' } } },
+                screen7: {},
+              },
+              initial: 'screen1',
+            },
+          },
+          initial: 'playVideo',
         },
       },
-      initial: 'introduction',
+      initial: 'phase0',
       on: {
-        next: { target: 'phase1' },
         updatePhase: { actions: 'phaseUpdate' },
         pollEnded: { actions: 'endPoll' },
       },
-    },
-    phase1: {
-      states: {
-        introduction: {
-          states: {
-            screen1: {
-              on: {
-                next: { target: 'screen2' },
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-            screen2: {
-              on: {
-                next: { target: 'screen3' },
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-            screen3: {
-              on: {
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-          },
-          initial: 'screen1',
-          on: {
-            next: [
-              { target: 'starter1', guard: 'isPollActive' },
-              { target: 'pollClosed', guard: 'isPollConcluded' },
-              { target: '#pokeBand.phase1.introduction.screen3' },
-            ],
-            updatePhase: { actions: 'phaseUpdate' },
-            pollEnded: { actions: 'endPoll' },
-          },
-        },
-        starter1: {
-          states: {
-            introduction: {
-              on: {
-                next: [
-                  { target: 'description', guard: 'isPollActive' },
-                  { target: '#pokeBand.phase1.pollClosed' },
-                ],
-                navRight: { target: '#pokeBand.phase1.starter2' },
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-            description: {
-              on: {
-                next: [
-                  { target: 'confirmChoice', guard: 'isPollActive' },
-                  { target: '#pokeBand.phase1.pollClosed' },
-                ],
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-            confirmChoice: {
-              on: {
-                back: { target: 'introduction' },
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-          },
-          initial: 'introduction',
-          on: {
-            next: [
-              { target: 'poll', guard: 'isPollActive' },
-              { target: '#pokeBand.phase1.pollClosed' },
-            ],
-            updatePhase: { actions: 'phaseUpdate' },
-            pollEnded: { actions: 'endPoll' },
-          },
-        },
-        starter2: {
-          states: {
-            introduction: {
-              on: {
-                next: [
-                  { target: 'description', guard: 'isPollActive' },
-                  { target: '#pokeBand.phase1.pollClosed' },
-                ],
-                navLeft: { target: '#pokeBand.phase1.starter1' },
-                navRight: { target: '#pokeBand.phase1.starter3' },
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-            description: {
-              on: {
-                next: [
-                  { target: 'confirmChoice', guard: 'isPollActive' },
-                  { target: '#pokeBand.phase1.pollClosed' },
-                ],
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-            confirmChoice: {
-              on: {
-                back: { target: 'introduction' },
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-          },
-          initial: 'introduction',
-          on: {
-            next: [
-              { target: 'poll', guard: 'isPollActive' },
-              { target: '#pokeBand.phase1.pollClosed' },
-            ],
-            updatePhase: { actions: 'phaseUpdate' },
-            pollEnded: { actions: 'endPoll' },
-          },
-        },
-        starter3: {
-          states: {
-            introduction: {
-              on: {
-                next: [
-                  { target: 'description', guard: 'isPollActive' },
-                  { target: '#pokeBand.phase1.pollClosed' },
-                ],
-                navLeft: { target: '#pokeBand.phase1.starter2' },
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-            description: {
-              on: {
-                next: [
-                  { target: 'confirmChoice', guard: 'isPollActive' },
-                  { target: '#pokeBand.phase1.pollClosed' },
-                ],
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-            confirmChoice: {
-              on: {
-                back: { target: 'introduction' },
-                updatePhase: { actions: 'phaseUpdate' },
-                pollEnded: { actions: 'endPoll' },
-              },
-            },
-          },
-          initial: 'introduction',
-          on: {
-            next: [
-              { target: 'poll', guard: 'isPollActive' },
-              { target: '#pokeBand.phase1.pollClosed' },
-            ],
-            updatePhase: { actions: 'phaseUpdate' },
-            pollEnded: { actions: 'endPoll' },
-          },
-        },
-        poll: {
-          on: {
-            next: [
-              { target: 'pollClosed', guard: 'isPollConcluded' },
-              { target: 'poll' },
-            ],
-            updatePhase: { actions: 'phaseUpdate' },
-            pollEnded: { actions: 'endPoll' },
-          },
-        },
-        pollClosed: {
-          on: {
-            next: { target: 'rivalSelect' },
-            updatePhase: { actions: 'phaseUpdate' },
-            pollEnded: { actions: 'endPoll' },
-          },
-        },
-        rivalSelect: {
-          on: {
-            updatePhase: { actions: 'phaseUpdate' },
-            pollEnded: { actions: 'endPoll' },
-          },
-        },
+      context: {
+        currentPhase: 0,
+        pollDuration,
+        pollStarted: null,
+        pollEnded: null,
       },
-      initial: 'introduction',
-      on: {
-        next: [
-          { target: 'phase2', guard: 'isPhase2' },
-          { target: '#pokeBand.phase1.rivalSelect' },
-        ],
-        updatePhase: { actions: 'phaseUpdate' },
-        pollEnded: { actions: 'endPoll' },
-      },
+    })
+  })()
+)
+
+function devMode<T extends Record<string, unknown>>(obj: T) {
+  if (!import.meta.env.DEV) return obj
+  if (!('states' in obj)) return obj
+
+  const allPaths = getAllPaths(obj.states as T)
+
+  return {
+    ...obj,
+    on: {
+      DEV_JUMP_TO_STATE: allPaths.map(path => ({
+        actions: 'logDevJump',
+        target: `#pokeBand.${path}`,
+        guard: { type: 'isTargetingState', params: { path } },
+      })),
+      ...('on' in obj && obj.on ? obj.on : {}),
     },
-    phase2: {
-      states: {
-        playVideo: {
-          on: { next: { target: 'epilogue' } },
-        },
-        epilogue: {
-          states: {
-            screen1: { on: { next: { target: 'screen2' } } },
-            screen2: { on: { next: { target: 'screen3' } } },
-            screen3: { on: { next: { target: 'screen4' } } },
-            screen4: { on: { next: { target: 'screen5' } } },
-            screen5: { on: { next: { target: 'screen6' } } },
-            screen6: { on: { next: { target: 'screen7' } } },
-            screen7: {},
-          },
-          initial: 'screen1',
-        },
-      },
-      initial: 'playVideo',
-    },
-  },
-  initial: 'phase0',
-  context: {
-    currentPhase: 0,
-    pollDuration,
-    pollStarted: null,
-    pollEnded: null,
-  },
-})
+  }
+
+  function getAllPaths(states: T, parentPath = ''): string[] {
+    if (!states) return []
+
+    return (Object.keys(states) as Array<keyof T>).flatMap(key => {
+      const stateConfigNode = states[key]
+      const currentPath = parentPath
+        ? `${parentPath}.${String(key)}`
+        : String(key)
+      const childStates = (
+        typeof stateConfigNode === 'object' &&
+        stateConfigNode &&
+        'states' in stateConfigNode &&
+        stateConfigNode.states &&
+        typeof stateConfigNode.states === 'object'
+          ? stateConfigNode.states
+          : {}
+      ) as T
+
+      const childPaths = getAllPaths(childStates, currentPath)
+
+      return [currentPath, ...childPaths]
+    })
+  }
+}
 
 type Context = {
   /**
@@ -366,3 +377,4 @@ type Events =
   | { type: 'next' }
   | { type: 'updatePhase'; phase?: number; startTime?: number | null }
   | { type: 'pollEnded'; endTime: number | null }
+  | { type: 'DEV_JUMP_TO_STATE'; path: string }
