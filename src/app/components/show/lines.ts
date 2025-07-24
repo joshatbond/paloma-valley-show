@@ -77,6 +77,8 @@ export function getLines(state: State, starter: string | null) {
       return lines.phase0.screen2
     case 'phase0.introduction.screen3':
       return lines.phase0.screen3
+    case 'phase0.introduction.screen4':
+      return lines.phase0.screen4
     case 'phase0.waitingPhase1':
       return lines.phase0.waiting
     case 'phase0.readyPhase1':
@@ -130,6 +132,7 @@ export function getLines(state: State, starter: string | null) {
     case 'phase2.epilogue.screen7':
       return lines.phase2.epilogue7
     default:
+      console.log('got a bad state', state)
       return ['Uh oh! Please reload your browser', ''] as [string, string]
   }
 }
