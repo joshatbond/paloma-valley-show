@@ -1,3 +1,4 @@
+import { clsx } from 'clsx'
 import { type PropsWithChildren, useEffect } from 'react'
 
 import { useTypewriter } from '~/app/hooks/useTypewriter'
@@ -18,7 +19,10 @@ export function TextContainer(
 ) {
   return (
     <div
-      className={`absolute inset-x-0 ${props.isWaiting ? 'top-full' : 'bottom-0'}`}
+      className={clsx(
+        'absolute inset-x-0',
+        props.isWaiting ? 'top-full' : 'bottom-0'
+      )}
     >
       <div className="relative px-[2%] pb-[1%]">
         <img src="/images/exposition.png" className="render-pixelated" />
