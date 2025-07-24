@@ -44,8 +44,16 @@ function RouteComponent() {
   const starterAssign = useStore(s => s.starterAssign)
 
   const nav =
-    (type: Exclude<SendParams, 'pollEnded' | 'updatePhase'>) => () => {
-      if (state?.includes('confirmChoice') && type === 'next') {
+    (
+      type: Exclude<
+        SendParams,
+        'pollEnded' | 'updatePhase' | 'DEV_JUMP_TO_STATE'
+      >
+    ) =>
+    () => {
+      if (!state) return
+
+      if (state.includes('confirmChoice') && type === 'next') {
         confirmStarter({
           showId: data.showId!,
           selection:
@@ -63,6 +71,7 @@ function RouteComponent() {
               : 'charmander'
         )
       }
+
       send({ type })
     }
   const lines = useMemo(() => getLines(state, starter), [state, starter])
@@ -115,7 +124,9 @@ function RouteComponent() {
 }
 
 function GameController(props: {
-  nav: (s: Exclude<SendParams, 'pollEnded' | 'updatePhase'>) => () => void
+  nav: (
+    s: Exclude<SendParams, 'pollEnded' | 'updatePhase' | 'DEV_JUMP_TO_STATE'>
+  ) => () => void
 }) {
   const typingStateAssign = useStore(s => s.typingStateAssign)
 
