@@ -95,14 +95,16 @@ function RouteComponent() {
               </Overlay>
             </MidLayer>
 
-            <TextContainer isWaiting={state === 'phase0.waitingPhase1'}>
-              <Text
-                text={lines}
-                hasEllipses={
-                  state === 'phase0.waitingPhase1' || state === 'phase1.poll'
-                }
-              />
-            </TextContainer>
+            {state?.includes('starter') ? null : (
+              <TextContainer isWaiting={state === 'phase0.waitingPhase1'}>
+                <Text
+                  text={lines}
+                  hasEllipses={
+                    state === 'phase0.waitingPhase1' || state === 'phase1.poll'
+                  }
+                />
+              </TextContainer>
+            )}
           </ScreenContainer>
         </div>
       </div>
@@ -143,12 +145,18 @@ function Overlay(props: PropsWithChildren & { state: State }) {
   switch (props.state) {
     case 'phase0.waitingPhase1':
       return <WaitingScreen />
-    case 'phase1.starter1':
-      return <Starter type="bulbasaur" />
-    case 'phase1.starter2':
-      return <Starter type="squirtle" />
-    case 'phase1.starter3':
-      return <Starter type="charmander" />
+    case 'phase1.starter1.confirmChoice':
+    case 'phase1.starter1.description':
+    case 'phase1.starter1.introduction':
+      return <Starter type="bulbasaur" state={props.state} />
+    case 'phase1.starter2.confirmChoice':
+    case 'phase1.starter2.description':
+    case 'phase1.starter2.introduction':
+      return <Starter type="squirtle" state={props.state} />
+    case 'phase1.starter3.confirmChoice':
+    case 'phase1.starter3.description':
+    case 'phase1.starter3.introduction':
+      return <Starter type="charmander" state={props.state} />
     case 'phase1.poll':
       return props.children
     default:
