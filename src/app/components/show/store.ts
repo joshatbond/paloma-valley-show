@@ -1,6 +1,6 @@
 import { createStore } from '~/app/hooks/store'
 
-export const useStore = createStore<Store>()(set => ({
+export const { useStore, getState } = createStore<Store>()(set => ({
   buttons: {
     a: 'ready',
     b: 'ready',
@@ -32,7 +32,7 @@ export const useStore = createStore<Store>()(set => ({
   },
 }))
 
-type Store = {
+export type Store = {
   buttons: {
     [K in 'a' | 'b' | 'up' | 'down' | 'left' | 'right' | 'start']: ButtonState
   }

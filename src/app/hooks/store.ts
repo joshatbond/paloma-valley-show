@@ -5,15 +5,19 @@ export function createStore<T>() {
     let state = stateCreator(setState, getState)
     const listeners = new Set<(state: T, prevState: T) => void>()
 
-    return function useStore<U>(
+    return { useStore, getState }
+    function useStore<U>(
       selector: (state: T) => U = state => state as unknown as U,
       equalityFn: (a: U, b: U) => boolean = Object.is
     ) {
       const currentSelector = useMemoizedSelector(selector, equalityFn)
 
-      return useSyncExternalStore(subscribe, () => currentSelector(getState()))
+      return useSyncExternalStore(
+        subscribe,
+        () => currentSelector(getState()),
+        () => currentSelector(getState())
+      )
     }
-
     function getState(): T {
       return state
     }

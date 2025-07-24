@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { api } from '~/server/convex/_generated/api'
 
+import { useStore } from '../components/show/store'
 import { Carousel } from '../components/ui/carousel'
 import { Controller } from '../components/ui/controller'
 import { useHaptic } from '../hooks/useHaptic'
@@ -75,31 +76,45 @@ function Home() {
         </div>
       </div>
 
-      <Controller
-        onUp={() => {
-          if (showSelected || !data.showId) {
-            haptics.pulse({ count: 2, gap: 10 })
-            return
-          }
-          haptics.once()
-          showSelectedAssign(true)
-        }}
-        onDown={() => {
-          if (!showSelected) {
-            haptics.pulse({ count: 2, gap: 10 })
-            return
-          }
-          haptics.once()
-          showSelectedAssign(false)
-        }}
-        onLeft={() => {}}
-        onRight={() => {}}
-        onA={() => {
-          haptics.once()
+      <GameController
+        enabledDown={showSelected}
+        enabledUp={!showSelected && !!data.showId}
+        onUp={() => showSelectedAssign(true)}
+        onDown={() => showSelectedAssign(false)}
+        onNext={() => {
           navigation({ to: showSelected ? '/show' : '/program' })
         }}
-        onB={() => {}}
       />
     </main>
+  )
+}
+
+function GameController({
+  enabledDown,
+  enabledUp,
+  ...props
+}: {
+  enabledUp: boolean
+  enabledDown: boolean
+  onUp: () => void
+  onDown: () => void
+  onNext: () => void
+}) {
+  const buttonStateAssign = useStore(s => s.buttonStateAssign)
+
+  useEffect(() => {
+    buttonStateAssign('up', enabledUp ? 'ready' : 'disabled')
+    buttonStateAssign('down', enabledDown ? 'ready' : 'disabled')
+  }, [enabledDown, enabledUp])
+
+  return (
+    <Controller
+      onUp={props.onUp}
+      onDown={props.onDown}
+      onLeft={() => {}}
+      onRight={() => {}}
+      onA={props.onNext}
+      onB={() => {}}
+    />
   )
 }
