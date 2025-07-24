@@ -38,7 +38,7 @@ const lines = {
       [`You chose ${s}! Let's see if the group agrees`, '...'] as const,
     pollClosed: (s: string) =>
       [
-        "'GARY: Alright, I'll take this one, then!",
+        "GARY: Alright, I'll take this one, then!",
         `Gary received the ${s}`,
       ] as const,
     rivalSelect: [
