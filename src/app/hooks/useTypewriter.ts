@@ -63,12 +63,25 @@ export function useTypewriter(
       const currentPhrase = phrases[phraseIndex % phrases.length]
       const currentIteration = Math.floor(phraseIndex / phrases.length)
 
-      if (isPaused && timeAccumulator.current >= pauseDuration) {
-        timeAccumulator.current = 0
-        dispatch({ type: 'START_DELETING' })
-      } else if (isDeleting && timeAccumulator.current >= deletingSpeed) {
-        timeAccumulator.current = 0
-        if (text.length > 0) dispatch({ type: 'DELETE_CHAR' })
+      if (isPaused) {
+        if (timeAccumulator.current >= pauseDuration) {
+          timeAccumulator.current = 0
+          dispatch({ type: 'START_DELETING' })
+        }
+      } else if (isDeleting) {
+        if (timeAccumulator.current >= deletingSpeed) {
+          timeAccumulator.current = 0
+          if (text.length > 0) {
+            dispatch({ type: 'DELETE_CHAR' })
+          } else {
+            if (totalIterations > 0 && currentIteration >= totalIterations) {
+              dispatch({ type: 'RESET' })
+              dispatch({ type: 'START_PAUSING', payload: { isLast: true } })
+              return
+            }
+            dispatch({ type: 'NEXT_PHRASE' })
+          }
+        }
       } else if (timeAccumulator.current >= typingSpeed) {
         timeAccumulator.current = 0
 
@@ -123,6 +136,7 @@ export function useTypewriter(
     text,
     {
       isDone: isDone,
+      isStarted,
       start: () => {
         if (isStarted) return
         isStartedAssign(true)

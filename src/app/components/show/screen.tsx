@@ -13,9 +13,13 @@ export function ScreenBackground(props: { url: string }) {
 export function MidLayer(props: PropsWithChildren) {
   return <div className="absolute inset-0">{props.children}</div>
 }
-export function TextContainer(props: PropsWithChildren) {
+export function TextContainer(
+  props: PropsWithChildren & { isWaiting?: boolean }
+) {
   return (
-    <div className="absolute inset-x-0 bottom-0">
+    <div
+      className={`absolute inset-x-0 ${props.isWaiting ? 'top-full' : 'bottom-0'}`}
+    >
       <div className="relative px-[2%] pb-[1%]">
         <img src="/images/exposition.png" className="render-pixelated" />
 
@@ -41,17 +45,35 @@ export function Text({
   const typingStateAssign = useStore(state => state.typingStateAssign)
 
   const [line1, { isDone: isLine1Done }] = useTypewriter([t1])
-  const [line2, { isDone: isLine2Done, start: startLine2 }] = useTypewriter(
-    [t2],
-    {
-      autoplay: false,
-    }
-  )
+  const [
+    line2,
+    { isDone: isLine2Done, isStarted: isLine2Started, start: startLine2 },
+  ] = useTypewriter([t2], {
+    autoplay: false,
+    ...(hasEllipses
+      ? {
+          totalIterations: 0,
+          typingSpeed: 0.5e3,
+          pauseDuration: 1e3,
+        }
+      : {}),
+  })
 
   useEffect(() => {
-    if (isLine1Done) setTimeout(startLine2, 0.4e3)
+    if (isLine1Done || (typingState === 'userOverride' && !isLine2Started))
+      setTimeout(
+        startLine2,
+        typingState === 'userOverride' && !isLine2Started ? 10 : 0.4e3
+      )
     if (isLine2Done) typingStateAssign('ready')
-  }, [isLine1Done, isLine2Done, typingStateAssign, startLine2])
+  }, [
+    isLine1Done,
+    isLine2Done,
+    isLine2Started,
+    typingState,
+    typingStateAssign,
+    startLine2,
+  ])
 
   useEffect(() => {
     if (typingState === 'ready' && !isLine2Done) typingStateAssign('typing')
@@ -63,7 +85,7 @@ export function Text({
       <p>
         {typingState === 'userOverride'
           ? hasEllipses
-            ? ''
+            ? line2
             : t2
           : isLine1Done
             ? typingState === 'typing'

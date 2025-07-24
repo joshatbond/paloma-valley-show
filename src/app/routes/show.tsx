@@ -95,7 +95,7 @@ function RouteComponent() {
               </Overlay>
             </MidLayer>
 
-            <TextContainer>
+            <TextContainer isWaiting={state === 'phase0.waitingPhase1'}>
               <Text
                 text={lines}
                 hasEllipses={
