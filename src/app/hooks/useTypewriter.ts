@@ -42,87 +42,96 @@ export function useTypewriter(
     speed: typingSpeed,
     count: 0,
   })
-  const [started, startedAssign] = useState(autoplay)
   const state = useRef<States>('init')
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
   const iterationCount = useRef(0)
+  const prevPhrases = useRef<string[]>([])
+  const started = useRef(autoplay)
 
-  const handleTyping = useCallback(() => {
-    const index = count % phrases.length
-    const currentPhrase = phrases[index]
+  const handleTyping = useCallback(
+    (started: boolean) => {
+      const index = count % phrases.length
+      const currentPhrase = phrases[index]
 
-    switch (state.current) {
-      case 'completed':
-        break
-      case 'init':
-        if (started) state.current = 'typing'
-        dispatch({ type: 'TYPE', payload: currentPhrase, speed: 0 })
-        break
-      case 'deleting':
-        dispatch({
-          type: 'DELETE',
-          payload: currentPhrase,
-          speed: deletingSpeed,
-        })
+      // debugger
+      switch (state.current) {
+        case 'completed':
+          break
+        case 'init':
+          if (started) state.current = 'typing'
+          dispatch({ type: 'TYPE', payload: currentPhrase, speed: 0 })
+          break
+        case 'deleting':
+          dispatch({
+            type: 'DELETE',
+            payload: currentPhrase,
+            speed: deletingSpeed,
+          })
 
-        if (text === '') {
-          state.current = 'typing'
-          dispatch({ type: 'COUNT' })
-        }
-        break
-      case 'pausing':
-        dispatch({ type: 'DELAY', payload: pauseDuration })
-        setTimeout(() => {
-          state.current = 'deleting'
-        }, pauseDuration)
-        break
-      case 'typing':
-        dispatch({ type: 'TYPE', payload: currentPhrase, speed: typingSpeed })
+          if (text === '') {
+            state.current = 'typing'
+            dispatch({ type: 'COUNT' })
+          }
+          break
+        case 'pausing':
+          dispatch({ type: 'DELAY', payload: pauseDuration })
+          setTimeout(() => {
+            state.current = 'deleting'
+          }, pauseDuration)
+          break
+        case 'typing':
+          dispatch({ type: 'TYPE', payload: currentPhrase, speed: typingSpeed })
 
-        if (text === currentPhrase) {
-          state.current = 'pausing'
+          if (text === currentPhrase) {
+            state.current = 'pausing'
 
-          if (totalIterations > 0) {
-            iterationCount.current += 1
-            if (iterationCount.current / phrases.length === totalIterations) {
-              state.current = 'completed'
+            if (totalIterations > 0) {
+              iterationCount.current += 1
+              if (iterationCount.current / phrases.length === totalIterations) {
+                state.current = 'completed'
+              }
             }
           }
-        }
 
-        break
-    }
-  }, [
-    deletingSpeed,
-    pauseDuration,
-    phrases,
-    started,
-    text,
-    totalIterations,
-    typingSpeed,
-  ])
+          break
+      }
+    },
+    [deletingSpeed, pauseDuration, phrases, text, totalIterations, typingSpeed]
+  )
 
   useEffect(() => {
-    if (started) {
-      timeoutRef.current = setTimeout(handleTyping, speed)
+    if (started.current && state.current !== 'completed') {
+      timeoutRef.current = setTimeout(
+        () => handleTyping(started.current),
+        speed
+      )
     }
 
     return () => clearTimeout(timeoutRef.current)
-  }, [started, speed, handleTyping])
+  }, [speed, started.current, handleTyping])
 
   useEffect(() => {
+    if (phrases.every(p => prevPhrases.current.includes(p))) return
+
     clearTimeout(timeoutRef.current)
     timeoutRef.current = undefined
     iterationCount.current = 0
     state.current = 'init'
+    started.current = autoplay
+    prevPhrases.current = phrases
     dispatch({ type: 'RESET' })
-  }, [phrases])
+  }, [phrases, autoplay])
 
   return [
     text,
     {
       isDone: state.current === 'completed',
-      start: () => startedAssign(true),
+      start: () => {
+        if (started.current) return
+
+        started.current = true
+        dispatch({ type: 'FORCED_RERENDER' })
+      },
     },
   ]
 }
@@ -160,10 +169,12 @@ function reducer(
       }
     case 'RESET':
       return {
-        ...state,
         count: 0,
         text: '',
+        speed: 80,
       }
+    case 'FORCED_RERENDER':
+      return { ...state }
     default:
       return state
   }
@@ -175,3 +186,4 @@ type Action =
   | { type: 'DELETE'; payload: string; speed: number }
   | { type: 'COUNT' }
   | { type: 'RESET' }
+  | { type: 'FORCED_RERENDER' }
