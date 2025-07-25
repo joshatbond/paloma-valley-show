@@ -13,6 +13,11 @@
   --color-maroon-800: oklch(25.281% 0.06323 3.482);
   --color-maroon-500: oklch(35.187% 0.10434 6.519);
   --color-maroon-700: oklch(29.52% 0.08424 4.839);
+  --color-menu-100: oklch(97.913% 0.00011 271.152);
+  --color-menu-200: oklch(86.715% 0.01469 328.818);
+  --color-menu-400: oklch(65.205% 0.09487 283.456);
+  --color-menu-500: oklch(53.424% 0.03854 302.156);
+  --color-menu-800: oklch(41.543% 0.05314 283.846);
   --font-poke: 'Pokemon';
   --ease-accel: cubic-bezier(0.33, 0, 1, 1);
   --gradient-poke-btn: linear-gradient(
@@ -25,6 +30,8 @@
   --shadow-poke-btn-elevate: 0 8px 20px rgba(0, 0, 0, 0.3);
   --text-shadow-full:
     2px 0 1px black, -2px 0 1px black, 0 2px 1px black, 0 -2px 1px black;
+  --inset-ring-3: inset 0 0 0 2px var(--tw-inset-ring-color, currentcolor);
+  --shadow-menu: box-shadow: 2px 2px 1px 0px #484868, -2px -2px 1px 0px #8888c8;
 }
 @utility render-pixelated {
   image-rendering: pixelated;

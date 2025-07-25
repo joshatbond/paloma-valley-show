@@ -2,13 +2,15 @@ import { convexQuery } from '@convex-dev/react-query'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/start'
-import { useEffect, useState } from 'react'
+import { PropsWithChildren, useEffect, useState } from 'react'
 
 import { api } from '~/server/convex/_generated/api'
 
 import { useStore } from '../components/show/store'
 import { Carousel } from '../components/ui/carousel'
 import { Controller } from '../components/ui/controller'
+import { GameBoyFrame } from '../components/ui/gameboy'
+import { Menu } from '../components/ui/mainMenu'
 
 const getBgURL = createServerFn({ method: 'GET' }).handler(() => {
   const backgroundUrls = ['/images/bg-1.png', '/images/bg-2.png']
@@ -25,28 +27,25 @@ function Home() {
   const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
   const navigation = useNavigate()
   const [showSelected, showSelectedAssign] = useState(false)
+  const showMenu = useStore(state => state.showMenu)
 
   useEffect(() => {
     showSelectedAssign(!!data.showId)
   }, [data])
 
   return (
+    <GameBoyFrame>
+      <ScreenContainer>
+        <LayerBg url={bgURL} />
+        <LayerCarousel />
+      </ScreenContainer>
+    </GameBoyFrame>
+  )
+
+  return (
     <main className="grid min-h-screen grid-rows-[1fr_auto]">
       <div className="grid bg-[#222] px-8 py-4 text-white">
         <div className="relative flex h-full flex-col overflow-clip rounded bg-black pt-8">
-          <div className="absolute inset-x-0 top-[20%] bottom-[20%]">
-            <img src={bgURL} className="h-full w-screen object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
-          </div>
-          <div className="absolute inset-x-2 bottom-2 h-[20vh]">
-            <Carousel />
-          </div>
-
-          <div className="relative flex justify-center">
-            <img src="/images/logo.png" className="w-[75%]" />
-            <div className="absolute inset-0"></div>
-          </div>
-
           <div className="relative flex-grow">
             <div className="h-full w-fit p-2 pl-4">
               <div className="grid grid-cols-[repeat(2,auto)] grid-rows-[repeat(2,auto)] gap-2">
@@ -74,6 +73,8 @@ function Home() {
               </div>
             </div>
           </div>
+
+          <Menu />
         </div>
       </div>
 
@@ -85,6 +86,7 @@ function Home() {
         onNext={() => {
           navigation({ to: showSelected ? '/show' : '/program' })
         }}
+        onStart={showMenu}
       />
     </main>
   )
@@ -100,6 +102,7 @@ function GameController({
   onUp: () => void
   onDown: () => void
   onNext: () => void
+  onStart: (f?: boolean) => void
 }) {
   const buttonStateAssign = useStore(s => s.buttonStateAssign)
 
@@ -112,10 +115,42 @@ function GameController({
     <Controller
       onUp={props.onUp}
       onDown={props.onDown}
-      onLeft={() => {}}
-      onRight={() => {}}
       onA={props.onNext}
-      onB={() => {}}
+      onB={() => props.onStart(false)}
+      onStart={props.onStart}
     />
+  )
+}
+
+function ScreenContainer(props: PropsWithChildren) {
+  return (
+    <div className="relative flex h-full flex-col overflow-clip rounded bg-black pt-8">
+      {props.children}
+    </div>
+  )
+}
+function LayerBg(props: { url: string }) {
+  return (
+    <div className="absolute inset-x-0 top-[20%] bottom-[20%]">
+      <img src={props.url} className="h-full w-screen object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+    </div>
+  )
+}
+function LayerCarousel() {
+  return (
+    <div className="absolute inset-x-2 bottom-2 h-[20vh]">
+      <Carousel />
+    </div>
+  )
+}
+
+function TopLayer() {}
+function LayerLogo() {
+  return (
+    <div className="relative flex justify-center">
+      <img src="/images/logo.png" className="w-[75%]" />
+      <div className="absolute inset-0"></div>
+    </div>
   )
 }
