@@ -1,7 +1,7 @@
 import {
   type Dispatch,
   type HTMLProps,
-  type MouseEvent,
+  type MouseEventHandler,
   type PropsWithChildren,
   type SetStateAction,
   createContext,
@@ -42,12 +42,28 @@ export function Menu({
     function handleKeyDow(e: KeyboardEvent) {
       e.preventDefault()
       if (e.key === 'ArrowDown') {
-        selectedItemAssign(p => (p + 1) % items.length)
+        selectedItemAssign(findNextEnabled)
       }
       if (e.key === 'ArrowUp') {
-        selectedItemAssign(p => (p + 1 - items.length) % items.length)
+        selectedItemAssign(findPreviousEnabled)
       }
       if (e.key === 'Enter') onSelect?.(selectedItemIndex)
+    }
+    function findNextEnabled(current: number) {
+      let next = (current + 1) % items.length
+      while (next !== current) {
+        if (!items[next].disabled) return next
+        next = (next + 1) % items.length
+      }
+      return current
+    }
+    function findPreviousEnabled(current: number) {
+      let prev = (current - 1 + items.length) % items.length
+      while (prev !== current) {
+        if (!items[prev].disabled) return prev
+        prev = (prev - 1 + items.length) % items.length
+      }
+      return current
     }
 
     return () => window.removeEventListener('keydown', handleKeyDow)
@@ -63,14 +79,18 @@ export function Menu({
   const getItemProps: MenuContext['getItemProps'] = (index, userProps) => ({
     ...userProps,
     onMouseEnter: e => {
+      if (!items[index] || items[index].disabled) return
+
       selectedItemAssign(index)
       userProps.onMouseEnter?.(e)
     },
     onClick: () => {
+      if (!items[index] || items[index].disabled) return
       onSelect?.(selectedItemIndex)
     },
     role: 'menuitem' as const,
     'aria-selected': index === selectedItemIndex,
+    'aria-disabled': items[index]?.disabled ?? false,
   })
 
   return (
@@ -94,14 +114,32 @@ const MenuList = forwardRef<HTMLUListElement, HTMLProps<HTMLUListElement>>(
 )
 MenuList.displayName = 'MenuList'
 
-const MenuItem = forwardRef<HTMLLIElement, HTMLProps<'li'> & { index: number }>(
-  ({ index, ...props }, ref) => {
-    const { getItemProps } = useMenuContext()
-    return <li ref={ref} {...props} />
+const MenuItem = forwardRef<
+  HTMLLIElement,
+  HTMLProps<HTMLLIElement> & { index: number }
+>(({ index, ...props }, ref) => {
+  const { getItemProps } = useMenuContext()
+  return <li ref={ref} {...getItemProps(index, props)} />
+})
+MenuItem.displayName = 'MenuItem'
+
+const MenuIndicator = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
+  (props, ref) => {
+    const { selectedItemIndex } = useMenuContext()
+
+    return (
+      <div
+        style={{ top: `${selectedItemIndex * 3.5}rem` }}
+        aria-hidden="true"
+        ref={ref}
+        {...props}
+      />
+    )
   }
 )
+MenuIndicator.displayName = 'MenuIndicator'
 
-export { MenuList }
+export { MenuIndicator, MenuItem, MenuList }
 
 function useMenuContext() {
   const context = useContext(MenuContext)
@@ -115,14 +153,16 @@ function useMenuContext() {
 type MenuContext = {
   selectedItemIndex: number
   selectedItemAssign: Dispatch<SetStateAction<number>>
-  menuItems: string[]
+  menuItems: Array<{ label: string; disabled?: boolean }>
   getItemProps: (
     index: number,
-    userProps: HTMLProps<'li'>
+    userProps: HTMLProps<HTMLLIElement>
   ) => {
-    onMouseEnter: (e: MouseEvent<'li'>) => void
-    onClick: (e: MouseEvent<'li'>) => void
+    onMouseEnter: MouseEventHandler<HTMLLIElement>
+    onClick: MouseEventHandler<HTMLLIElement>
     role: 'menuitem'
     'aria-selected': boolean
+    'aria-disabled': boolean
   }
 }
+export type MenuItem = MenuContext['menuItems'][number]
