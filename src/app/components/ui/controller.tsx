@@ -65,7 +65,7 @@ function Button({
 
   const lastDownRef = useRef(0)
   const lastUpRef = useRef(0)
-  const throttleDelay = 2.5e3
+  const throttleDelay = 0.1e3
 
   const handleDown = useCallback(() => {
     switch (state) {
