@@ -40,7 +40,6 @@ export function Menu({
     window.addEventListener('keydown', handleKeyDow)
 
     function handleKeyDow(e: KeyboardEvent) {
-      e.preventDefault()
       if (e.key === 'ArrowDown') {
         selectedItemAssign(findNextEnabled)
       }
