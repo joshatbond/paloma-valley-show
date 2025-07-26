@@ -24,13 +24,6 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   const bgURL = Route.useLoaderData()
-  const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
-  const [showSelected, showSelectedAssign] = useState(false)
-  const showMenu = useStore(state => state.showMenu)
-
-  useEffect(() => {
-    showSelectedAssign(!!data.showId)
-  }, [data])
 
   return (
     <GameBoyFrame>
@@ -89,6 +82,7 @@ function NavMenu() {
   const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
   const nextButtonState = useStore(state => state.buttons.a)
   const startMenuFocus = useStore(state => state.menu.show)
+  const buttonStateAssign = useStore(state => state.buttonStateAssign)
   const [selected, selectedAssign] = useState(0)
   const [items, itemsAssign] = useState([
     { label: 'View Program', disabled: false },
@@ -98,14 +92,19 @@ function NavMenu() {
     if (!data) return
     itemsAssign(p => [p[0], { ...p[1], disabled: !!!data.showId }])
   }, [data, itemsAssign])
+
   useEffect(() => {
-    if (nextButtonState !== 'pressed') return
-    console.log('here')
+    if (nextButtonState !== 'pressed' || startMenuFocus) return
+    buttonStateAssign('a', 'ready')
     navigate({ to: selected === 0 ? '/program' : '/show' })
-  }, [nextButtonState, selected, navigate])
+  }, [nextButtonState, startMenuFocus, selected, buttonStateAssign, navigate])
 
   return (
-    <Menu items={items} hasFocus={!startMenuFocus} onSelect={selectedAssign}>
+    <Menu
+      items={items}
+      hasFocus={!startMenuFocus}
+      onNavigation={selectedAssign}
+    >
       <div className="relative h-full w-fit p-2 pl-4">
         <MenuList className="relative m-0 list-none p-0">
           <MenuIndicator className="ease-accel absolute left-2 transition-all duration-100">

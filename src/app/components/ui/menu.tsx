@@ -34,7 +34,7 @@ export function Menu({
    * a callback function that triggers when a menu navigation occurs
    * @params the previous and current index of the navigation
    */
-  onNavigation?: (indexes: [prev: number, current: number]) => void
+  onNavigation?: (index: number) => void
   /** whether or not the current menu should handle interactions */
   hasFocus?: boolean
 }>) {
@@ -98,7 +98,7 @@ export function Menu({
   useEffect(() => {
     if (selectedItemIndex === prevSelection.current) return
 
-    onNavigation?.([prevSelection.current, selectedItemIndex])
+    onNavigation?.(selectedItemIndex)
     prevSelection.current = selectedItemIndex
   }, [selectedItemIndex, onNavigation])
 
