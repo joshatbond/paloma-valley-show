@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, useCallback, useEffect } from 'react'
+import { ComponentPropsWithoutRef, useCallback, useEffect, useRef } from 'react'
 
 import { type Store, useStore } from '~/app/components/show/store'
 import { useHaptic } from '~/app/hooks/useHaptic'
@@ -63,6 +63,10 @@ function Button({
   const stateAssign = useStore(state => state.buttonStateAssign)
   const haptics = useHaptic()
 
+  const lastDownRef = useRef(0)
+  const lastUpRef = useRef(0)
+  const throttleDelay = 2.5e3
+
   const handleDown = useCallback(() => {
     switch (state) {
       case 'disabled':
@@ -95,22 +99,29 @@ function Button({
         case 'Enter':
           return 'a'
         case 'b':
+        case 'Backspace':
           return 'b'
         case 'Escape':
           return 'start'
       }
     }
     function keyDown(e: KeyboardEvent) {
+      if (Date.now() - lastDownRef.current < throttleDelay) return
+      lastDownRef.current = Date.now()
+
       const key = keyMap(e.key)
 
       if (key !== kind) return
       handleDown()
     }
     function keyUp(e: KeyboardEvent) {
+      if (Date.now() - lastUpRef.current < throttleDelay) return
+      lastUpRef.current = Date.now()
+
       const key = keyMap(e.key)
       if (key !== kind) return
 
-      handleUp
+      handleUp()
     }
 
     return () => {

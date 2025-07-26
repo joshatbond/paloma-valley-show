@@ -36,14 +36,22 @@ export function Menu({
   const [selectedItemIndex, selectedItemAssign] = useState(0)
   const prevSelection = useRef<number>(0)
 
+  const lastDownRef = useRef(0)
+  const lastUpRef = useRef(0)
+  const throttleDelay = 0.5e3
+
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDow)
 
     function handleKeyDow(e: KeyboardEvent) {
       if (e.key === 'ArrowDown') {
+        if (Date.now() - lastDownRef.current < throttleDelay) return
+        lastDownRef.current = Date.now()
         selectedItemAssign(findNextEnabled)
       }
       if (e.key === 'ArrowUp') {
+        if (Date.now() - lastUpRef.current < throttleDelay) return
+        lastUpRef.current = Date.now()
         selectedItemAssign(findPreviousEnabled)
       }
       if (e.key === 'Enter') onSelect?.(selectedItemIndex)
@@ -128,7 +136,7 @@ const MenuIndicator = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
 
     return (
       <div
-        style={{ top: `${selectedItemIndex * 3.5}rem` }}
+        style={{ top: `${selectedItemIndex * 2.2 + 0.3}rem` }}
         aria-hidden="true"
         ref={ref}
         {...props}
