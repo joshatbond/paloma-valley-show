@@ -12,10 +12,13 @@ import {
   useState,
 } from 'react'
 
+import { useStore } from '../show/store'
+
 const MenuContext = createContext<MenuContext | null>(null)
 
 export function Menu({
   items,
+  hasFocus,
   onNavigation,
   onSelect,
   ...props
@@ -32,18 +35,34 @@ export function Menu({
    * @params the previous and current index of the navigation
    */
   onNavigation?: (indexes: [prev: number, current: number]) => void
+  /** whether or not the current menu should handle interactions */
+  hasFocus?: boolean
 }>) {
+  const upKeyState = useStore(state => state.buttons.up)
+  const downKeyState = useStore(state => state.buttons.down)
   const [selectedItemIndex, selectedItemAssign] = useState(0)
   const prevSelection = useRef<number>(0)
 
   const lastDownRef = useRef(0)
   const lastUpRef = useRef(0)
-  const throttleDelay = 0.5e3
+  const throttleDelay = 0.1e3
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDow)
+    if (!hasFocus) return
+    if (upKeyState === 'pressed') {
+      if (Date.now() - lastUpRef.current < throttleDelay) return
+      lastDownRef.current = Date.now()
+      selectedItemAssign(findPreviousEnabled)
+    }
+    if (downKeyState === 'pressed') {
+      if (Date.now() - lastDownRef.current < throttleDelay) return
+      lastUpRef.current = Date.now()
+      selectedItemAssign(findNextEnabled)
+    }
 
     function handleKeyDow(e: KeyboardEvent) {
+      if (!hasFocus) return
       if (e.key === 'ArrowDown') {
         if (Date.now() - lastDownRef.current < throttleDelay) return
         lastDownRef.current = Date.now()
@@ -74,7 +93,7 @@ export function Menu({
     }
 
     return () => window.removeEventListener('keydown', handleKeyDow)
-  }, [items, onSelect, selectedItemAssign])
+  }, [items, hasFocus, upKeyState, downKeyState, onSelect, selectedItemAssign])
 
   useEffect(() => {
     if (selectedItemIndex === prevSelection.current) return
@@ -91,9 +110,10 @@ export function Menu({
       selectedItemAssign(index)
       userProps.onMouseEnter?.(e)
     },
-    onClick: () => {
+    onClick: e => {
       if (!items[index] || items[index].disabled) return
       onSelect?.(selectedItemIndex)
+      userProps.onClick?.(e)
     },
     role: 'menuitem' as const,
     'aria-selected': index === selectedItemIndex,

@@ -8,9 +8,9 @@ import { api } from '~/server/convex/_generated/api'
 
 import { useStore } from '../components/show/store'
 import { Carousel } from '../components/ui/carousel'
-import { Controller } from '../components/ui/controller'
 import { GameBoyFrame } from '../components/ui/gameboy'
-import { Menu } from '../components/ui/mainMenu'
+import { Menu, MenuIndicator, MenuItem, MenuList } from '../components/ui/menu'
+import { StartMenu } from '../components/ui/startMenu'
 
 const getBgURL = createServerFn({ method: 'GET' }).handler(() => {
   const backgroundUrls = ['/images/bg-1.png', '/images/bg-2.png']
@@ -25,7 +25,6 @@ export const Route = createFileRoute('/')({
 function Home() {
   const bgURL = Route.useLoaderData()
   const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
-  const navigation = useNavigate()
   const [showSelected, showSelectedAssign] = useState(false)
   const showMenu = useStore(state => state.showMenu)
 
@@ -38,87 +37,11 @@ function Home() {
       <ScreenContainer>
         <LayerBg url={bgURL} />
         <LayerCarousel />
+        <LayerTop />
+
+        <StartMenu />
       </ScreenContainer>
     </GameBoyFrame>
-  )
-
-  return (
-    <main className="grid min-h-screen grid-rows-[1fr_auto]">
-      <div className="grid bg-[#222] px-8 py-4 text-white">
-        <div className="relative flex h-full flex-col overflow-clip rounded bg-black pt-8">
-          <div className="relative flex-grow">
-            <div className="h-full w-fit p-2 pl-4">
-              <div className="grid grid-cols-[repeat(2,auto)] grid-rows-[repeat(2,auto)] gap-2">
-                <label className="relative col-start-1 row-span-2 row-start-1 inline-block w-4">
-                  <input
-                    type="checkbox"
-                    id="sound-effects"
-                    className="peer sr-only"
-                    checked={!showSelected}
-                    onChange={() => {}}
-                  />
-                  <span className="ease-accel absolute inset-0 cursor-pointer rounded-full transition-all duration-50 peer-checked:translate-y-3/5">
-                    <img src="/images/arrow.png" className="w-4 -rotate-90" />
-                  </span>
-                </label>
-
-                <p
-                  className={`font-poke text-shadow-full col-start-2 row-start-1 w-fit text-xs select-none ${data.showId ? 'text-white' : 'text-neutral-500'}`}
-                >
-                  Start Show
-                </p>
-                <p className="font-poke text-shadow-full col-start-2 row-start-2 w-fit text-xs select-none">
-                  See Program
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <Menu />
-        </div>
-      </div>
-
-      <GameController
-        enabledDown={showSelected}
-        enabledUp={!showSelected && !!data.showId}
-        onUp={() => showSelectedAssign(true)}
-        onDown={() => showSelectedAssign(false)}
-        onNext={() => {
-          navigation({ to: showSelected ? '/show' : '/program' })
-        }}
-        onStart={showMenu}
-      />
-    </main>
-  )
-}
-
-function GameController({
-  enabledDown,
-  enabledUp,
-  ...props
-}: {
-  enabledUp: boolean
-  enabledDown: boolean
-  onUp: () => void
-  onDown: () => void
-  onNext: () => void
-  onStart: (f?: boolean) => void
-}) {
-  const buttonStateAssign = useStore(s => s.buttonStateAssign)
-
-  useEffect(() => {
-    buttonStateAssign('up', enabledUp ? 'ready' : 'disabled')
-    buttonStateAssign('down', enabledDown ? 'ready' : 'disabled')
-  }, [enabledDown, enabledUp])
-
-  return (
-    <Controller
-      onUp={props.onUp}
-      onDown={props.onDown}
-      onA={props.onNext}
-      onB={() => props.onStart(false)}
-      onStart={props.onStart}
-    />
   )
 }
 
@@ -145,12 +68,61 @@ function LayerCarousel() {
   )
 }
 
-function TopLayer() {}
-function LayerLogo() {
+function LayerTop() {
+  return (
+    <div className="relative flex-grow">
+      <Logo />
+      <NavMenu />
+    </div>
+  )
+}
+function Logo() {
   return (
     <div className="relative flex justify-center">
       <img src="/images/logo.png" className="w-[75%]" />
       <div className="absolute inset-0"></div>
     </div>
+  )
+}
+function NavMenu() {
+  const navigate = useNavigate()
+  const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
+  const nextButtonState = useStore(state => state.buttons.a)
+  const startMenuFocus = useStore(state => state.menu.show)
+  const [selected, selectedAssign] = useState(0)
+  const [items, itemsAssign] = useState([
+    { label: 'View Program', disabled: false },
+    { label: 'Start Show', disabled: true },
+  ])
+  useEffect(() => {
+    if (!data) return
+    itemsAssign(p => [p[0], { ...p[1], disabled: !!!data.showId }])
+  }, [data, itemsAssign])
+  useEffect(() => {
+    if (nextButtonState !== 'pressed') return
+    console.log('here')
+    navigate({ to: selected === 0 ? '/program' : '/show' })
+  }, [nextButtonState, selected, navigate])
+
+  return (
+    <Menu items={items} hasFocus={!startMenuFocus} onSelect={selectedAssign}>
+      <div className="relative h-full w-fit p-2 pl-4">
+        <MenuList className="relative m-0 list-none p-0">
+          <MenuIndicator className="ease-accel absolute left-2 transition-all duration-100">
+            <img src="/images/arrow.png" className="w-4 -rotate-90" />
+          </MenuIndicator>
+
+          {items.map((item, index) => (
+            <MenuItem
+              key={item.label}
+              index={index}
+              className={`font-poke cursor-pointer px-8 py-2 text-xs select-none ${item.disabled ? 'cursor-not-allowed text-neutral-400' : 'text-white'}`}
+            >
+              {item.label}
+            </MenuItem>
+          ))}
+        </MenuList>
+      </div>
+    </Menu>
   )
 }
