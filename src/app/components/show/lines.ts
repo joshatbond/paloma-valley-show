@@ -132,7 +132,6 @@ export function getLines(state: State, starter: string | null) {
     case 'phase2.epilogue.screen7':
       return lines.phase2.epilogue7
     default:
-      console.log('got a bad state', state)
       return ['Uh oh! Please reload your browser', ''] as [string, string]
   }
 }
