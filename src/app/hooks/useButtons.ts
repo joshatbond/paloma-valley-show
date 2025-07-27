@@ -24,8 +24,12 @@ export function useButton(
   const lastUsed = useRef(0)
 
   useEffect(() => {
-    if (Date.now() - lastUsed.current < throttleDuration) return
-    if (buttonState !== 'pressed' || (cond && !cond())) {
+    if (
+      Date.now() - lastUsed.current < throttleDuration ||
+      buttonState !== 'pressed'
+    )
+      return
+    if (cond && !cond()) {
       lastUsed.current = Date.now()
       haptics.pulse({ count: 2, gap: 10 })
       return
