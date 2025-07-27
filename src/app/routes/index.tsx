@@ -115,7 +115,7 @@ function NavMenu() {
             <MenuItem
               key={item.label}
               index={index}
-              className={`font-poke cursor-pointer px-8 py-2 text-xs select-none ${item.disabled ? 'cursor-not-allowed text-neutral-400' : 'text-white'}`}
+              className={`font-poke text-shadow-full cursor-pointer px-8 py-2 text-xs select-none ${item.disabled ? 'cursor-not-allowed text-neutral-400' : 'text-white'}`}
             >
               {item.label}
             </MenuItem>
