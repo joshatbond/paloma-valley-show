@@ -38,7 +38,9 @@ export function Menu({
   /** whether or not the current menu should handle interactions */
   hasFocus?: boolean
 }>) {
-  const [selectedItemIndex, selectedItemIndexAssign] = useState(0)
+  const [selectedItemIndex, selectedItemIndexAssign] = useState(
+    items.findIndex(i => !!!i.disabled)
+  )
   const previousItemIndex = useRef<number>(0)
 
   const itemsMemo = useRef(JSON.stringify(items))
@@ -81,7 +83,7 @@ export function Menu({
   useEffect(() => {
     if (JSON.stringify(items) === itemsMemo.current) return
     itemsMemo.current = JSON.stringify(items)
-    selectedItemIndexAssign(0)
+    selectedItemIndexAssign(items.findIndex(i => !!!i.disabled))
   }, [items, selectedItemIndexAssign])
   useEffect(() => {
     if (!hasFocus) selectedItemIndexAssign(0)
