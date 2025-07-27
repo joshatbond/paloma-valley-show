@@ -7,10 +7,12 @@ export function useButton(
   button: Button,
   {
     throttleDuration = 0.1e3,
+    disabled = false,
     cond,
     onPress,
   }: {
     throttleDuration?: number
+    disabled?: boolean
     cond?: () => boolean
     onPress: () => void
   } = {
@@ -24,24 +26,22 @@ export function useButton(
   const lastUsed = useRef(0)
 
   useEffect(() => {
-    if (
-      Date.now() - lastUsed.current < throttleDuration ||
-      buttonState !== 'pressed'
-    )
-      return
-    if (cond && !cond()) {
-      lastUsed.current = Date.now()
-      haptics.pulse({ count: 2, gap: 10 })
-      return
-    }
+    if (disabled) return
 
-    lastUsed.current = Date.now()
+    const now = Date.now()
+    const tooSoon = now - lastUsed.current < throttleDuration
+    if (buttonState !== 'pressed' || tooSoon) return
+
+    lastUsed.current = now
     buttonStateAssign(button, 'ready')
-    haptics.once()
-    onPress()
+    if (cond?.() || !cond) {
+      haptics.once()
+      onPress()
+    }
   }, [
     button,
     buttonState,
+    disabled,
     haptics,
     throttleDuration,
     buttonStateAssign,
