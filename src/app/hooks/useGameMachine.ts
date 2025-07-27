@@ -83,7 +83,10 @@ export function useGameMachine({
         startTime: pollStartDate,
       })
     }
-  }, [currentPhase, pollEndDate, send])
+    if (currentState === 'phase0.waitingPhase1' && currentPhase === 1) {
+      send({ type: 'next' })
+    }
+  }, [currentState, currentPhase, pollEndDate, send])
 
   return [currentState, send, ref] as const
 }
