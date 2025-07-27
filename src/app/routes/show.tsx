@@ -15,10 +15,12 @@ import {
   TextContainer,
 } from '../components/show/screen'
 import { Starter } from '../components/show/starter'
-import { getState, useStore } from '../components/show/store'
+import { useStore } from '../components/show/store'
 import { WaitingScreen } from '../components/show/waiting'
-import { Controller } from '../components/ui/controller'
-import { SendParams, State, useGameMachine } from '../hooks/useGameMachine'
+import { GameBoyFrame } from '../components/ui/gameboy'
+import { StartMenu } from '../components/ui/startMenu'
+import { useButton } from '../hooks/useButtons'
+import { State, useGameMachine } from '../hooks/useGameMachine'
 
 export const Route = createFileRoute('/show')({
   component: RouteComponent,
@@ -38,42 +40,56 @@ function RouteComponent() {
   })
   const bgImg = state?.includes('phase1') ? 'phase_1_bg.png' : 'phase_0_bg.png'
 
+  const typingState = useStore(s => s.typing)
   const typingStateAssign = useStore(s => s.typingStateAssign)
   const prevState = useRef(state)
   const starter = useStore(s => s.starter)
   const starterAssign = useStore(s => s.starterAssign)
+  const menuHasFocus = useStore(state => state.menu.show)
 
-  const nav =
-    (
-      type: Exclude<
-        SendParams,
-        'pollEnded' | 'updatePhase' | 'DEV_JUMP_TO_STATE'
-      >
-    ) =>
-    () => {
-      if (!state) return
-
-      if (state.includes('confirmChoice') && type === 'next') {
+  useButton('a', {
+    cond: () => !menuHasFocus,
+    onPress: () => {
+      if (typingState === 'typing') {
+        typingStateAssign('userOverride')
+        return
+      }
+      if (state?.includes('confirmChoice')) {
+        const selection = state.includes('phase1.starter1')
+          ? (['one', 'bulbasaur'] as const)
+          : state.includes('phase1.starter2')
+            ? (['two', 'squirtle'] as const)
+            : (['three', 'charmander'] as const)
         confirmStarter({
           showId: data.showId!,
-          selection:
-            state === 'phase1.starter1'
-              ? 'one'
-              : state === 'phase1.starter2'
-                ? 'two'
-                : 'three',
+          selection: selection[0],
         })
-        starterAssign(
-          state === 'phase1.starter1'
-            ? 'bulbasaur'
-            : state === 'phase1.starter2'
-              ? 'squirtle'
-              : 'charmander'
-        )
+        starterAssign(selection[1])
       }
+      send({ type: 'next' })
+    },
+  })
+  useButton('b', {
+    cond: () => !menuHasFocus,
+    onPress: () => send({ type: 'back' }),
+  })
+  useButton('left', {
+    cond: () => !menuHasFocus,
+    onPress: () => send({ type: 'navLeft' }),
+  })
+  useButton('right', {
+    cond: () => !menuHasFocus,
+    onPress: () => send({ type: 'navRight' }),
+  })
+  useButton('up', {
+    cond: () => !menuHasFocus,
+    onPress: () => send({ type: 'navRight' }),
+  })
+  useButton('down', {
+    cond: () => !menuHasFocus,
+    onPress: () => send({ type: 'navLeft' }),
+  })
 
-      send({ type })
-    }
   const lines = useMemo(() => getLines(state, starter), [state, starter])
 
   useEffect(() => {
@@ -86,69 +102,41 @@ function RouteComponent() {
   if (!data.showId) navigation({ to: '/' })
 
   return (
-    <main className="grid min-h-screen grid-rows-[1fr_auto]">
-      <div className="grid bg-[#222] px-8 py-4 text-white">
-        <div className="grid place-content-center rounded bg-black">
-          <ScreenContainer>
-            <ScreenBackground url={`/images/${bgImg}`} />
+    <GameBoyFrame>
+      <div className="relative grid place-content-center rounded bg-black">
+        <ScreenContainer>
+          <ScreenBackground url={`/images/${bgImg}`} />
 
-            <MidLayer>
-              <Overlay state={state}>
-                <Poll
-                  duration={ref.getSnapshot().context.pollDuration}
-                  end={data.pollEnded}
-                  id={data.showId ?? 0}
-                  start={data.pollStarted}
-                  onNext={nav('next')}
-                />
-              </Overlay>
-            </MidLayer>
+          <MidLayer>
+            <Overlay state={state}>
+              <Poll
+                duration={ref.getSnapshot().context.pollDuration}
+                end={data.pollEnded}
+                id={data.showId ?? 0}
+                start={data.pollStarted}
+                onNext={() => send({ type: 'next' })}
+              />
+            </Overlay>
+          </MidLayer>
 
-            {state?.includes('starter') ? null : (
-              <TextContainer isWaiting={state === 'phase0.waitingPhase1'}>
-                <Text
-                  text={lines}
-                  hasEllipses={
-                    state === 'phase0.waitingPhase1' || state === 'phase1.poll'
-                  }
-                />
-              </TextContainer>
-            )}
-          </ScreenContainer>
+          {state?.includes('starter') ? null : (
+            <TextContainer isWaiting={state === 'phase0.waitingPhase1'}>
+              <Text
+                text={lines}
+                hasEllipses={
+                  state === 'phase0.waitingPhase1' || state === 'phase1.poll'
+                }
+              />
+            </TextContainer>
+          )}
+        </ScreenContainer>
+        <div className="absolute inset-0">
+          <div className="relative grid h-full w-full">
+            <StartMenu send={send} id={data._id} showId={data.showId} />
+          </div>
         </div>
       </div>
-
-      <GameController nav={nav} />
-    </main>
-  )
-}
-
-function GameController(props: {
-  nav: (
-    s: Exclude<SendParams, 'pollEnded' | 'updatePhase' | 'DEV_JUMP_TO_STATE'>
-  ) => () => void
-}) {
-  const typingStateAssign = useStore(s => s.typingStateAssign)
-
-  const onNext = () => {
-    const typingState = getState().typing
-
-    if (typingState === 'typing') {
-      typingStateAssign('userOverride')
-    } else {
-      props.nav('next')()
-    }
-  }
-
-  return (
-    <Controller
-      onUp={props.nav('navRight')}
-      onDown={props.nav('navLeft')}
-      onLeft={props.nav('navLeft')}
-      onRight={props.nav('navRight')}
-      onA={onNext}
-      onB={props.nav('back')}
-    />
+    </GameBoyFrame>
   )
 }
 

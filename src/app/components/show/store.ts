@@ -1,4 +1,4 @@
-import { createStore } from '~/app/hooks/store'
+import { createStore } from '~/app/hooks/createStore'
 
 export const { useStore, getState } = createStore<Store>()(set => ({
   buttons: {
@@ -8,7 +8,14 @@ export const { useStore, getState } = createStore<Store>()(set => ({
     down: 'ready',
     left: 'ready',
     right: 'ready',
-    start: 'disabled',
+    start: import.meta.env.DEV ? 'ready' : 'disabled',
+  },
+  menu: {
+    show: false,
+  },
+  qaMode: {
+    enabled: import.meta.env.DEV,
+    shown: false,
   },
   starter: null,
   typing: 'ready',
@@ -18,6 +25,24 @@ export const { useStore, getState } = createStore<Store>()(set => ({
       buttons: {
         ...state.buttons,
         [button]: newState,
+      },
+    }))
+  },
+  showMenu: f => {
+    set(state => ({
+      ...state,
+      menu: {
+        ...state.qaMode,
+        show: f !== undefined ? f : !state.menu.show,
+      },
+    }))
+  },
+  showQAMode: f => {
+    set(state => ({
+      ...state,
+      qaMode: {
+        ...state.qaMode,
+        shown: f !== undefined ? f : !state.qaMode.shown,
       },
     }))
   },
@@ -36,11 +61,18 @@ export type Store = {
   buttons: {
     [K in 'a' | 'b' | 'up' | 'down' | 'left' | 'right' | 'start']: ButtonState
   }
+  menu: { show: boolean }
   starter: 'charmander' | 'squirtle' | 'bulbasaur' | null
   typing: Typing | TypingDisabled | TypingReady
+  qaMode: {
+    enabled: boolean
+    shown: boolean
+  }
   buttonStateAssign: (b: keyof Store['buttons'], s: ButtonState) => void
   starterAssign: (c: Store['starter']) => void
   typingStateAssign: (s: Store['typing']) => void
+  showQAMode: (f?: boolean) => void
+  showMenu: (f?: boolean) => void
 }
 type ButtonState = 'ready' | 'pressed' | 'disabled'
 /** this state is when the system is currently rendering the typewriter effect */
