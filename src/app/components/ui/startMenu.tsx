@@ -120,7 +120,7 @@ export function StartMenu() {
       onNavigation={selectedItemIndexAssign}
     >
       <div className="absolute inset-0 grid grid-cols-12 grid-rows-[1fr_auto] gap-y-4 bg-black/30 backdrop-blur-xs">
-        <div className="border-menu-500 before:border-menu-800 bg-menu-100 inset-ring-menu-200 after:border-menu-400 col-span-6 col-start-7 m-2 space-y-2 rounded border-4 inset-ring-3 transition-all before:absolute before:inset-0 before:-right-[5px] before:-bottom-[6px] before:rounded before:border-r-2 before:border-b-2 after:absolute after:inset-0 after:-top-[5px] after:-left-[5px] after:rounded after:border-t-2 after:border-l-2">
+        <div className="border-menu-500 before:border-menu-800 bg-menu-100 inset-ring-menu-200 after:border-menu-400 relative col-span-6 col-start-7 m-2 space-y-2 rounded border-4 inset-ring-3 transition-all before:absolute before:inset-0 before:-right-[5px] before:-bottom-[6px] before:rounded before:border-r-2 before:border-b-2 after:absolute after:inset-0 after:-top-[5px] after:-left-[5px] after:rounded after:border-t-2 after:border-l-2">
           <div className="bg-black/10 px-4 py-1">
             <p className="font-poke text-center text-black">{menuRoot.label}</p>
           </div>
