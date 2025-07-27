@@ -25,7 +25,7 @@ export function Poll(props: {
   if (props.end || timeLeft <= 0) props.onNext()
 
   return (
-    <div className="grid grid-cols-[1fr_auto_1fr] grid-rows-[1fr_auto] bg-black/30 backdrop-blur-xs">
+    <div className="grid h-full grid-cols-[1fr_auto_1fr] grid-rows-[1fr_auto] bg-black/30 backdrop-blur-xs">
       <div className="col-start-2 row-start-1 grid grid-flow-col place-items-center gap-2 px-8">
         <PollItem
           type="bulbasaur"
@@ -41,7 +41,9 @@ export function Poll(props: {
         />
       </div>
 
-      <div className="col-span-3 col-start-1 row-start-2 px-[2%] pb-[1%]" />
+      <div className="col-span-3 col-start-1 row-start-2 px-[2%] pb-[1%]">
+        <img src="/images/exposition.png" />
+      </div>
     </div>
   )
 }
