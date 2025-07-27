@@ -11,6 +11,7 @@ import { Carousel } from '../components/ui/carousel'
 import { GameBoyFrame } from '../components/ui/gameboy'
 import { Menu, MenuIndicator, MenuItem, MenuList } from '../components/ui/menu'
 import { StartMenu } from '../components/ui/startMenu'
+import { useButton } from '../hooks/useButtons'
 
 const getBgURL = createServerFn({ method: 'GET' }).handler(() => {
   const backgroundUrls = ['/images/bg-1.png', '/images/bg-2.png']
@@ -80,24 +81,22 @@ function Logo() {
 function NavMenu() {
   const navigate = useNavigate()
   const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
-  const nextButtonState = useStore(state => state.buttons.a)
   const startMenuFocus = useStore(state => state.menu.show)
-  const buttonStateAssign = useStore(state => state.buttonStateAssign)
   const [selected, selectedAssign] = useState(0)
   const [items, itemsAssign] = useState([
     { label: 'View Program', disabled: false },
     { label: 'Start Show', disabled: true },
   ])
+
   useEffect(() => {
     if (!data) return
     itemsAssign(p => [p[0], { ...p[1], disabled: !!!data.showId }])
   }, [data, itemsAssign])
 
-  useEffect(() => {
-    if (nextButtonState !== 'pressed' || startMenuFocus) return
-    buttonStateAssign('a', 'ready')
-    navigate({ to: selected === 0 ? '/program' : '/show' })
-  }, [nextButtonState, startMenuFocus, selected, buttonStateAssign, navigate])
+  useButton('a', {
+    cond: () => !startMenuFocus,
+    onPress: () => navigate({ to: selected === 0 ? '/program' : '/show' }),
+  })
 
   return (
     <Menu

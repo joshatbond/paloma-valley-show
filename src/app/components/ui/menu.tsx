@@ -12,7 +12,7 @@ import {
   useState,
 } from 'react'
 
-import { useStore } from '../show/store'
+import { useButton } from '~/app/hooks/useButtons'
 
 const MenuContext = createContext<MenuContext | null>(null)
 
@@ -38,76 +38,61 @@ export function Menu({
   /** whether or not the current menu should handle interactions */
   hasFocus?: boolean
 }>) {
-  const upKeyState = useStore(state => state.buttons.up)
-  const downKeyState = useStore(state => state.buttons.down)
-  const [selectedItemIndex, selectedItemAssign] = useState(0)
-  const prevSelection = useRef<number>(0)
+  const [selectedItemIndex, selectedItemIndexAssign] = useState(0)
+  const previousItemIndex = useRef<number>(0)
 
-  const lastDownRef = useRef(0)
-  const lastUpRef = useRef(0)
-  const throttleDelay = 0.1e3
+  const itemsMemo = useRef(JSON.stringify(items))
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDow)
-    if (!hasFocus) return
-    if (upKeyState === 'pressed') {
-      if (Date.now() - lastUpRef.current < throttleDelay) return
-      lastDownRef.current = Date.now()
-      selectedItemAssign(findPreviousEnabled)
-    }
-    if (downKeyState === 'pressed') {
-      if (Date.now() - lastDownRef.current < throttleDelay) return
-      lastUpRef.current = Date.now()
-      selectedItemAssign(findNextEnabled)
-    }
-
-    function handleKeyDow(e: KeyboardEvent) {
-      if (!hasFocus) return
-      if (e.key === 'ArrowDown') {
-        if (Date.now() - lastDownRef.current < throttleDelay) return
-        lastDownRef.current = Date.now()
-        selectedItemAssign(findNextEnabled)
-      }
-      if (e.key === 'ArrowUp') {
-        if (Date.now() - lastUpRef.current < throttleDelay) return
-        lastUpRef.current = Date.now()
-        selectedItemAssign(findPreviousEnabled)
-      }
-      if (e.key === 'Enter') onSelect?.(selectedItemIndex)
-    }
-    function findNextEnabled(current: number) {
-      let next = (current + 1) % items.length
-      while (next !== current) {
-        if (!items[next].disabled) return next
-        next = (next + 1) % items.length
-      }
-      return current
-    }
-    function findPreviousEnabled(current: number) {
-      let prev = (current - 1 + items.length) % items.length
-      while (prev !== current) {
-        if (!items[prev].disabled) return prev
-        prev = (prev - 1 + items.length) % items.length
-      }
-      return current
-    }
-
-    return () => window.removeEventListener('keydown', handleKeyDow)
-  }, [items, hasFocus, upKeyState, downKeyState, onSelect, selectedItemAssign])
+  useButton('down', {
+    cond: () => !!hasFocus,
+    onPress: () => {
+      selectedItemIndexAssign(current => {
+        let next = (current + 1) % items.length
+        while (next !== current) {
+          if (!items[next].disabled) return next
+          next = (next + 1) % items.length
+        }
+        return current
+      })
+    },
+  })
+  useButton('up', {
+    cond: () => !!hasFocus,
+    onPress: () => {
+      selectedItemIndexAssign(current => {
+        let prev = (current - 1 + items.length) % items.length
+        while (prev !== current) {
+          if (!items[prev].disabled) return prev
+          prev = (prev - 1 + items.length) % items.length
+        }
+        return current
+      })
+    },
+  })
 
   useEffect(() => {
-    if (selectedItemIndex === prevSelection.current) return
-
+    if (selectedItemIndex === previousItemIndex.current) return
+    previousItemIndex.current = selectedItemIndex
     onNavigation?.(selectedItemIndex)
-    prevSelection.current = selectedItemIndex
+
+    return () => onNavigation?.(0)
   }, [selectedItemIndex, onNavigation])
+
+  useEffect(() => {
+    if (JSON.stringify(items) === itemsMemo.current) return
+    itemsMemo.current = JSON.stringify(items)
+    selectedItemIndexAssign(0)
+  }, [items, selectedItemIndexAssign])
+  useEffect(() => {
+    if (!hasFocus) selectedItemIndexAssign(0)
+  }, [hasFocus, selectedItemIndexAssign])
 
   const getItemProps: MenuContext['getItemProps'] = (index, userProps) => ({
     ...userProps,
     onMouseEnter: e => {
       if (!items[index] || items[index].disabled) return
 
-      selectedItemAssign(index)
+      selectedItemIndexAssign(index)
       userProps.onMouseEnter?.(e)
     },
     onClick: e => {
@@ -123,7 +108,7 @@ export function Menu({
   return (
     <MenuContext.Provider
       value={{
-        selectedItemAssign,
+        selectedItemAssign: selectedItemIndexAssign,
         selectedItemIndex,
         menuItems: items,
         getItemProps,
