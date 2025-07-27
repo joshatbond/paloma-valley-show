@@ -7,7 +7,13 @@ export function WaitingScreen() {
   useEffect(() => {
     if (!videoRef.current) return
     const tick = () => {
-      if (!videoRef.current || isLooping.current) return
+      if (!videoRef.current) return
+      if (isLooping.current === true) {
+        if (!videoRef.current.muted) {
+          videoRef.current.muted = true
+        }
+        return
+      }
       const { currentTime, duration } = videoRef.current
       const threshold = 0.1
 
@@ -26,7 +32,6 @@ export function WaitingScreen() {
       height="540"
       autoPlay={true}
       controls={false}
-      muted={isLooping.current}
       loop={true}
       className="absolute inset-0"
       playsInline={true}
