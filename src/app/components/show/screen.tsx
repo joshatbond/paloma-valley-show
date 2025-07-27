@@ -27,7 +27,7 @@ export function TextContainer(
       <div className="relative px-[2%] pb-[1%]">
         <img src="/images/exposition.png" className="render-pixelated" />
 
-        <div className="font-poke absolute inset-0 py-[0.6rem] pr-5 pl-6 text-[2.3vw] text-black">
+        <div className="absolute inset-0 px-8 py-[0.6rem]">
           {props.children}
         </div>
 
@@ -85,8 +85,10 @@ export function Text({
 
   return (
     <>
-      <p>{typingState === 'typing' ? line1 : t1}</p>
-      <p>
+      <p className="font-poke text-[min(2.3vw,10px)] text-black">
+        {typingState === 'typing' ? line1 : t1}
+      </p>
+      <p className="font-poke text-[min(2.3vw,10px)] text-black">
         {typingState === 'userOverride'
           ? hasEllipses
             ? line2
