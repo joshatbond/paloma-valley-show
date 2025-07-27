@@ -1,7 +1,6 @@
 import { ComponentPropsWithoutRef, useCallback, useEffect, useRef } from 'react'
 
 import { type Store, useStore } from '~/app/components/show/store'
-import { useHaptic } from '~/app/hooks/useHaptic'
 
 export function Controller() {
   return (
@@ -59,7 +58,6 @@ function Button({
 }: ComponentPropsWithoutRef<'button'> & {
   kind: keyof Store['buttons']
 }) {
-  const haptics = useHaptic()
   const state = useStore(state => state.buttons[kind])
   const stateAssign = useStore(state => state.buttonStateAssign)
 
