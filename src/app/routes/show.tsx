@@ -55,12 +55,11 @@ function RouteComponent() {
         return
       }
       if (state?.includes('confirmChoice')) {
-        const selection =
-          state === 'phase1.starter1'
-            ? (['one', 'bulbasaur'] as const)
-            : state === 'phase1.starter2'
-              ? (['two', 'squirtle'] as const)
-              : (['three', 'charmander'] as const)
+        const selection = state.includes('phase1.starter1')
+          ? (['one', 'bulbasaur'] as const)
+          : state.includes('phase1.starter2')
+            ? (['two', 'squirtle'] as const)
+            : (['three', 'charmander'] as const)
         confirmStarter({
           showId: data.showId!,
           selection: selection[0],
@@ -73,6 +72,22 @@ function RouteComponent() {
   useButton('b', {
     cond: () => !menuHasFocus,
     onPress: () => send({ type: 'back' }),
+  })
+  useButton('left', {
+    cond: () => !menuHasFocus,
+    onPress: () => send({ type: 'navLeft' }),
+  })
+  useButton('right', {
+    cond: () => !menuHasFocus,
+    onPress: () => send({ type: 'navRight' }),
+  })
+  useButton('up', {
+    cond: () => !menuHasFocus,
+    onPress: () => send({ type: 'navRight' }),
+  })
+  useButton('down', {
+    cond: () => !menuHasFocus,
+    onPress: () => send({ type: 'navLeft' }),
   })
 
   const lines = useMemo(() => getLines(state, starter), [state, starter])
@@ -117,7 +132,7 @@ function RouteComponent() {
         </ScreenContainer>
         <div className="absolute inset-0">
           <div className="relative grid h-full w-full">
-            <StartMenu />
+            <StartMenu send={send} id={data._id} showId={data.showId} />
           </div>
         </div>
       </div>
