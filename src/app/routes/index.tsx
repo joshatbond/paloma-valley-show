@@ -85,8 +85,8 @@ function NavMenu() {
   const startMenuFocus = useStore(state => state.menu.show)
   const [selected, selectedAssign] = useState(0)
   const [items, itemsAssign] = useState([
-    { label: 'View Program', disabled: false },
     { label: 'Start Show', disabled: true },
+    { label: 'View Program', disabled: false },
   ])
 
   useEffect(() => {
