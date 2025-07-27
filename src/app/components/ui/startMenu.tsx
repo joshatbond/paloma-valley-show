@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from 'react'
+import { useNavigate, useRouterState } from '@tanstack/react-router'
+import { useState } from 'react'
 
+import { useButton } from '~/app/hooks/useButtons'
 import { useStore } from '~/components/show/store'
 
 import { Menu, MenuIndicator, MenuItem, MenuList } from './menu'
 
 export function StartMenu() {
+  const location = useRouterState({ select: s => s.location })
+  const navigate = useNavigate()
   const menuHasFocus = useStore(state => state.menu.show)
-  const backButtonState = useStore(state => state.buttons.b)
-  const nextButtonState = useStore(state => state.buttons.a)
-  const startButtonState = useStore(state => state.buttons.start)
-  const buttonStateAssign = useStore(state => state.buttonStateAssign)
   const toggleMenu = useStore(state => state.showMenu)
 
   const menu = {
@@ -18,73 +18,98 @@ export function StartMenu() {
       items: [
         import.meta.env.DEV && {
           label: 'QA Mode',
-          to: 'qaMode',
           desc: 'Show QA Mode Menu',
+          action: () => menuRootAssign(menu.qaMode),
         },
+        location.pathname !== '/'
+          ? {
+              label: 'HOME',
+              action: () => navigate({ to: '/' }),
+            }
+          : undefined,
         {
           label: 'EXIT',
           desc: 'Close this MENU window',
           action: () => toggleMenu(false),
         },
-      ],
+      ].filter(Boolean),
     },
     ...(import.meta.env.DEV
       ? {
           qaMode: {
             label: 'QA Mode',
-            items: [{ label: '', desc: '' }],
+            items: [
+              {
+                label: 'BACK',
+                desc: 'Return to Main MENU',
+                action: () => menuRootAssign(menu.root),
+              },
+              location.pathname === '/show' && {
+                label: 'GO TO',
+                desc: 'Specify the state you want to make current',
+                action: () => menuRootAssign(menu.qaModeNav),
+              },
+            ].filter(Boolean),
           },
+          qaModeNav: {
+            label: 'GO TO',
+            items: [
+              {
+                label: 'BACK',
+                desc: 'Go back to QA Mode Menu',
+                action: () => menuRootAssign(menu.qaMode),
+              },
+              {
+                label: 'phase 0',
+                desc: 'Open Phase 0 Menu',
+                action: () => menuRootAssign(menu.qaModeNavP0),
+              },
+              {
+                label: 'phase 1',
+                desc: 'Open Phase 1 Menu',
+                action: () => menuRootAssign(menu.qaModeNavP1),
+              },
+              {
+                label: 'phase 2',
+                desc: 'Open Phase 2 Menu',
+                action: () => menuRootAssign(menu.qaModeNavP2),
+              },
+            ],
+          },
+          qaModeNavP0: {
+            label: 'Phase 0',
+            items: [
+              {
+                label: 'screen1',
+                desc: 'Intro screen 1',
+                action: () => {},
+              },
+            ],
+          },
+          qaModeNavP1: { label: 'Phase 1', items: [] },
+          qaModeNavP2: { label: 'Phase 2', items: [] },
         }
       : {}),
   } as Menu
   const [menuRoot, menuRootAssign] = useState(menu.root)
   const [selectedItemIndex, selectedItemIndexAssign] = useState(0)
-  const pressThrottle = useRef<{ back: number; next: number; start: number }>({
-    back: 0,
-    next: 0,
-    start: 0,
+
+  useButton('b', {
+    cond: () => menuHasFocus,
+    onPress: () => {
+      toggleMenu(false)
+      menuRootAssign(menu.root)
+    },
   })
-  const throttleDuration = 0.1e3
-
-  // menu visibility
-  useEffect(() => {
-    if (backButtonState === 'pressed') {
-      if (Date.now() - pressThrottle.current.back < throttleDuration) return
-      pressThrottle.current.back = Date.now()
-      if (menuHasFocus) toggleMenu(false)
-    }
-    if (startButtonState === 'pressed') {
-      if (Date.now() - pressThrottle.current.start < throttleDuration) return
-      pressThrottle.current.start = Date.now()
+  useButton('start', {
+    onPress: () => {
+      if (menuHasFocus) menuRootAssign(menu.root)
       toggleMenu()
-    }
-  }, [
-    backButtonState,
-    startButtonState,
-    throttleDuration,
-    menuHasFocus,
-    toggleMenu,
-  ])
-
-  // actions
-  useEffect(() => {
-    if (
-      nextButtonState !== 'pressed' ||
-      Date.now() - pressThrottle.current.next < throttleDuration
-    )
-      return
-    pressThrottle.current.next = Date.now()
-    buttonStateAssign('a', 'ready')
-
-    const currentItem = menuRoot.items[selectedItemIndex]
-    currentItem.action?.()
-  }, [
-    nextButtonState,
-    throttleDuration,
-    menuRoot,
-    selectedItemIndex,
-    buttonStateAssign,
-  ])
+    },
+  })
+  useButton('a', {
+    onPress: () => menuRoot.items[selectedItemIndex].action?.(),
+  })
 
   if (!menuHasFocus) return null
 
@@ -94,8 +119,8 @@ export function StartMenu() {
       hasFocus={menuHasFocus}
       onNavigation={selectedItemIndexAssign}
     >
-      <div className="absolute inset-0 grid grid-cols-12 bg-black/30 p-1 backdrop-blur-xs">
-        <div className="border-menu-500 before:border-menu-800 bg-menu-100 inset-ring-menu-200 after:border-menu-400 col-span-6 col-start-7 space-y-2 rounded border-4 inset-ring-3 transition-all before:absolute before:inset-0 before:-right-[5px] before:-bottom-[6px] before:rounded before:border-r-2 before:border-b-2 after:absolute after:inset-0 after:-top-[5px] after:-left-[5px] after:rounded after:border-t-2 after:border-l-2">
+      <div className="absolute inset-0 grid grid-cols-12 grid-rows-[1fr_auto] gap-y-4 bg-black/30 backdrop-blur-xs">
+        <div className="border-menu-500 before:border-menu-800 bg-menu-100 inset-ring-menu-200 after:border-menu-400 col-span-6 col-start-7 m-2 space-y-2 rounded border-4 inset-ring-3 transition-all before:absolute before:inset-0 before:-right-[5px] before:-bottom-[6px] before:rounded before:border-r-2 before:border-b-2 after:absolute after:inset-0 after:-top-[5px] after:-left-[5px] after:rounded after:border-t-2 after:border-l-2">
           <div className="bg-black/10 px-4 py-1">
             <p className="font-poke text-center text-black">{menuRoot.label}</p>
           </div>
@@ -120,6 +145,12 @@ export function StartMenu() {
               Nothing to see here!
             </p>
           )}
+        </div>
+
+        <div className="bg-menu-desc-700 col-span-12 row-start-2 h-16 py-1">
+          <p className="font-poke bg-menu-des-400 bg-menu-desc-400 border-t-menu-desc-100 border-b-menu-desc-300 h-full border-t-2 border-b-2 p-4 text-xs text-white">
+            {menuRoot.items[selectedItemIndex].desc ?? 'Press A to select...'}
+          </p>
         </div>
       </div>
     </Menu>

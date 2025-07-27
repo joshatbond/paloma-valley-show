@@ -18,6 +18,10 @@
   --color-menu-400: oklch(65.205% 0.09487 283.456);
   --color-menu-500: oklch(53.424% 0.03854 302.156);
   --color-menu-800: oklch(41.543% 0.05314 283.846);
+  --color-menu-desc-100: oklch(0.6812 0.1307 228.47);
+  --color-menu-desc-300: oklch(0.504 0.091474 219.5372);
+  --color-menu-desc-400: oklch(0.5548 0.1421 245.82);
+  --color-menu-desc-700: oklch(0.4064 0.084979 233.9439);
   --font-poke: 'Pokemon';
   --ease-accel: cubic-bezier(0.33, 0, 1, 1);
   --gradient-poke-btn: linear-gradient(
