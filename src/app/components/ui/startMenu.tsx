@@ -1,16 +1,29 @@
+import { useConvexMutation } from '@convex-dev/react-query'
 import { useNavigate, useRouterState } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useButton } from '~/app/hooks/useButtons'
+import { useGameMachine } from '~/app/hooks/useGameMachine'
 import { useStore } from '~/components/show/store'
+import { api } from '~/server/convex/_generated/api'
 
 import { Menu, MenuIndicator, MenuItem, MenuList } from './menu'
 
-export function StartMenu() {
+export function StartMenu(props: {
+  send?: ReturnType<typeof useGameMachine>[1]
+  id: (typeof api.appState.updatePhaseState)['_args']['id']
+  showId: (typeof api.appState.setActiveState)['_args']['state']
+}) {
   const location = useRouterState({ select: s => s.location })
   const navigate = useNavigate()
   const menuHasFocus = useStore(state => state.menu.show)
   const toggleMenu = useStore(state => state.showMenu)
+  const nextPhase = import.meta.env.DEV
+    ? useConvexMutation(api.appState.updatePhaseState)
+    : undefined
+  const startShow = import.meta.env.DEV
+    ? useConvexMutation(api.appState.setActiveState)
+    : undefined
 
   const menu = {
     root: {
@@ -24,6 +37,7 @@ export function StartMenu() {
         location.pathname !== '/'
           ? {
               label: 'HOME',
+              desc: 'Go back to the home page',
               action: () => {
                 toggleMenu()
                 navigate({ to: '/' })
@@ -42,17 +56,69 @@ export function StartMenu() {
           qaMode: {
             label: 'QA Mode',
             items: [
+              nextPhase &&
+                startShow && {
+                  label: 'ADMIN',
+                  desc: 'Quick access to the convex functions',
+                  action: () => menuRootAssign(menu.admin),
+                },
+              location.pathname === '/show' &&
+                props.send && {
+                  label: 'GO TO',
+                  desc: 'Specify the state you want to make current',
+                  action: () => menuRootAssign(menu.qaModeNav),
+                },
               {
                 label: 'BACK',
                 desc: 'Return to Main MENU',
                 action: () => menuRootAssign(menu.root),
               },
-              location.pathname === '/show' && {
-                label: 'GO TO',
-                desc: 'Specify the state you want to make current',
-                action: () => menuRootAssign(menu.qaModeNav),
-              },
             ].filter(Boolean),
+          },
+          admin: {
+            label: 'ADMIN',
+            items: [
+              {
+                label: 'Toggle Show',
+                desc: "Toggle the show's active state",
+                action: () => {
+                  startShow!({
+                    id: props.id,
+                    state: props.showId ? null : Date.now(),
+                  })
+                  toggleMenu(false)
+                },
+              },
+              {
+                label: 'Phase 0',
+                desc: 'Set experience to Phase 0',
+                action: () => {
+                  nextPhase!({ id: props.id, state: 0 })
+                  toggleMenu(false)
+                },
+              },
+              {
+                label: 'Phase 1',
+                desc: 'Set experience to Phase 1',
+                action: () => {
+                  nextPhase!({ id: props.id, state: 1 })
+                  toggleMenu(false)
+                },
+              },
+              {
+                label: 'Phase 2',
+                desc: 'Set experience to Phase 2',
+                action: () => {
+                  nextPhase!({ id: props.id, state: 2 })
+                  toggleMenu(false)
+                },
+              },
+              {
+                label: 'BACK',
+                desc: 'Go back to main menu',
+                action: () => menuRootAssign(menu.root),
+              },
+            ],
           },
           qaModeNav: {
             label: 'GO TO',
@@ -85,11 +151,73 @@ export function StartMenu() {
               {
                 label: 'screen1',
                 desc: 'Intro screen 1',
-                action: () => {},
+                action: () =>
+                  props.send!({
+                    type: 'DEV_JUMP_TO_STATE',
+                    path: 'phase0.introduction.screen1',
+                  }),
+              },
+              {
+                label: 'screen2',
+                desc: 'Intro screen 2',
+                action: () =>
+                  props.send!({
+                    type: 'DEV_JUMP_TO_STATE',
+                    path: 'phase0.introduction.screen2',
+                  }),
+              },
+              {
+                label: 'screen3',
+                desc: 'Intro screen 3',
+                action: () =>
+                  props.send!({
+                    type: 'DEV_JUMP_TO_STATE',
+                    path: 'phase0.introduction.screen3',
+                  }),
+              },
+              {
+                label: 'screen4',
+                desc: 'Intro screen 4',
+                action: () =>
+                  props.send!({
+                    type: 'DEV_JUMP_TO_STATE',
+                    path: 'phase0.introduction.screen4',
+                  }),
+              },
+              {
+                label: 'waiting',
+                desc: 'Waiting Screen',
+                action: () =>
+                  props.send!({
+                    type: 'DEV_JUMP_TO_STATE',
+                    path: 'phase0.waitingPhase1',
+                  }),
+              },
+              {
+                label: 'ready',
+                desc: 'Ready for phase 1 screen',
+                action: () =>
+                  props.send!({
+                    type: 'DEV_JUMP_TO_STATE',
+                    path: 'phase0.readyPhase1',
+                  }),
               },
             ],
           },
-          qaModeNavP1: { label: 'Phase 1', items: [] },
+          qaModeNavP1: {
+            label: 'Phase 1',
+            items: [
+              {
+                label: 'Poll',
+                desc: 'Go to the Poll page',
+                action: () =>
+                  props.send!({
+                    type: 'DEV_JUMP_TO_STATE',
+                    path: 'phase1.poll',
+                  }),
+              },
+            ],
+          },
           qaModeNavP2: { label: 'Phase 2', items: [] },
         }
       : {}),
@@ -114,6 +242,13 @@ export function StartMenu() {
     onPress: () => menuRoot.items[selectedItemIndex].action?.(),
   })
 
+  useEffect(() => {
+    return () => {
+      selectedItemIndexAssign(0)
+      menuRootAssign(menu.root)
+    }
+  }, [])
+
   if (!menuHasFocus) return null
 
   return (
@@ -136,7 +271,7 @@ export function StartMenu() {
                 <MenuItem
                   key={item.label}
                   index={index}
-                  className={`font-poke cursor-pointer px-8 py-2 text-[12px] select-none ${item.disabled ? 'cursor-not-allowed text-neutral-400' : 'text-black'}`}
+                  className={`font-poke cursor-pointer py-2 pr-2 pl-8 text-[12px] select-none ${item.disabled ? 'cursor-not-allowed text-neutral-400' : 'text-black'}`}
                   onClick={item.action}
                 >
                   {item.label}
@@ -152,7 +287,7 @@ export function StartMenu() {
 
         <div className="bg-menu-desc-700 col-span-12 row-start-2 h-16 py-1">
           <p className="font-poke bg-menu-des-400 bg-menu-desc-400 border-t-menu-desc-100 border-b-menu-desc-300 h-full border-t-2 border-b-2 p-4 text-xs text-white">
-            {menuRoot.items[selectedItemIndex].desc ?? 'Press A to select...'}
+            {menuRoot.items[selectedItemIndex]?.desc ?? 'Press A to select...'}
           </p>
         </div>
       </div>

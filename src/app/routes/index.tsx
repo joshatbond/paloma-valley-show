@@ -25,6 +25,7 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   const bgURL = Route.useLoaderData()
+  const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
 
   return (
     <GameBoyFrame>
@@ -33,7 +34,7 @@ function Home() {
         <LayerCarousel />
         <LayerTop />
 
-        <StartMenu />
+        <StartMenu id={data._id} showId={data.showId} />
       </ScreenContainer>
     </GameBoyFrame>
   )
