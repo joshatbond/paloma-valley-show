@@ -91,7 +91,11 @@ function NavMenu() {
 
   useEffect(() => {
     if (!data) return
-    itemsAssign(p => [p[0], { ...p[1], disabled: !!!data.showId }])
+    itemsAssign(p =>
+      p.map(i =>
+        i.label === 'Start Show' ? { ...i, disabled: !!!data.showId } : i
+      )
+    )
   }, [data, itemsAssign])
 
   useButton('a', {
