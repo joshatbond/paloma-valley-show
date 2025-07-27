@@ -147,6 +147,7 @@ export const machine = setup({
                       { target: '#pokeBand.phase1.pollClosed' },
                     ],
                     navRight: { target: '#pokeBand.phase1.starter2' },
+                    navLeft: { target: '#pokeBand.phase1.starter3' },
                   },
                 },
                 description: {
@@ -218,6 +219,7 @@ export const machine = setup({
                       { target: '#pokeBand.phase1.pollClosed' },
                     ],
                     navLeft: { target: '#pokeBand.phase1.starter2' },
+                    navRight: { target: '#pokeBand.phase1.starter1' },
                   },
                 },
                 description: {
