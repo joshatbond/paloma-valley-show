@@ -62,10 +62,6 @@ function Button({
   const state = useStore(state => state.buttons[kind])
   const stateAssign = useStore(state => state.buttonStateAssign)
 
-  const lastDownRef = useRef(0)
-  const lastUpRef = useRef(0)
-  const throttleDelay = 0.1e3
-
   const handleDown = useCallback(() => {
     if (state === 'ready') stateAssign(kind, 'pressed')
   }, [state, stateAssign])
@@ -96,18 +92,12 @@ function Button({
       }
     }
     function keyDown(e: KeyboardEvent) {
-      if (Date.now() - lastDownRef.current < throttleDelay) return
-      lastDownRef.current = Date.now()
-
       const key = keyMap(e.key)
 
       if (key !== kind) return
       handleDown()
     }
     function keyUp(e: KeyboardEvent) {
-      if (Date.now() - lastUpRef.current < throttleDelay) return
-      lastUpRef.current = Date.now()
-
       const key = keyMap(e.key)
       if (key !== kind) return
 

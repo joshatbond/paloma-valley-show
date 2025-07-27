@@ -8,7 +8,7 @@ export const { useStore, getState } = createStore<Store>()(set => ({
     down: 'ready',
     left: 'ready',
     right: 'ready',
-    start: import.meta.env.DEV ? 'ready' : 'disabled',
+    start: 'ready',
   },
   menu: {
     show: false,
