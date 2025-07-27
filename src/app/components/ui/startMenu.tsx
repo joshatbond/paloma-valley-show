@@ -24,7 +24,10 @@ export function StartMenu() {
         location.pathname !== '/'
           ? {
               label: 'HOME',
-              action: () => navigate({ to: '/' }),
+              action: () => {
+                toggleMenu()
+                navigate({ to: '/' })
+              },
             }
           : undefined,
         {
