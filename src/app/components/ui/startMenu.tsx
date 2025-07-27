@@ -226,7 +226,7 @@ export function StartMenu(props: {
   const [selectedItemIndex, selectedItemIndexAssign] = useState(0)
 
   useButton('b', {
-    cond: () => menuHasFocus,
+    disabled: !menuHasFocus,
     onPress: () => {
       toggleMenu(false)
       menuRootAssign(menu.root)
@@ -239,7 +239,7 @@ export function StartMenu(props: {
     },
   })
   useButton('a', {
-    cond: () => menuHasFocus,
+    disabled: !menuHasFocus,
     onPress: () => menuRoot.items[selectedItemIndex].action?.(),
   })
 
