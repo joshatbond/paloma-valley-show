@@ -61,25 +61,15 @@ function Button({
 }) {
   const state = useStore(state => state.buttons[kind])
   const stateAssign = useStore(state => state.buttonStateAssign)
-  const haptics = useHaptic()
 
   const lastDownRef = useRef(0)
   const lastUpRef = useRef(0)
   const throttleDelay = 0.1e3
 
   const handleDown = useCallback(() => {
-    switch (state) {
-      case 'disabled':
-        haptics.pulse({ count: 2, gap: 10 })
-        break
-      case 'ready':
-        stateAssign(kind, 'pressed')
-        haptics.once()
-        break
-      default:
-        break
-    }
-  }, [state, haptics, stateAssign])
+    if (state === 'ready') stateAssign(kind, 'pressed')
+  }, [state, stateAssign])
+
   const handleUp = useCallback(() => {
     if (state === 'pressed') stateAssign(kind, 'ready')
   }, [state, stateAssign])
