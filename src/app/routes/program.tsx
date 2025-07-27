@@ -1,4 +1,8 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
+
+import { ScreenContainer } from '../components/show/screen'
+import { GameBoyFrame } from '../components/ui/gameboy'
+import { StartMenu } from '../components/ui/startMenu'
 
 export const Route = createFileRoute('/program')({
   component: RouteComponent,
@@ -6,9 +10,19 @@ export const Route = createFileRoute('/program')({
 
 function RouteComponent() {
   return (
-    <main>
-      <Link to="/">&lt; Home</Link>
-      <p>Program Goes Here</p>
-    </main>
+    <GameBoyFrame>
+      <div className="relative grid">
+        <div className="grid place-content-center rounded bg-black">
+          <ScreenContainer>
+            <div>Program will go here</div>
+          </ScreenContainer>
+        </div>
+        <div className="absolute inset-0">
+          <div className="relative grid h-full">
+            <StartMenu />
+          </div>
+        </div>
+      </div>
+    </GameBoyFrame>
   )
 }
