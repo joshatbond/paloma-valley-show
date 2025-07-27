@@ -59,6 +59,7 @@ function Button({
 }: ComponentPropsWithoutRef<'button'> & {
   kind: keyof Store['buttons']
 }) {
+  const haptics = useHaptic()
   const state = useStore(state => state.buttons[kind])
   const stateAssign = useStore(state => state.buttonStateAssign)
 
@@ -110,5 +111,5 @@ function Button({
     }
   }, [kind, handleDown, handleUp])
 
-  return <button onPointerDown={handleDown} onPointerUp={handleUp} {...props} />
+  return <button onPointerUp={handleUp} onClick={handleDown} {...props} />
 }
