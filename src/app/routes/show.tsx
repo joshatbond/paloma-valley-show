@@ -21,6 +21,7 @@ import { GameBoyFrame } from '../components/ui/gameboy'
 import { StartMenu } from '../components/ui/startMenu'
 import { useButton } from '../hooks/useButtons'
 import { State, useGameMachine } from '../hooks/useGameMachine'
+import { useHaptic } from '../hooks/useHaptic'
 
 export const Route = createFileRoute('/show')({
   component: RouteComponent,
@@ -46,6 +47,7 @@ function RouteComponent() {
   const starter = useStore(s => s.starter)
   const starterAssign = useStore(s => s.starterAssign)
   const menuHasFocus = useStore(state => state.menu.show)
+  const haptics = useHaptic()
 
   useButton('a', {
     cond: () => !menuHasFocus,
@@ -71,23 +73,41 @@ function RouteComponent() {
   })
   useButton('b', {
     cond: () => !menuHasFocus,
-    onPress: () => send({ type: 'back' }),
+    onPress: () => {
+      if (state?.includes('confirmChoice')) {
+        send({ type: 'back' })
+      } else {
+        haptics.pulse({ count: 2, gap: 10 })
+      }
+    },
   })
   useButton('left', {
     cond: () => !menuHasFocus,
-    onPress: () => send({ type: 'navLeft' }),
+    onPress: () => {
+      if (state?.includes('starter') && state.includes('introduction')) {
+        send({ type: 'navLeft' })
+      } else {
+        haptics.pulse({ count: 2, gap: 10 })
+      }
+    },
   })
   useButton('right', {
     cond: () => !menuHasFocus,
-    onPress: () => send({ type: 'navRight' }),
+    onPress: () => () => {
+      if (state?.includes('starter') && state.includes('introduction')) {
+        send({ type: 'navLeft' })
+      } else {
+        haptics.pulse({ count: 2, gap: 10 })
+      }
+    },
   })
   useButton('up', {
     cond: () => !menuHasFocus,
-    onPress: () => send({ type: 'navRight' }),
+    onPress: () => haptics.pulse({ count: 2, gap: 10 }),
   })
   useButton('down', {
     cond: () => !menuHasFocus,
-    onPress: () => send({ type: 'navLeft' }),
+    onPress: () => haptics.pulse({ count: 2, gap: 10 }),
   })
 
   const lines = useMemo(() => getLines(state, starter), [state, starter])

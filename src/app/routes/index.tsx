@@ -12,6 +12,7 @@ import { GameBoyFrame } from '../components/ui/gameboy'
 import { Menu, MenuIndicator, MenuItem, MenuList } from '../components/ui/menu'
 import { StartMenu } from '../components/ui/startMenu'
 import { useButton } from '../hooks/useButtons'
+import { useHaptic } from '../hooks/useHaptic'
 
 const getBgURL = createServerFn({ method: 'GET' }).handler(() => {
   const backgroundUrls = ['/images/bg-1.png', '/images/bg-2.png']
@@ -26,6 +27,16 @@ export const Route = createFileRoute('/')({
 function Home() {
   const bgURL = Route.useLoaderData()
   const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
+  const haptics = useHaptic()
+  useButton('b', {
+    onPress: () => haptics.pulse({ count: 2, gap: 10 }),
+  })
+  useButton('left', {
+    onPress: () => haptics.pulse({ count: 2, gap: 10 }),
+  })
+  useButton('right', {
+    onPress: () => haptics.pulse({ count: 2, gap: 10 }),
+  })
 
   return (
     <GameBoyFrame>

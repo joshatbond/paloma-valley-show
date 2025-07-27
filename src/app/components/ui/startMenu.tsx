@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { useButton } from '~/app/hooks/useButtons'
 import { useGameMachine } from '~/app/hooks/useGameMachine'
+import { useHaptic } from '~/app/hooks/useHaptic'
 import { useStore } from '~/components/show/store'
 import { api } from '~/server/convex/_generated/api'
 
@@ -18,6 +19,7 @@ export function StartMenu(props: {
   const navigate = useNavigate()
   const menuHasFocus = useStore(state => state.menu.show)
   const toggleMenu = useStore(state => state.showMenu)
+  const haptics = useHaptic()
   const nextPhase = import.meta.env.DEV
     ? useConvexMutation(api.appState.updatePhaseState)
     : undefined
@@ -241,6 +243,15 @@ export function StartMenu(props: {
   useButton('a', {
     disabled: !menuHasFocus,
     onPress: () => menuRoot.items[selectedItemIndex].action?.(),
+  })
+
+  useButton('left', {
+    cond: () => menuHasFocus,
+    onPress: () => haptics.pulse({ count: 2, gap: 10 }),
+  })
+  useButton('right', {
+    cond: () => menuHasFocus,
+    onPress: () => haptics.pulse({ count: 2, gap: 10 }),
   })
 
   useEffect(() => {
