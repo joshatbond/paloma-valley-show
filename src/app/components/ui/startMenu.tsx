@@ -234,11 +234,13 @@ export function StartMenu(props: {
   })
   useButton('start', {
     onPress: () => {
+      console.log('pressing start')
       if (menuHasFocus) menuRootAssign(menu.root)
       toggleMenu()
     },
   })
   useButton('a', {
+    cond: () => menuHasFocus,
     onPress: () => menuRoot.items[selectedItemIndex].action?.(),
   })
 
