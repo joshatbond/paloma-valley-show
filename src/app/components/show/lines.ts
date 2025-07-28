@@ -114,7 +114,15 @@ export function getLines(state: State, starter: string | null) {
     case 'phase1.poll':
       return lines.phase1.poll(starter ?? '')
     case 'phase1.pollClosed':
-      return lines.phase1.pollClosed(starter ?? '')
+      const rivalChoices = {
+        bulbasaur: 'charmander',
+        squirtle: 'bulbasaur',
+        charmander: 'squirtle',
+      }
+      if (starter === null) starter = 'bulbasaur'
+      return lines.phase1.pollClosed(
+        rivalChoices[starter as keyof typeof rivalChoices]
+      )
     case 'phase1.rivalSelect':
       return lines.phase1.rivalSelect
     case 'phase2.epilogue.screen1':
