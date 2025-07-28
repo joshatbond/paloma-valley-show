@@ -4,7 +4,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { api } from '~/server/convex/_generated/api'
 
-import { ScreenContainer } from '../components/show/screen'
+import { BattleSimulator } from '../components/battle'
 import { GameBoyFrame } from '../components/ui/gameboy'
 import { StartMenu } from '../components/ui/startMenu'
 
@@ -14,14 +14,11 @@ export const Route = createFileRoute('/battle')({
 
 function RouteComponent() {
   const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
-
   return (
     <GameBoyFrame>
       <div className="relative grid">
-        <div className="grid place-content-center rounded bg-black">
-          <ScreenContainer>
-            <div>Battle Simulator will go here</div>
-          </ScreenContainer>
+        <div className="grid rounded bg-black">
+          <BattleSimulator />
         </div>
         <div className="absolute inset-0">
           <div className="relative grid h-full">
