@@ -1,5 +1,5 @@
 import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { PropsWithChildren, useEffect, useMemo, useRef } from 'react'
 
@@ -95,7 +95,7 @@ function RouteComponent() {
     cond: () => !menuHasFocus,
     onPress: () => () => {
       if (state?.includes('starter') && state.includes('introduction')) {
-        send({ type: 'navLeft' })
+        send({ type: 'navRight' })
       } else {
         haptics.pulse({ count: 2, gap: 10 })
       }
