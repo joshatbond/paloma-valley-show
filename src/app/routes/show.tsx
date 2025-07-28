@@ -92,8 +92,7 @@ function RouteComponent() {
     },
   })
   useButton('right', {
-    cond: () => !menuHasFocus,
-    onPress: () => () => {
+    onPress: () => {
       if (state?.includes('starter') && state.includes('introduction')) {
         send({ type: 'navRight' })
       } else {
