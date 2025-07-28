@@ -58,12 +58,16 @@ function RouteComponent() {
               <button
                 id="next-phase-button"
                 className="border-maroon-800 active:shadow-poke-btn-depress hover:shadow-poke-btn-elevate relative flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full border-2 bg-(image:--gradient-poke-btn) px-4 py-2 text-lg font-bold text-white uppercase transition-all duration-200 ease-in-out before:absolute before:top-0 before:-left-full before:h-full before:w-full before:-skew-x-[20deg] before:bg-white/20 before:transition-all before:duration-300 before:ease-in-out hover:-translate-y-[3px] hover:before:left-full active:translate-y-0"
-                onClick={() =>
-                  nextPhase({
-                    id: data._id,
-                    state: data.currentPhase === 2 ? 0 : data.currentPhase + 1,
-                  })
-                }
+                onClick={() => {
+                  if (data.showId) {
+                    nextPhase({
+                      id: data._id,
+                      state:
+                        data.currentPhase === 2 ? 0 : data.currentPhase + 1,
+                      showId: data.showId,
+                    })
+                  }
+                }}
               >
                 +
               </button>

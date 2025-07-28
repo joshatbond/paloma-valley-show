@@ -95,7 +95,9 @@ export function StartMenu(props: {
                 label: 'Phase 0',
                 desc: 'Set experience to Phase 0',
                 action: () => {
-                  nextPhase!({ id: props.id, state: 0 })
+                  if (props.showId) {
+                    nextPhase!({ id: props.id, state: 0, showId: props.showId })
+                  }
                   toggleMenu(false)
                 },
               },
@@ -103,7 +105,9 @@ export function StartMenu(props: {
                 label: 'Phase 1',
                 desc: 'Set experience to Phase 1',
                 action: () => {
-                  nextPhase!({ id: props.id, state: 1 })
+                  if (props.showId) {
+                    nextPhase!({ id: props.id, state: 1, showId: props.showId })
+                  }
                   toggleMenu(false)
                 },
               },
@@ -111,7 +115,9 @@ export function StartMenu(props: {
                 label: 'Phase 2',
                 desc: 'Set experience to Phase 2',
                 action: () => {
-                  nextPhase!({ id: props.id, state: 2 })
+                  if (props.showId) {
+                    nextPhase!({ id: props.id, state: 2, showId: props.showId })
+                  }
                   toggleMenu(false)
                 },
               },
