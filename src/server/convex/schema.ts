@@ -13,6 +13,7 @@ export default defineSchema({
     currentPhase: v.number(),
     pollStarted: v.union(v.number(), v.null()),
     pollEnded: v.optional(v.number()),
+    pollChoice: v.optional(selection),
   }),
   poll: defineTable({
     showId: v.number(),

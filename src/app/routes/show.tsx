@@ -118,6 +118,17 @@ function RouteComponent() {
     prevState.current = state
     typingStateAssign('ready')
   }, [state, typingStateAssign])
+  useEffect(() => {
+    if (data.pollChoice) {
+      starterAssign(
+        data.pollChoice === 'one'
+          ? 'bulbasaur'
+          : data.pollChoice === 'two'
+            ? 'squirtle'
+            : 'charmander'
+      )
+    }
+  }, [data])
 
   if (!data.showId) navigation({ to: '/' })
 
