@@ -8,7 +8,7 @@ import { ScreenContainer } from '../components/show/screen'
 import { GameBoyFrame } from '../components/ui/gameboy'
 import { StartMenu } from '../components/ui/startMenu'
 
-export const Route = createFileRoute('/program')({
+export const Route = createFileRoute('/battle')({
   component: RouteComponent,
 })
 
