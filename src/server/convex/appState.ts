@@ -1,5 +1,6 @@
 import { v } from 'convex/values'
 
+import { api } from './_generated/api'
 import { mutation, query } from './_generated/server'
 import { selection as dbSelection } from './schema'
 
@@ -29,12 +30,22 @@ export const pollState = query({
 
 export const setActiveState = mutation({
   args: { id: v.id('appState'), state: v.union(v.number(), v.null()) },
-  handler: async (ctx, args) =>
+  handler: async (ctx, args) => {
     await ctx.db.patch(args.id, {
       showId: args.state,
       currentPhase: args.state ? 0 : -1,
       pollStarted: null,
-    }),
+    })
+    const now = new Date()
+    const tomorrow = new Date(now)
+    tomorrow.setDate(now.getDate() + 1)
+    tomorrow.setHours(0, 0, 0, 0)
+    const endOfDay = tomorrow.getTime() - now.getTime()
+    await ctx.scheduler.runAt(endOfDay, api.appState.setActiveState, {
+      id: args.id,
+      state: null,
+    })
+  },
 })
 export const updatePhaseState = mutation({
   args: { id: v.id('appState'), state: v.number(), showId: v.number() },
