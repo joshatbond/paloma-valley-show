@@ -1,18 +1,18 @@
 import { useEffect, useRef } from 'react'
 
-import { getInstance } from './pixi'
+import { run } from './pixi'
 
 export function BattleSimulator() {
   const parentEl = useRef<HTMLDivElement>(null)
-  const appRef = useRef<ReturnType<typeof getInstance>>()
+  const appRef = useRef<ReturnType<typeof run>>()
 
   useEffect(() => {
     if (parentEl) {
-      appRef.current = getInstance()
+      run('battle-container')
     }
 
     return () => {
-      appRef.current?.destroy()
+      appRef.current?.()
     }
   }, [parentEl.current])
 

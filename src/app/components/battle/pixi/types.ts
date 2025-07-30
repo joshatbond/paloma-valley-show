@@ -1,6 +1,9 @@
 import { Sound } from '@pixi/sound'
 import { Filter, Texture } from 'pixi.js-legacy'
 
+import { Event } from './classes/Event'
+import { Move } from './constants/moveInfo'
+
 export type IGame = {
   pass(): void
   showOptions(): void
@@ -18,8 +21,8 @@ export type IResource = {
   getCry(id: string): string | undefined
   getOpponentTrainerTexture(): Texture | undefined
   getPlayerTrainerTexture(): Texture | undefined
-  getFront(id: string): Texture[]
-  getBack(id: string): Texture
+  getFront(id: string): Texture[] | undefined
+  getBack(id: string): Texture | undefined
 }
 export type IView = {
   resources: IResource
@@ -79,7 +82,7 @@ export type MemberObject = {
   id: string
   level: number
   gender: 'male' | 'female' | 'none'
-  moves: string[]
+  moves: Move[]
   name: string
 }
 export type TeamObject = {
