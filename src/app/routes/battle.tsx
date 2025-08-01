@@ -9,6 +9,7 @@ import { GameBoyFrame } from '../components/ui/gameboy'
 import { StartMenu } from '../components/ui/startMenu'
 
 export const Route = createFileRoute('/battle')({
+  ssr: false,
   component: RouteComponent,
 })
 

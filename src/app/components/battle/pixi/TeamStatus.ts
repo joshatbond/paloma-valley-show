@@ -1,21 +1,21 @@
-import { Container, Sprite } from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js-legacy'
 
-import { statsWindowTexture, teamStatus } from './Graphics'
+import * as Graphics from './Graphics'
 
 class TeamStatus {
   x: number
   y: number
   flip: boolean
-  windowSpr: Sprite
-  balls: Sprite[]
-  stage: Container
+  windowSpr: PIXI.Sprite
+  balls: PIXI.Sprite[]
+  stage: PIXI.Container
 
-  constructor(stage: Container, x: number, y: number, flip: boolean) {
+  constructor(stage: PIXI.Container, x: number, y: number, flip: boolean) {
     this.stage = stage
     this.x = x
     this.y = y
     this.flip = flip
-    this.windowSpr = new Sprite(statsWindowTexture)
+    this.windowSpr = new PIXI.Sprite(Graphics.statsWindowTexture)
     this.windowSpr.x = x
     this.windowSpr.y = y
     if (flip) this.windowSpr.scale.x = -1
@@ -35,7 +35,7 @@ class TeamStatus {
       } else {
         j = 3
       }
-      const spr = new Sprite(teamStatus[j])
+      const spr = new PIXI.Sprite(Graphics.teamStatus[j])
       spr.x = this.flip ? this.x - 64 + 8 * i : this.x + 56 - 8 * i
       spr.y = this.y
       this.balls.push(spr)
@@ -49,14 +49,16 @@ class TeamStatus {
   }
 }
 
-export class PlayerTeamStatus extends TeamStatus {
-  constructor(stage: Container) {
-    super(stage, screen.width - 8, 80, true)
+class PlayerTeamStatus extends TeamStatus {
+  constructor(stage: PIXI.Container) {
+    super(stage, Graphics.GAMEBOY_WIDTH - 8, 80, true)
   }
 }
 
-export class OpponentTeamStatus extends TeamStatus {
-  constructor(stage: Container) {
+class OpponentTeamStatus extends TeamStatus {
+  constructor(stage: PIXI.Container) {
     super(stage, 8, 16, false)
   }
 }
+
+export { PlayerTeamStatus, OpponentTeamStatus }

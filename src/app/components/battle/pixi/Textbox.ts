@@ -1,15 +1,14 @@
-import { sound } from '@pixi/sound'
-import { Container, Sprite, Texture } from 'pixi.js-legacy'
+import * as PIXI_SOUND from '@pixi/sound'
+import * as PIXI from 'pixi.js-legacy'
 
-import { screen } from '../constants'
-import { getInstance } from './Application'
-import { charTex, font } from './Graphics'
+import * as Graphics from './Graphics'
+import * as Input from './Input.js'
 
 const APOSTROPHE_LETTERS = ['d', 'l', 'm', 'r', 's', 't', 'v']
 
-const textboxTexture = Texture.from('textbox.png')
-const textboxSprite = new Sprite(textboxTexture)
-const contArrowSprite = new Sprite(charTex(11, 5))
+const textboxTexture = PIXI.Texture.from('textbox.png')
+const textboxSprite = new PIXI.Sprite(textboxTexture)
+const contArrowSprite = new PIXI.Sprite(Graphics.charTex(11, 5))
 
 enum State {
   SHOW,
@@ -20,23 +19,21 @@ enum State {
   NONE,
 }
 
-export class Textbox {
+class Textbox {
   private forceAdvance: boolean = false
   data: string[] = []
   showArrow = false
   line = 0
   idx = 0
   offset = 0 // move cursor back when compressing apostrophes
-  sprites: Sprite[] = []
+  sprites: PIXI.Sprite[] = []
   state: State = State.NONE
   auto = false
   ticks = 0
-  private readonly stage: Container
-  input: ReturnType<ReturnType<typeof getInstance>['getKeyboardInput']>
+  private readonly stage: PIXI.Container
 
-  constructor(stage: Container) {
+  constructor(stage: PIXI.Container) {
     this.stage = stage
-    this.input = getInstance().getKeyboardInput()
   }
 
   advance() {
@@ -90,22 +87,21 @@ export class Textbox {
   }
 
   update() {
-    if (!this.input) return
     //console.log(this.state, this.ticks);
-    textboxSprite.y = screen.height - textboxSprite.height
+    textboxSprite.y = Graphics.GAMEBOY_HEIGHT - textboxSprite.height
     contArrowSprite.x = textboxSprite.x + 18 * 8
     contArrowSprite.y = textboxSprite.y + 5 * 8
     contArrowSprite.visible = this.showArrow
 
     switch (this.state) {
       case State.SHOW:
-        if (this.ticks >= (this.input.advance() ? 0 : 1)) {
+        if (this.ticks >= (Input.advance() ? 0 : 1)) {
           // Finish page
           if (this.line >= 2) {
             this.showArrow = true
             this.state = State.WAIT
-            this.input.releaseSelect()
-            this.input.releaseBack()
+            Input.releaseSelect()
+            Input.releaseBack()
             return
           }
           const current = this.currentLine()
@@ -119,8 +115,8 @@ export class Textbox {
           let c = current[this.idx]!
           c = this.ellipse(this.apostrophe(c))
           // add single character to line
-          const tex = font[c]
-          const spr = new Sprite(tex)
+          const tex = Graphics.font[c]
+          const spr = new PIXI.Sprite(tex)
           spr.x = 8 + (this.idx - this.offset) * 8
           spr.y = textboxSprite.y + 16 + this.line * 16
           this.sprites.push(spr)
@@ -139,11 +135,11 @@ export class Textbox {
           this.ticks = 0
         }
 
-        if (this.input.advance() || doAuto || this.forceAdvance) {
-          if (this.input.advance() || this.forceAdvance) {
-            if (!doAuto) sound.play('pressab')
-            this.input.releaseSelect()
-            this.input.releaseBack()
+        if (Input.advance() || doAuto || this.forceAdvance) {
+          if (Input.advance() || this.forceAdvance) {
+            if (!doAuto) PIXI_SOUND.sound.play('pressab')
+            Input.releaseSelect()
+            Input.releaseBack()
           }
           if (this.showArrow) {
             contArrowSprite.visible = false
@@ -211,3 +207,5 @@ export class Textbox {
     return this.state === State.DONE
   }
 }
+
+export { Textbox as default }

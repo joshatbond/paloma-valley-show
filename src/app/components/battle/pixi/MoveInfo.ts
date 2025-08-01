@@ -1,4 +1,18 @@
-export const moveInfo = {
+interface MoveInfo {
+  // name of sound effect
+  // if undefined: use cry
+  sfx?: string
+  // -1 means play on side of pokemon using the attack, 1 is opposite
+  pan?: number
+  // special text to display
+  text?: string
+  // specify that NO sfx should be played
+  noSfx?: boolean
+  // specify what shaders to load
+  shaders?: string[]
+}
+
+const moveInfo: { [move: string]: MoveInfo } = {
   POUND: {},
   'KARATE CHOP': {},
   'DOUBLE SLAP': {},
@@ -462,29 +476,5 @@ export const moveInfo = {
     shaders: ['surf'],
   },
   'BEAT UP': {},
-} satisfies Record<
-  string,
-  {
-    /**
-     * The name of the sound effect. If undefined, use cry
-     */
-    sfx?: string
-    /**
-     * -1 means play on side of pokemon using the attack, 1 is opposite
-     */
-    pan?: number
-    /**
-     * special text to display
-     */
-    text?: string
-    /**
-     * specify that NO sfx should be played
-     */
-    noSfx?: boolean
-    /**
-     * specify what shaders to load
-     */
-    shaders?: string[]
-  }
->
-export type Move = keyof typeof moveInfo
+}
+export default moveInfo

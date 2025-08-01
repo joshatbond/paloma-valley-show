@@ -1,162 +1,171 @@
-import { Container, Rectangle, Sprite, Texture } from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js-legacy'
 
-import { screen } from '../constants'
-import { Ease } from '../util/math'
-import { attack, tileHorizontal } from './Graphics'
+import Ease from './Ease'
+import * as Graphics from './Graphics'
 
-const openTexture = Texture.from('open.png')
-const openSheet = tileHorizontal(openTexture, 40, 40, 4)
+const openTexture = PIXI.Texture.from('open.png')
+const openSheet = Graphics.tileHorizontal(openTexture, 40, 40, 4)
 
-export const attackTex = {
-  BOOM_SMALL: attack(0, 0, 2, 2),
-  BOOM_MED: attack(0, 2, 3, 3),
-  BOOM_BIG: attack(0, 5, 4, 4),
-  GRAY_DIAG: attack(2, 0, 1, 1),
-  RAZOR: attack(25, 6, 2, 1),
-  RAZOR_DARK: attack(25, 7, 2, 1),
-  GROWL_HORIZ_LIGHT: attack(6, 15, 3, 1),
-  GROWL_HORIZ_DARK: attack(9, 15, 3, 1),
-  GROWL_DIAG_LIGHT: attack(6, 16, 3, 3),
-  GROWL_DIAG_DARK: attack(9, 16, 3, 3),
-  NOTE_QUARTER: attack(4, 16, 1, 2),
-  NOTE_EIGHTH: attack(5, 16, 1, 2),
-  NOTE_SIXTEENTH: attack(4, 18, 2, 2),
-  Z_SMALL: attack(3, 19, 1, 1),
-  Z_MED: attack(3, 20, 1, 1),
-  Z_BIG: attack(3, 21, 2, 2),
-  RING_1: attack(11, 0, 1, 2),
-  RING_2: attack(12, 0, 2, 3),
-  RING_3: attack(14, 0, 2, 3),
-  RING_4: attack(16, 0, 2, 4),
-  BIRD_1: attack(10, 6, 2, 2),
-  BIRD_2: attack(10, 8, 2, 2),
-  BLACK_CIRCLE_SMALL: attack(5, 2, 2, 2),
-  BLACK_CIRCLE: attack(7, 2, 4, 4),
-  EXPLOSION: attack(4, 216 / 8, 4, 4),
-  PARA_1: attack(3, 9, 1, 5),
-  PARA_2: attack(3, 14, 1, 5),
-  BOMB: attack(12, 10, 2, 2),
-  PSN_BUBBLE_1: attack(12, 12, 1, 1),
-  PSN_BUBBLE_2: attack(13, 12, 1, 1),
-  PSN_BUBBLE_3: attack(12, 13, 1, 1),
-  SKULL: attack(14, 10, 2, 2),
-  SPEED_3: attack(176 / 8, 232 / 8, 1, 3),
-  SPEED_2: attack(184 / 8, 208 / 8, 3, 6),
-  SPEED_1: attack(208 / 8, 200 / 8, 6, 7),
-  SHADOW_BALL: attack(96 / 8, 112 / 8, 2, 2),
-  SWORD: attack(3, 2, 2, 2),
-  CRUNCH_1: attack(112 / 8, 48 / 8, 4, 2),
-  CRUNCH_2: attack(112 / 8, 8, 2, 1),
-  ICE_1: attack(4, 4, 1, 1),
-  ICE_2: attack(5, 4, 1, 1),
-  ICE_3: attack(6, 4, 1, 2),
-  ICE_4: attack(112 / 8, 112 / 8, 1, 2),
-  ICE_4_TOP: attack(112 / 8, 112 / 8, 1, 1),
-  PUNCH: attack(3, 0, 2, 2),
-  FOOT: attack(7, 0, 2, 2),
-  ENERGY_1: attack(3, 23, 2, 2),
-  ENERGY_2: attack(3, 25, 2, 2),
-  SPHERE_1: attack(232 / 8, 6, 3, 3),
-  SPHERE_2: attack(232 / 8, 9, 3, 3),
-  SPHERE_3: attack(232 / 8, 12, 3, 3),
-  SPHERE_4: attack(232 / 8, 15, 3, 3),
-  SPHERE_5: attack(232 / 8, 18, 3, 3),
-  SPHERE_6: attack(232 / 8, 21, 3, 3),
-  BEAM_1_SMALL: attack(5, 192 / 8 + 2, 1, 1),
-  BEAM_1_CORNER: attack(5, 192 / 8, 1, 2),
-  BEAM_1: attack(5, 192 / 8, 1, 3),
-  BEAM_1_END: attack(6, 25, 2, 2),
-  BEAM_2_SMALL: attack(5, 168 / 8 + 2, 1, 1),
-  BEAM_2_CORNER: attack(5, 168 / 8, 1, 2),
-  BEAM_2: attack(5, 168 / 8, 1, 3),
-  BEAM_2_END: attack(6, 23, 2, 2),
-  TWINKLE_1_LIGHT: attack(8, 184 / 8, 2, 2),
-  TWINKLE_2_LIGHT: attack(8, 184 / 8 + 2, 3, 3),
-  TWINKLE_3_LIGHT: attack(8, 184 / 8 + 5, 4, 4),
-  TWINKLE_1_DARK: attack(10, 184 / 8, 2, 2),
-  TWINKLE_2_DARK: attack(11, 184 / 8 + 2, 3, 3),
-  TWINKLE_3_DARK: attack(12, 184 / 8 + 5, 4, 4),
-  FLY_BIG_1: attack(21, 8, 4, 7),
-  FLY_BIG_2: attack(25, 8, 4, 7),
-  FLY_MED: attack(16, 8, 2, 7),
-  FLY_SMALL_1: attack(216 / 8, 15, 1, 7),
-  FLY_SMALL_2: attack(224 / 8, 15, 1, 7),
-  SUBSTITUTE_FRONT: attack(48 / 8, 152 / 8, 2, 2),
-  SUBSTITUTE_BACK: attack(48 / 8 + 2, 152 / 8, 2, 2),
-  SPARKLE_1: attack(64 / 8, 168 / 8, 1, 1),
-  SPARKLE_2: attack(64 / 8, 168 / 8 + 1, 1, 1),
-  HAND: attack(48 / 8, 168 / 8, 2, 2),
-  DISABLE_DARK_5: attack(128 / 8, 176 / 8, 6, 5),
-  DISABLE_DARK_4: attack(128 / 8, 176 / 8 + 1, 6, 4),
-  DISABLE_DARK_3: attack(128 / 8, 176 / 8 + 2, 6, 3),
-  DISABLE_DARK_2: attack(128 / 8, 176 / 8 + 3, 6, 2),
-  DISABLE_DARK_1: attack(128 / 8, 176 / 8 + 4, 6, 1),
-  DISABLE_LIGHT_5: attack(128 / 8, 216 / 8, 6, 5),
-  DISABLE_LIGHT_4: attack(128 / 8, 216 / 8 + 1, 6, 4),
-  DISABLE_LIGHT_3: attack(128 / 8, 216 / 8 + 2, 6, 3),
-  DISABLE_LIGHT_2: attack(128 / 8, 216 / 8 + 3, 6, 2),
-  DISABLE_LIGHT_1: attack(128 / 8, 216 / 8 + 4, 6, 1),
-  CLAP: attack(72 / 8, 168 / 8, 1, 2),
-  STAR: attack(72 / 8 + 1, 168 / 8, 2, 2),
-  FIRE_SMALL_1: attack(96 / 8, 40 / 8, 1, 1),
-  FIRE_SMALL_2: attack(96 / 8 + 1, 40 / 8, 1, 1),
-  FIRE_BIG_1: attack(96 / 8, 40 / 8 + 1, 2, 2),
-  FIRE_BIG_2: attack(96 / 8, 40 / 8 + 3, 2, 2),
-  BUBBLE_1: attack(10, 10, 1, 1),
-  BUBBLE_2: attack(10, 11, 2, 2),
-  BUBBLE_3: attack(10, 13, 2, 2),
-  HEART: attack(80 / 8, 152 / 8, 2, 2),
-  SMALL_THUNDER_1: attack(11, 2, 1, 1),
-  SMALL_THUNDER_2: attack(11, 3, 1, 1),
-  SMALL_THUNDER_3: attack(11, 4, 1, 1),
-  THUNDER_SIDE: attack(192 / 8, 120 / 8, 3, 7),
-  THUNDER_MID: attack(176 / 8, 120 / 8, 2, 7),
-  DIRT_SHADOW: attack(6, 6, 2, 2),
-  AMNESIA_1: attack(112 / 8, 72 / 8, 1, 1),
-  AMNESIA_2: attack(112 / 8 + 1, 72 / 8, 1, 1),
-  AMNESIA_3: attack(112 / 8, 72 / 8 + 3, 2, 2),
-  RAIN: attack(4, 20, 1, 1),
-  SHINE_LIGHT: attack(5, 20, 1, 1),
-  SOLAR_BEAM_1: attack(112 / 8, 168 / 8, 1, 1),
-  SOLAR_BEAM_2: attack(112 / 8, 168 / 8 - 1, 1, 1),
-  SOLAR_BEAM_3: attack(112 / 8, 168 / 8 - 2, 1, 1),
-  SOLAR_BEAM_4: attack(112 / 8 - 2, 168 / 8, 2, 2),
-  SOLAR_BEAM_5: attack(112 / 8 - 2, 168 / 8 - 2, 2, 2),
-  SOLAR_BEAM_6: attack(112 / 8 - 2, 128 / 8, 3, 3),
-  LASER_1: attack(48 / 8, 10, 1, 2),
-  LASER_2: attack(48 / 8 + 1, 10, 1, 2),
-  LASER_END_1: attack(48 / 8, 8, 2, 2),
-  LASER_END_2: attack(48 / 8 + 2, 8, 2, 2),
-  LASER_SPLASH_1: attack(48 / 8, 12, 2, 3),
-  LASER_SPLASH_2: attack(48 / 8 + 2, 12, 2, 3),
-  SURF: attack(176 / 8, 192 / 8, 10, 1),
-  TORNADO_1: attack(120 / 8, 120 / 8, 1, 1),
-  TORNADO_2: attack(120 / 8 + 1, 120 / 8, 1, 1),
-  TORNADO_3: attack(120 / 8 + 2, 120 / 8, 1, 1),
+const attackTex = {
+  BOOM_SMALL: Graphics.attack(0, 0, 2, 2),
+  BOOM_MED: Graphics.attack(0, 2, 3, 3),
+  BOOM_BIG: Graphics.attack(0, 5, 4, 4),
+  GRAY_DIAG: Graphics.attack(2, 0, 1, 1),
+  RAZOR: Graphics.attack(25, 6, 2, 1),
+  RAZOR_DARK: Graphics.attack(25, 7, 2, 1),
+  GROWL_HORIZ_LIGHT: Graphics.attack(6, 15, 3, 1),
+  GROWL_HORIZ_DARK: Graphics.attack(9, 15, 3, 1),
+  GROWL_DIAG_LIGHT: Graphics.attack(6, 16, 3, 3),
+  GROWL_DIAG_DARK: Graphics.attack(9, 16, 3, 3),
+  NOTE_QUARTER: Graphics.attack(4, 16, 1, 2),
+  NOTE_EIGHTH: Graphics.attack(5, 16, 1, 2),
+  NOTE_SIXTEENTH: Graphics.attack(4, 18, 2, 2),
+  Z_SMALL: Graphics.attack(3, 19, 1, 1),
+  Z_MED: Graphics.attack(3, 20, 1, 1),
+  Z_BIG: Graphics.attack(3, 21, 2, 2),
+  RING_1: Graphics.attack(11, 0, 1, 2),
+  RING_2: Graphics.attack(12, 0, 2, 3),
+  RING_3: Graphics.attack(14, 0, 2, 3),
+  RING_4: Graphics.attack(16, 0, 2, 4),
+  BIRD_1: Graphics.attack(10, 6, 2, 2),
+  BIRD_2: Graphics.attack(10, 8, 2, 2),
+  BLACK_CIRCLE_SMALL: Graphics.attack(5, 2, 2, 2),
+  BLACK_CIRCLE: Graphics.attack(7, 2, 4, 4),
+  EXPLOSION: Graphics.attack(4, 216 / 8, 4, 4),
+  PARA_1: Graphics.attack(3, 9, 1, 5),
+  PARA_2: Graphics.attack(3, 14, 1, 5),
+  BOMB: Graphics.attack(12, 10, 2, 2),
+  PSN_BUBBLE_1: Graphics.attack(12, 12, 1, 1),
+  PSN_BUBBLE_2: Graphics.attack(13, 12, 1, 1),
+  PSN_BUBBLE_3: Graphics.attack(12, 13, 1, 1),
+  SKULL: Graphics.attack(14, 10, 2, 2),
+  SPEED_3: Graphics.attack(176 / 8, 232 / 8, 1, 3),
+  SPEED_2: Graphics.attack(184 / 8, 208 / 8, 3, 6),
+  SPEED_1: Graphics.attack(208 / 8, 200 / 8, 6, 7),
+  SHADOW_BALL: Graphics.attack(96 / 8, 112 / 8, 2, 2),
+  SWORD: Graphics.attack(3, 2, 2, 2),
+  CRUNCH_1: Graphics.attack(112 / 8, 48 / 8, 4, 2),
+  CRUNCH_2: Graphics.attack(112 / 8, 8, 2, 1),
+  ICE_1: Graphics.attack(4, 4, 1, 1),
+  ICE_2: Graphics.attack(5, 4, 1, 1),
+  ICE_3: Graphics.attack(6, 4, 1, 2),
+  ICE_4: Graphics.attack(112 / 8, 112 / 8, 1, 2),
+  ICE_4_TOP: Graphics.attack(112 / 8, 112 / 8, 1, 1),
+  PUNCH: Graphics.attack(3, 0, 2, 2),
+  FOOT: Graphics.attack(7, 0, 2, 2),
+  ENERGY_1: Graphics.attack(3, 23, 2, 2),
+  ENERGY_2: Graphics.attack(3, 25, 2, 2),
+  SPHERE_1: Graphics.attack(232 / 8, 6, 3, 3),
+  SPHERE_2: Graphics.attack(232 / 8, 9, 3, 3),
+  SPHERE_3: Graphics.attack(232 / 8, 12, 3, 3),
+  SPHERE_4: Graphics.attack(232 / 8, 15, 3, 3),
+  SPHERE_5: Graphics.attack(232 / 8, 18, 3, 3),
+  SPHERE_6: Graphics.attack(232 / 8, 21, 3, 3),
+  BEAM_1_SMALL: Graphics.attack(5, 192 / 8 + 2, 1, 1),
+  BEAM_1_CORNER: Graphics.attack(5, 192 / 8, 1, 2),
+  BEAM_1: Graphics.attack(5, 192 / 8, 1, 3),
+  BEAM_1_END: Graphics.attack(6, 25, 2, 2),
+  BEAM_2_SMALL: Graphics.attack(5, 168 / 8 + 2, 1, 1),
+  BEAM_2_CORNER: Graphics.attack(5, 168 / 8, 1, 2),
+  BEAM_2: Graphics.attack(5, 168 / 8, 1, 3),
+  BEAM_2_END: Graphics.attack(6, 23, 2, 2),
+  TWINKLE_1_LIGHT: Graphics.attack(8, 184 / 8, 2, 2),
+  TWINKLE_2_LIGHT: Graphics.attack(8, 184 / 8 + 2, 3, 3),
+  TWINKLE_3_LIGHT: Graphics.attack(8, 184 / 8 + 5, 4, 4),
+  TWINKLE_1_DARK: Graphics.attack(10, 184 / 8, 2, 2),
+  TWINKLE_2_DARK: Graphics.attack(11, 184 / 8 + 2, 3, 3),
+  TWINKLE_3_DARK: Graphics.attack(12, 184 / 8 + 5, 4, 4),
+  FLY_BIG_1: Graphics.attack(21, 8, 4, 7),
+  FLY_BIG_2: Graphics.attack(25, 8, 4, 7),
+  FLY_MED: Graphics.attack(16, 8, 2, 7),
+  FLY_SMALL_1: Graphics.attack(216 / 8, 15, 1, 7),
+  FLY_SMALL_2: Graphics.attack(224 / 8, 15, 1, 7),
+  SUBSTITUTE_FRONT: Graphics.attack(48 / 8, 152 / 8, 2, 2),
+  SUBSTITUTE_BACK: Graphics.attack(48 / 8 + 2, 152 / 8, 2, 2),
+  SPARKLE_1: Graphics.attack(64 / 8, 168 / 8, 1, 1),
+  SPARKLE_2: Graphics.attack(64 / 8, 168 / 8 + 1, 1, 1),
+  HAND: Graphics.attack(48 / 8, 168 / 8, 2, 2),
+  DISABLE_DARK_5: Graphics.attack(128 / 8, 176 / 8, 6, 5),
+  DISABLE_DARK_4: Graphics.attack(128 / 8, 176 / 8 + 1, 6, 4),
+  DISABLE_DARK_3: Graphics.attack(128 / 8, 176 / 8 + 2, 6, 3),
+  DISABLE_DARK_2: Graphics.attack(128 / 8, 176 / 8 + 3, 6, 2),
+  DISABLE_DARK_1: Graphics.attack(128 / 8, 176 / 8 + 4, 6, 1),
+  DISABLE_LIGHT_5: Graphics.attack(128 / 8, 216 / 8, 6, 5),
+  DISABLE_LIGHT_4: Graphics.attack(128 / 8, 216 / 8 + 1, 6, 4),
+  DISABLE_LIGHT_3: Graphics.attack(128 / 8, 216 / 8 + 2, 6, 3),
+  DISABLE_LIGHT_2: Graphics.attack(128 / 8, 216 / 8 + 3, 6, 2),
+  DISABLE_LIGHT_1: Graphics.attack(128 / 8, 216 / 8 + 4, 6, 1),
+  CLAP: Graphics.attack(72 / 8, 168 / 8, 1, 2),
+  STAR: Graphics.attack(72 / 8 + 1, 168 / 8, 2, 2),
+  FIRE_SMALL_1: Graphics.attack(96 / 8, 40 / 8, 1, 1),
+  FIRE_SMALL_2: Graphics.attack(96 / 8 + 1, 40 / 8, 1, 1),
+  FIRE_BIG_1: Graphics.attack(96 / 8, 40 / 8 + 1, 2, 2),
+  FIRE_BIG_2: Graphics.attack(96 / 8, 40 / 8 + 3, 2, 2),
+  BUBBLE_1: Graphics.attack(10, 10, 1, 1),
+  BUBBLE_2: Graphics.attack(10, 11, 2, 2),
+  BUBBLE_3: Graphics.attack(10, 13, 2, 2),
+  HEART: Graphics.attack(80 / 8, 152 / 8, 2, 2),
+  SMALL_THUNDER_1: Graphics.attack(11, 2, 1, 1),
+  SMALL_THUNDER_2: Graphics.attack(11, 3, 1, 1),
+  SMALL_THUNDER_3: Graphics.attack(11, 4, 1, 1),
+  THUNDER_SIDE: Graphics.attack(192 / 8, 120 / 8, 3, 7),
+  THUNDER_MID: Graphics.attack(176 / 8, 120 / 8, 2, 7),
+  DIRT_SHADOW: Graphics.attack(6, 6, 2, 2),
+  AMNESIA_1: Graphics.attack(112 / 8, 72 / 8, 1, 1),
+  AMNESIA_2: Graphics.attack(112 / 8 + 1, 72 / 8, 1, 1),
+  AMNESIA_3: Graphics.attack(112 / 8, 72 / 8 + 3, 2, 2),
+  RAIN: Graphics.attack(4, 20, 1, 1),
+  SHINE_LIGHT: Graphics.attack(5, 20, 1, 1),
+  SOLAR_BEAM_1: Graphics.attack(112 / 8, 168 / 8, 1, 1),
+  SOLAR_BEAM_2: Graphics.attack(112 / 8, 168 / 8 - 1, 1, 1),
+  SOLAR_BEAM_3: Graphics.attack(112 / 8, 168 / 8 - 2, 1, 1),
+  SOLAR_BEAM_4: Graphics.attack(112 / 8 - 2, 168 / 8, 2, 2),
+  SOLAR_BEAM_5: Graphics.attack(112 / 8 - 2, 168 / 8 - 2, 2, 2),
+  SOLAR_BEAM_6: Graphics.attack(112 / 8 - 2, 128 / 8, 3, 3),
+  LASER_1: Graphics.attack(48 / 8, 10, 1, 2),
+  LASER_2: Graphics.attack(48 / 8 + 1, 10, 1, 2),
+  LASER_END_1: Graphics.attack(48 / 8, 8, 2, 2),
+  LASER_END_2: Graphics.attack(48 / 8 + 2, 8, 2, 2),
+  LASER_SPLASH_1: Graphics.attack(48 / 8, 12, 2, 3),
+  LASER_SPLASH_2: Graphics.attack(48 / 8 + 2, 12, 2, 3),
+  SURF: Graphics.attack(176 / 8, 192 / 8, 10, 1),
+  TORNADO_1: Graphics.attack(120 / 8, 120 / 8, 1, 1),
+  TORNADO_2: Graphics.attack(120 / 8 + 1, 120 / 8, 1, 1),
+  TORNADO_3: Graphics.attack(120 / 8 + 2, 120 / 8, 1, 1),
 }
+
+type AttackTexture = keyof typeof attackTex
+
 const notes = [
   attackTex.NOTE_QUARTER,
   attackTex.NOTE_EIGHTH,
   attackTex.NOTE_SIXTEENTH,
 ]
+
 const Zs = [
   attackTex.Z_SMALL,
   attackTex.Z_MED,
   attackTex.Z_BIG,
   attackTex.Z_MED,
 ]
+
 const rings = [
   attackTex.RING_1,
   attackTex.RING_2,
   attackTex.RING_3,
   attackTex.RING_4,
 ]
+
 const bubbleUp = [3, 4, 5, 6, 7, 8].map(
-  x => new Texture(attackTex.PSN_BUBBLE_1 as any, new Rectangle(96, 96, 8, x))
+  x =>
+    new PIXI.Texture(
+      attackTex.PSN_BUBBLE_1 as any,
+      new PIXI.Rectangle(96, 96, 8, x)
+    )
 )
 
-export class Particle {
-  protected readonly stage: Container
+class Particle {
+  protected readonly stage: PIXI.Container
   protected x: number
   protected y: number
   protected dx: number
@@ -170,9 +179,9 @@ export class Particle {
   protected flickerFrames: number | undefined = undefined
   protected timer: number
   public dead: boolean
-  protected sprites: Sprite[]
+  protected sprites: PIXI.Sprite[]
 
-  constructor(stage: Container, x: number, y: number, dx = 0, dy = 0) {
+  constructor(stage: PIXI.Container, x: number, y: number, dx = 0, dy = 0) {
     this.stage = stage
     this.x = x
     this.y = y
@@ -184,7 +193,7 @@ export class Particle {
   }
 
   addSprite(x: number, y: number) {
-    const s = new Sprite()
+    const s = new PIXI.Sprite()
     s.anchor.set(0.5)
     s.x = x
     s.y = y
@@ -276,12 +285,12 @@ export class Particle {
   }
 }
 
-export class Static extends Particle {
-  private readonly originalSubArea: Rectangle
-  private subAreaFn: ((t: number) => Rectangle) | null = null
+class Static extends Particle {
+  private readonly originalSubArea: PIXI.Rectangle
+  private subAreaFn: ((t: number) => PIXI.Rectangle) | null = null
 
   constructor(
-    stage: Container,
+    stage: PIXI.Container,
     x: number,
     y: number,
     tex: AttackTexture,
@@ -290,9 +299,9 @@ export class Static extends Particle {
     super(stage, x, y)
     const t = attackTex[tex]
     this.originalSubArea = t.frame
-    this.addSprite(x, y).texture = new Texture(
+    this.addSprite(x, y).texture = new PIXI.Texture(
       t.baseTexture,
-      new Rectangle(t.frame.x, t.frame.y, t.frame.width, t.frame.height)
+      new PIXI.Rectangle(t.frame.x, t.frame.y, t.frame.width, t.frame.height)
     )
     this.life = life
     this.delayFrames = 0
@@ -319,7 +328,7 @@ export class Static extends Particle {
     return this
   }
 
-  subArea(fn: (t: number) => Rectangle) {
+  subArea(fn: (t: number) => PIXI.Rectangle) {
     this.subAreaFn = fn
     return this
   }
@@ -345,12 +354,12 @@ export class Static extends Particle {
   }
 }
 
-export class Sequence extends Particle {
-  protected texs: Texture[]
+class Sequence extends Particle {
+  protected texs: PIXI.Texture[]
   protected delay: number
 
   constructor(
-    stage: Container,
+    stage: PIXI.Container,
     x: number,
     y: number,
     texs: AttackTexture[],
@@ -399,8 +408,8 @@ export class Sequence extends Particle {
 }
 
 /* Ball opening effect when a member is sent out. */
-export class Open extends Particle {
-  constructor(stage: Container, x: number, y: number) {
+class Open extends Particle {
+  constructor(stage: PIXI.Container, x: number, y: number) {
     super(stage, x, y)
     this.addSprite(x, y)
   }
@@ -414,8 +423,8 @@ export class Open extends Particle {
   }
 }
 
-export class Twinkle extends Sequence {
-  constructor(stage: Container, x: number, y: number) {
+class Twinkle extends Sequence {
+  constructor(stage: PIXI.Container, x: number, y: number) {
     super(
       stage,
       x,
@@ -434,8 +443,8 @@ export class Twinkle extends Sequence {
   }
 }
 
-export class Fly extends Sequence {
-  constructor(stage: Container, x: number, y: number) {
+class Fly extends Sequence {
+  constructor(stage: PIXI.Container, x: number, y: number) {
     super(
       stage,
       x,
@@ -453,12 +462,12 @@ export class Fly extends Sequence {
   }
 }
 
-export class Slash extends Particle {
+class Slash extends Particle {
   private pieces: number
   private delay: number
   private flickerTime: number
 
-  constructor(stage: Container, x: number, y: number, pieces = 4) {
+  constructor(stage: PIXI.Container, x: number, y: number, pieces = 4) {
     super(stage, x, y)
     // number of diags to build
     this.pieces = pieces
@@ -499,8 +508,14 @@ export class Slash extends Particle {
   }
 }
 
-export class VineWhip extends Particle {
-  constructor(stage: Container, x: number, y: number, sx: number, sy: number) {
+class VineWhip extends Particle {
+  constructor(
+    stage: PIXI.Container,
+    x: number,
+    y: number,
+    sx: number,
+    sy: number
+  ) {
     super(stage, x, y)
     this.addSprite(x, y).texture = attackTex.RAZOR
     this.sprites[0].scale.set(sx, sy)
@@ -515,10 +530,10 @@ export class VineWhip extends Particle {
   }
 }
 
-export class Growl extends Particle {
+class Growl extends Particle {
   private readonly scaleX: number
 
-  constructor(stage: Container, x: number, y: number, scaleX: number) {
+  constructor(stage: PIXI.Container, x: number, y: number, scaleX: number) {
     super(stage, x, y)
     this.scaleX = scaleX
     this.addSprite(x, y - 12).scale.set(scaleX, 1)
@@ -546,8 +561,14 @@ export class Growl extends Particle {
   }
 }
 
-export class Note extends Particle {
-  constructor(stage: Container, x: number, y: number, dx: number, dy: number) {
+class Note extends Particle {
+  constructor(
+    stage: PIXI.Container,
+    x: number,
+    y: number,
+    dx: number,
+    dy: number
+  ) {
     super(stage, x, y, dx, dy)
     this.addSprite(x, y).texture = notes[Math.floor(Math.random() * 3)]
   }
@@ -561,15 +582,15 @@ export class Note extends Particle {
     if (
       this.x < 0 ||
       this.y < 0 ||
-      this.x >= screen.width ||
-      this.y >= screen.height
+      this.x >= Graphics.GAMEBOY_WIDTH ||
+      this.y >= Graphics.GAMEBOY_HEIGHT
     )
       this.die()
   }
 }
 
-export class Z extends Particle {
-  constructor(stage: Container, x: number, y: number, dx: number) {
+class Z extends Particle {
+  constructor(stage: PIXI.Container, x: number, y: number, dx: number) {
     super(stage, x, y, dx)
     this.addSprite(x, y)
   }
@@ -584,8 +605,14 @@ export class Z extends Particle {
   }
 }
 
-export class Ring extends Particle {
-  constructor(stage: Container, x: number, y: number, dx: number, dy: number) {
+class Ring extends Particle {
+  constructor(
+    stage: PIXI.Container,
+    x: number,
+    y: number,
+    dx: number,
+    dy: number
+  ) {
     super(stage, x, y, dx, dy)
     this.addSprite(x, y)
   }
@@ -603,7 +630,7 @@ export class Ring extends Particle {
   }
 }
 
-export class Rotate extends Particle {
+class Rotate extends Particle {
   protected cos_t: number = 0
   protected delay: number
   protected period: number
@@ -611,7 +638,7 @@ export class Rotate extends Particle {
   protected h: number
 
   constructor(
-    stage: Container,
+    stage: PIXI.Container,
     x: number,
     y: number,
     w: number,
@@ -634,8 +661,8 @@ export class Rotate extends Particle {
   }
 }
 
-export class Bird extends Rotate {
-  constructor(stage: Container, x: number, y: number, delay: number) {
+class Bird extends Rotate {
+  constructor(stage: PIXI.Container, x: number, y: number, delay: number) {
     super(stage, x, y, 16, 4, 60, delay * 20)
     this.addSprite(x, y)
   }
@@ -654,8 +681,8 @@ export class Bird extends Rotate {
   }
 }
 
-export class Sword extends Rotate {
-  constructor(stage: Container, x: number, y: number, delay: number) {
+class Sword extends Rotate {
+  constructor(stage: PIXI.Container, x: number, y: number, delay: number) {
     super(stage, x, y, 24, 3, 80, -delay * (80 / 5))
     this.addSprite(x, y).texture = attackTex.SWORD
   }
@@ -667,7 +694,7 @@ export class Sword extends Rotate {
   }
 }
 
-export class Disable extends Particle {
+class Disable extends Particle {
   private static readonly TEXTURES = [
     [
       attackTex.DISABLE_LIGHT_1,
@@ -685,7 +712,7 @@ export class Disable extends Particle {
     ],
   ]
 
-  constructor(stage: Container, x: number, y: number) {
+  constructor(stage: PIXI.Container, x: number, y: number) {
     super(stage, x, y)
     this.addSprite(x, y)
   }
@@ -704,10 +731,10 @@ export class Disable extends Particle {
   }
 }
 
-export class Paralysis extends Particle {
+class Paralysis extends Particle {
   protected dir: number
 
-  constructor(stage: Container, x: number, y: number, dir: number) {
+  constructor(stage: PIXI.Container, x: number, y: number, dir: number) {
     super(stage, x, y)
     this.addSprite(x, y).scale.set(dir, 1)
     this.dir = dir
@@ -723,11 +750,11 @@ export class Paralysis extends Particle {
   }
 }
 
-export class Bomb extends Particle {
+class Bomb extends Particle {
   protected deadY: number
 
   constructor(
-    stage: Container,
+    stage: PIXI.Container,
     x: number,
     y: number,
     dx: number,
@@ -749,8 +776,8 @@ export class Bomb extends Particle {
   }
 }
 
-export class PoisonBubble extends Particle {
-  constructor(stage: Container, x: number, y: number) {
+class PoisonBubble extends Particle {
+  constructor(stage: PIXI.Container, x: number, y: number) {
     super(stage, x, y)
     this.addSprite(x, y)
   }
@@ -773,20 +800,20 @@ export class PoisonBubble extends Particle {
   }
 }
 
-export class Speed extends Sequence {
-  constructor(stage: Container, x: number, y: number) {
+class Speed extends Sequence {
+  constructor(stage: PIXI.Container, x: number, y: number) {
     super(stage, x, y, ['SPEED_1', 'SPEED_2', 'SPEED_3'], 3)
   }
 }
 
-export class Explosion extends Sequence {
-  constructor(stage: Container, x: number, y: number) {
+class Explosion extends Sequence {
+  constructor(stage: PIXI.Container, x: number, y: number) {
     super(stage, x, y, ['BLACK_CIRCLE_SMALL', 'BLACK_CIRCLE', 'EXPLOSION'], 3)
   }
 }
 
-export class Sphere extends Sequence {
-  constructor(stage: Container, x: number, y: number) {
+class Sphere extends Sequence {
+  constructor(stage: PIXI.Container, x: number, y: number) {
     super(
       stage,
       x,
@@ -798,10 +825,10 @@ export class Sphere extends Sequence {
   }
 }
 
-export class ShadowBall extends Static {
+class ShadowBall extends Static {
   private speed: number
 
-  constructor(stage: Container, x: number, y: number, speed: number) {
+  constructor(stage: PIXI.Container, x: number, y: number, speed: number) {
     super(stage, x, y, 'SHADOW_BALL', 34)
     this.speed = speed
   }
@@ -817,10 +844,10 @@ export class ShadowBall extends Static {
   }
 }
 
-export class IceWall extends Particle {
+class IceWall extends Particle {
   protected duration: number
 
-  constructor(stage: Container, x: number, y: number, duration: number) {
+  constructor(stage: PIXI.Container, x: number, y: number, duration: number) {
     super(stage, x, y)
     this.duration = duration
     for (let i = 0; i < 2; i++) this.addSprite(x + 16 * (i + 1), y)
@@ -852,13 +879,13 @@ export class IceWall extends Particle {
   }
 }
 
-export class RisingIceWall extends Particle {
+class RisingIceWall extends Particle {
   protected riseTime: number
   protected flickerTime: number
   protected wait: boolean = false
 
   constructor(
-    stage: Container,
+    stage: PIXI.Container,
     x: number,
     y: number,
     riseTime: number,
@@ -925,4 +952,31 @@ export class RisingIceWall extends Particle {
   }
 }
 
-export type AttackTexture = keyof typeof attackTex
+export {
+  Particle,
+  Slash,
+  Open,
+  attackTex,
+  Static,
+  VineWhip,
+  Growl,
+  Note,
+  Z,
+  Ring,
+  Bird,
+  Paralysis,
+  Bomb,
+  PoisonBubble,
+  Speed,
+  ShadowBall,
+  Sword,
+  IceWall,
+  RisingIceWall,
+  Explosion,
+  Sequence,
+  Sphere,
+  Twinkle,
+  Fly,
+  Disable,
+  type AttackTexture,
+}

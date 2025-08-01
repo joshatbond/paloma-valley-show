@@ -1,35 +1,25 @@
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix'
-import { Container, Rectangle, Sprite, Texture, filters } from 'pixi.js-legacy'
+import * as PIXI_SOUND from '@pixi/sound'
+import * as PIXI from 'pixi.js-legacy'
 
-import {
-  OPPONENT_SPRITE_X,
-  OPPONENT_SPRITE_Y,
-  PLAYER_SPRITE_X,
-  PLAYER_SPRITE_Y,
-  screen,
-} from '../constants'
-import {
-  type AnimObject,
-  IResource,
-  type IView,
-  type MemberObject,
-  type Music,
-  type Status,
-} from '../types'
-import { getInstance } from './Application'
-import { Event } from './Event'
-import { type DeepEvent, Events } from './Event'
-import { playerStatsTexture, removeAlpha, statsWindowTexture } from './Graphics'
-import { AttackTexture, Particle, attackTex } from './Particle'
+import { AnimObject, MemberObject } from './BattleObjects'
+import effects from './Effect'
+import { DeepEvent, Event, Events } from './Event'
+import * as Graphics from './Graphics'
+import { IResources, Music } from './IResources'
+import IView from './IView'
+import * as Input from './Input'
+import * as Particle from './Particle'
 import { HPStatsView, StatsView } from './StatsView'
+import Status from './Status'
 import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
-import { Textbox } from './TextBox'
+import Textbox from './Textbox'
 
 function animate(
-  sprite: Sprite,
-  textures: Texture[],
+  sprite: PIXI.Sprite,
+  textures: PIXI.Texture[],
   animData: AnimObject = { ref: [0], delay: [0] }
-) {
+): Event {
   const { ref, delay } = animData
   // I think this was to fix animation data I scraped?
   delay[delay.length - 1] = 0
@@ -57,18 +47,18 @@ function animate(
   return Events.flatten(script)
 }
 
-export class View implements IView {
+class View implements IView {
   private matrixFilter: ColorMatrixFilter
   private grayScale: boolean = false
 
   // comprises all of the following containers
-  private readonly fullStage = new Container()
+  private readonly fullStage = new PIXI.Container()
   // display textbox here
-  private readonly textboxStage = new Container()
+  private readonly textboxStage = new PIXI.Container()
   // display particles here
-  private readonly particleStage = new Container()
+  private readonly particleStage = new PIXI.Container()
   // display everything else here
-  private readonly stage = new Container()
+  private readonly stage = new PIXI.Container()
 
   private readonly textbox: Textbox
 
@@ -79,28 +69,25 @@ export class View implements IView {
   private readonly playerStats: StatsView
   private readonly opponentStats: StatsView
 
-  private readonly particles: Particle[] = []
+  private readonly particles: Particle.Particle[] = []
 
   private readonly trainerSprites: {
-    player: Sprite
-    opponent: Sprite
+    player: PIXI.Sprite
+    opponent: PIXI.Sprite
   }
-  private readonly memberSprites: { player: Sprite; opponent: Sprite }
+  private readonly memberSprites: { player: PIXI.Sprite; opponent: PIXI.Sprite }
 
   private readonly playerStatus: Status = { maxHp: 0, hp: 0, condition: '' }
   private readonly opponentStatus: Status = { maxHp: 0, hp: 0, condition: '' }
 
   private playerMember?: MemberObject
   private opponentMember?: MemberObject
-  app: ReturnType<typeof getInstance>['app'] | null = null
 
   constructor(
-    public resources: IResource,
+    public readonly app: PIXI.Application,
+    public resources: IResources,
     private debug: boolean = false
   ) {
-    const singleton = getInstance()
-    const Input = singleton.getKeyboardInput()
-
     this.playerStats = new HPStatsView(
       this.stage,
       72,
@@ -120,7 +107,7 @@ export class View implements IView {
         statusX: -1,
         nameY: undefined,
       },
-      playerStatsTexture
+      Graphics.playerStatsTexture
     )
 
     this.opponentStats = new StatsView(
@@ -142,7 +129,7 @@ export class View implements IView {
         hpTextX: undefined,
         hpTextY: undefined,
       },
-      statsWindowTexture
+      Graphics.statsWindowTexture
     )
 
     this.playerTeamStatus = new PlayerTeamStatus(this.stage)
@@ -151,42 +138,45 @@ export class View implements IView {
     this.textbox = new Textbox(this.textboxStage)
 
     this.trainerSprites = {
-      player: new Sprite(resources.getPlayerTrainerTexture()),
-      opponent: new Sprite(resources.getOpponentTrainerTexture()),
+      player: new PIXI.Sprite(resources.getPlayerTrainerTexture()),
+      opponent: new PIXI.Sprite(resources.getOpponentTrainerTexture()),
     }
 
     this.memberSprites = {
-      player: new Sprite(),
-      opponent: new Sprite(),
+      player: new PIXI.Sprite(),
+      opponent: new PIXI.Sprite(),
     }
 
     this.memberSprites.player.filters = []
-    this.memberSprites.opponent.filters = [removeAlpha]
+    this.memberSprites.opponent.filters = [Graphics.removeAlpha]
 
-    this.memberSprites.player.x = PLAYER_SPRITE_X
-    this.memberSprites.player.y = PLAYER_SPRITE_Y
+    this.memberSprites.player.x = Graphics.PLAYER_SPRITE_X
+    this.memberSprites.player.y = Graphics.PLAYER_SPRITE_Y
 
-    this.memberSprites.opponent.x = OPPONENT_SPRITE_X
-    this.memberSprites.opponent.y = OPPONENT_SPRITE_Y
+    this.memberSprites.opponent.x = Graphics.OPPONENT_SPRITE_X
+    this.memberSprites.opponent.y = Graphics.OPPONENT_SPRITE_Y
 
     this.fullStage.addChild(this.textboxStage)
     this.fullStage.addChild(this.stage)
     this.fullStage.addChild(this.particleStage)
-    this.matrixFilter = new filters.ColorMatrixFilter()
+    this.matrixFilter = new PIXI.filters.ColorMatrixFilter()
     this.stage.filters = [this.matrixFilter]
-    this.stage.filterArea = new Rectangle(0, 0, screen.width, screen.height)
+    this.stage.filterArea = new PIXI.Rectangle(
+      0,
+      0,
+      Graphics.GAMEBOY_WIDTH,
+      Graphics.GAMEBOY_HEIGHT
+    )
     this.stage.sortableChildren = true
     this.fullStage.sortableChildren = true
     this.particleStage.zIndex = 2
     this.particleStage.sortableChildren = true
 
-    if (!singleton.app || !Input) return
-    this.app = singleton.app
-    this.app.stage.on('click', () => {
+    app.stage.on('click', () => {
       Input.forceBack()
       this.textbox.advance()
     })
-    this.app.stage.on('tap', () => {
+    app.stage.on('tap', () => {
       Input.forceBack()
       this.textbox.advance()
     })
@@ -233,18 +223,17 @@ export class View implements IView {
     this.textbox.show()
   }
 
-  getStage(): Container {
+  getStage(): PIXI.Container {
     return this.stage
   }
 
-  getFullStage(): Container {
+  getFullStage(): PIXI.Container {
     return this.fullStage
   }
 
   invertColors(): Event {
     return {
       init: () => {
-        if (!this.app) return
         this.matrixFilter.negative(true)
         if (this.app.renderer.backgroundColor === 0xf8f8f8) {
           this.app.renderer.backgroundColor = 0x080808
@@ -292,14 +281,14 @@ export class View implements IView {
     }
   }
 
-  getMemberSprite(isPlayer: boolean): Sprite {
+  getMemberSprite(isPlayer: boolean): PIXI.Sprite {
     if (isPlayer) {
       return this.memberSprites.player
     }
     return this.memberSprites.opponent
   }
 
-  getOpponentStatsStage(): Container {
+  getOpponentStatsStage(): PIXI.Container {
     return this.opponentStats.getStage()
   }
 
@@ -431,9 +420,9 @@ export class View implements IView {
       done: t => {
         const progress = t / SLIDE_IN_LIMIT
         this.trainerSprites.player.x =
-          (1.0 - progress) * screen.width + progress * 16
+          (1.0 - progress) * Graphics.GAMEBOY_WIDTH + progress * 16
         this.trainerSprites.opponent.x =
-          (1.0 - progress) * -56 + progress * OPPONENT_SPRITE_X
+          (1.0 - progress) * -56 + progress * Graphics.OPPONENT_SPRITE_X
         return t >= SLIDE_IN_LIMIT
       },
     }
@@ -447,7 +436,8 @@ export class View implements IView {
         done: t => {
           const progress = t / OPP_SLIDE_OUT_LIMIT
           const x =
-            progress * OPPONENT_SPRITE_X + (1.0 - progress) * screen.width
+            progress * Graphics.OPPONENT_SPRITE_X +
+            (1.0 - progress) * Graphics.GAMEBOY_WIDTH
           this.trainerSprites.opponent.x = Math.floor(x / 8) * 8
           return t >= OPP_SLIDE_OUT_LIMIT
         },
@@ -477,7 +467,8 @@ export class View implements IView {
         done: t => {
           const progress = t / OPP_SLIDE_OUT_LIMIT
           const x =
-            (1.0 - progress) * OPPONENT_SPRITE_X + progress * screen.width
+            (1.0 - progress) * Graphics.OPPONENT_SPRITE_X +
+            progress * Graphics.GAMEBOY_WIDTH
           this.trainerSprites.opponent.x = Math.floor(x / 8) * 8
           return t >= OPP_SLIDE_OUT_LIMIT
         },
@@ -516,32 +507,31 @@ export class View implements IView {
   }
 
   setPlayerSubtitute() {
-    this.memberSprites.player.texture = attackTex.SUBSTITUTE_BACK
+    this.memberSprites.player.texture = Particle.attackTex.SUBSTITUTE_BACK
   }
 
   setOpponentSubtitute() {
-    this.memberSprites.opponent.texture = attackTex.SUBSTITUTE_FRONT
+    this.memberSprites.opponent.texture = Particle.attackTex.SUBSTITUTE_FRONT
   }
 
   setOpponentTexture(id?: string) {
-    if (!id) return
-    const texture = this.resources.getFront(id)
-    if (!texture) return
-    this.memberSprites.opponent.texture = texture as any
+    this.memberSprites.opponent.texture =
+      id && (this.resources.getFront(id)[0] as any)
   }
 
   /* Old-style particle rendering. Try to avoid this. */
-  particleV1(particle: (stage: Container) => Particle): Event {
+  particleV1(particle: (stage: PIXI.Container) => Particle.Particle): Event {
     return { init: () => this.particles.push(particle(this.particleStage)) }
   }
 
   particle(
     t: string,
-    ...args: (number | AttackTexture | AttackTexture[])[]
+    ...args: (number | Particle.AttackTexture | Particle.AttackTexture[])[]
   ): Event {
-    const Type: new (stage: Container, ...args: any[]) => Particle = (
-      Particle as any
-    )[t]
+    const Type: new (
+      stage: PIXI.Container,
+      ...args: any[]
+    ) => Particle.Particle = (Particle as any)[t]
     if (typeof Type !== 'function') {
       console.error(`Unknown particle: "${t}".`)
       return {}
@@ -552,9 +542,10 @@ export class View implements IView {
   }
 
   saveParticle(t: string, ...args: any[]): Event {
-    const Type: new (stage: Container, ...args: any[]) => Particle = (
-      Particle as any
-    )[t]
+    const Type: new (
+      stage: PIXI.Container,
+      ...args: any[]
+    ) => Particle.Particle = (Particle as any)[t]
     return {
       init: state => {
         const p = new Type(this.particleStage, ...args)
@@ -573,7 +564,7 @@ export class View implements IView {
   }
 
   static waitForParticle(): Event {
-    return { done: (_, state) => (state.object as Particle).dead }
+    return { done: (_, state) => (state.object as Particle.Particle).dead }
   }
 
   effect(name: string, isPlayer: boolean): Event | undefined {
@@ -617,14 +608,14 @@ export class View implements IView {
     if (name == null) return {}
     return {
       init: state => {
-        const sound: SOUND.Sound = SOUND.sound.find(name)
+        const sound: PIXI_SOUND.Sound = PIXI_SOUND.sound.find(name)
         if (sound == null) {
           console.error(`Could not play sound: "${name}".`)
           state.waiting = false
           return
         }
         if (panning !== 0) {
-          sound.filters = [new SOUND.filters.StereoFilter(panning)]
+          sound.filters = [new PIXI_SOUND.filters.StereoFilter(panning)]
         }
 
         if (this.debug) {
@@ -794,3 +785,5 @@ export class View implements IView {
     ])
   }
 }
+
+export default View

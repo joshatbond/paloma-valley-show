@@ -1,16 +1,33 @@
-import { Container, Sprite, Texture } from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js-legacy'
 
-import { MemberObject, Status } from '../types'
-import { charTex, removeAlpha } from './Graphics'
-import { Text } from './Text'
+import { MemberObject } from './BattleObjects'
+import * as Graphics from './Graphics'
+import Status from './Status'
+import Text from './Text'
 
-const levelTexture = charTex(12, 6)
-const maleTexture = charTex(14, 6)
-const femaleTexture = charTex(13, 6)
-const hpbarTexture = Texture.from('hpbar.png')
+const levelTexture = Graphics.charTex(12, 6)
+const maleTexture = Graphics.charTex(14, 6)
+const femaleTexture = Graphics.charTex(13, 6)
+const hpbarTexture = PIXI.Texture.from('hpbar.png')
+
+interface Offsets {
+  nameX?: number
+  nameY?: number
+  lvlX: number
+  lvlY: number
+  hpbarX: number
+  hpbarY: number
+  genderX?: number
+  genderY?: number
+  texX?: number
+  texY?: number
+  statusX: number
+  hpTextX?: number
+  hpTextY?: number
+}
 
 /* Displays member name, level, gender, and health within an optional window. */
-export class StatsView {
+class StatsView {
   protected stage
   protected myStage
   protected lvlX
@@ -29,7 +46,7 @@ export class StatsView {
   protected status: Status | null = null
 
   constructor(
-    stage: Container,
+    stage: PIXI.Container,
     x: number,
     y: number,
     {
@@ -45,11 +62,11 @@ export class StatsView {
       texY,
       statusX,
     }: Offsets,
-    tex: Texture | undefined = undefined
+    tex: PIXI.Texture | undefined = undefined
   ) {
     this.stage = stage
-    this.myStage = new Container()
-    this.myStage.filters = [removeAlpha]
+    this.myStage = new PIXI.Container()
+    this.myStage.filters = [Graphics.removeAlpha]
     this.myStage.zIndex = -1
     this.myStage.sortableChildren = true
     this.myStage.x = x
@@ -61,27 +78,27 @@ export class StatsView {
     this.statusText = new Text(this.myStage, lvlX * 8 + statusX * 8, lvlY * 8)
 
     this.nameText = new Text(this.myStage, nameX * 8, nameY * 8)
-    this.levelSpr = new Sprite(levelTexture)
+    this.levelSpr = new PIXI.Sprite(levelTexture)
     this.levelSpr.x = lvlX * 8 - 8
     this.levelSpr.y = lvlY * 8
-    this.hpbarSpr = new Sprite(hpbarTexture)
+    this.hpbarSpr = new PIXI.Sprite(hpbarTexture)
     this.hpbarSpr.x = hpbarX * 8
     this.hpbarSpr.y = hpbarY * 8
     if (genderX != null && genderY != null) {
-      this.genderSpr = new Sprite(undefined)
+      this.genderSpr = new PIXI.Sprite(undefined)
       this.genderSpr.x = genderX * 8
       this.genderSpr.y = genderY * 8
       this.genderSpr.zIndex = -1
     }
 
-    this.healthRect = Sprite.from(Texture.WHITE)
+    this.healthRect = PIXI.Sprite.from(PIXI.Texture.WHITE)
     this.healthRect.x = (hpbarX + 2) * 8
     this.healthRect.y = hpbarY * 8 + 3
     this.healthRect.height = 2
 
     // for drawing the little windows surrounding the stats
     if (tex != null && texX != null && texY != null) {
-      this.extraSpr = new Sprite(tex)
+      this.extraSpr = new PIXI.Sprite(tex)
       this.extraSpr.x = texX * 8
       this.extraSpr.y = texY * 8
     }
@@ -176,17 +193,17 @@ export class StatsView {
 }
 
 /* Displays stats showing the numerical value of the HP out of the total. */
-export class HPStatsView extends StatsView {
+class HPStatsView extends StatsView {
   protected hpText
   protected maxHpText
   protected lastHp: number = -1
 
   constructor(
-    stage: Container,
+    stage: PIXI.Container,
     x: number,
     y: number,
     offsets: Offsets,
-    tex: Texture | undefined = undefined
+    tex: PIXI.Texture | undefined = undefined
   ) {
     super(stage, x, y, offsets, tex)
     this.hpText = new Text(
@@ -243,18 +260,5 @@ export class HPStatsView extends StatsView {
     this.lastHp = status.hp
   }
 }
-type Offsets = {
-  nameX?: number
-  nameY?: number
-  lvlX: number
-  lvlY: number
-  hpbarX: number
-  hpbarY: number
-  genderX?: number
-  genderY?: number
-  texX?: number
-  texY?: number
-  statusX: number
-  hpTextX?: number
-  hpTextY?: number
-}
+
+export { StatsView, HPStatsView }

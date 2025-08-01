@@ -1,7 +1,7 @@
-import { Application, RenderTexture, Sprite } from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js-legacy'
 
-import { screen } from '../constants/index'
-import { KeyboardInputManager } from './Input'
+import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from '../Graphics'
+import * as Input from '../Input'
 
 /**
  * Manages the PixiJS application instance, including its initialization,
@@ -17,12 +17,12 @@ class App {
   /**
    * The PixiJS Application instance.
    */
-  private pixiApp: Application | null = null
+  private pixiApp: PIXI.Application | null = null
 
   /**
    * The PixiJS RenderTexture used for primary rendering.
    */
-  private pixiRenderTexture: RenderTexture | null = null
+  private pixiRenderTexture: PIXI.RenderTexture | null = null
 
   /**
    * The HTMLDivElement that serves as the parent container for the PixiJS canvas.
@@ -32,7 +32,7 @@ class App {
   /**
    * The KeyboardInputManager instance for handling keyboard interactions.
    */
-  private keyboardInput: KeyboardInputManager | null = null
+  // private keyboardInput: KeyboardInputManager | null = null
 
   /**
    * A cleanup function returned by `initWindow` to properly destroy the PixiJS app
@@ -82,35 +82,46 @@ class App {
     }
 
     const { height, width } = calculateAppSize(this.parentElement)
-    this.pixiApp = new Application({ height, width, backgroundColor: 0xf8f8f8 })
+
+    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
+
+    this.pixiApp = new PIXI.Application({
+      height,
+      width,
+      backgroundColor: 0xf8f8f8,
+    })
+    console.log(this.pixiApp)
     this.parentElement.appendChild(this.pixiApp.view)
 
     if (!this.pixiRenderTexture) {
-      this.pixiRenderTexture = RenderTexture.create({
+      this.pixiRenderTexture = PIXI.RenderTexture.create({
         height: screen.height,
         width: screen.width,
       })
     }
 
-    if (!this.keyboardInput) {
-      this.keyboardInput = new KeyboardInputManager()
-    }
+    // if (!this.keyboardInput) {
+    //   this.keyboardInput = new KeyboardInputManager()
+    // }
 
-    const sprite = new Sprite(this.pixiRenderTexture)
+    const sprite = new PIXI.Sprite(this.pixiRenderTexture)
     sprite.height = height
     sprite.width = width
 
     this.pixiApp.stage.addChild(sprite)
     this.pixiApp.stage.interactive = true
 
-    this.keyboardInput.focus()
+    // this.keyboardInput.focus()
+    Input.focus()
     document.addEventListener(
       'keydown',
-      this.keyboardInput.keyDown.bind(this.keyboardInput)
+      // this.keyboardInput.keyDown.bind(this.keyboardInput)
+      Input.keyDown
     )
     document.addEventListener(
       'keyup',
-      this.keyboardInput.keyUp.bind(this.keyboardInput)
+      // this.keyboardInput.keyUp.bind(this.keyboardInput)
+      Input.keyUp
     )
 
     this.cleanupFunction = () => {
@@ -120,21 +131,21 @@ class App {
       }
       this.pixiRenderTexture = null
       this.parentElement = null
-      if (this.keyboardInput) {
-        document.removeEventListener(
-          'keydown',
-          this.keyboardInput.keyDown.bind(this.keyboardInput)
-        )
-        document.removeEventListener(
-          'keyup',
-          this.keyboardInput.keyUp.bind(this.keyboardInput)
-        )
-        this.keyboardInput = null
-      }
+      document.removeEventListener('keydown', Input.keyDown)
+      document.removeEventListener('keyup', Input.keyUp)
+      // if (this.keyboardInput) {
+      //   document.removeEventListener(
+      //     'keydown',
+      //     this.keyboardInput.keyDown.bind(this.keyboardInput)
+      //   )
+      //   document.removeEventListener(
+      //     'keyup',
+      //     this.keyboardInput.keyUp.bind(this.keyboardInput)
+      //   )
+      //   this.keyboardInput = null
+      // }
       App.instance = null
     }
-
-    console.log('PixiJS App initialized successfully.')
   }
 
   /**
@@ -156,9 +167,9 @@ class App {
    * Retrieves the current KeyboardInputManager instance.
    * @returns The KeyboardInputManager instance, or null if not initialized.
    */
-  public getKeyboardInput() {
-    return this.keyboardInput
-  }
+  // public getKeyboardInput() {
+  //   return this.keyboardInput
+  // }
 
   /**
    * Destroys the PixiJS application and cleans up all associated resources.
@@ -185,15 +196,15 @@ export const getInstance = App.getInstance
  * @returns An object containing the calculated height and width for the app.
  */
 function calculateAppSize<T extends HTMLElement>(el: T) {
-  const { height: parentHeight, width: parentWidth } =
-    el.getBoundingClientRect()
+  const box = el.getBoundingClientRect()
+
   let scale = 6
   // Continuously reduce scale until the app fits within the parent dimensions
   while (
-    screen.height * scale > parentHeight ||
-    screen.width * scale > parentWidth
+    GAMEBOY_HEIGHT * scale > box.height ||
+    GAMEBOY_WIDTH * scale > box.width
   ) {
     scale -= 0.5
   }
-  return { height: screen.height * scale, width: screen.width * scale }
+  return { height: GAMEBOY_HEIGHT * scale, width: GAMEBOY_WIDTH * scale }
 }

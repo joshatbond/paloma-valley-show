@@ -1,20 +1,42 @@
-import { Container, Sprite } from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js-legacy'
 
-import { font } from './Graphics'
+import * as Graphics from './Graphics'
 
 const APOSTROPHE_LETTERS = ['d', 'l', 'm', 'r', 's', 't', 'v']
 
+function special(i: number, str: string): [number, string] {
+  if (
+    str[i] === "'" &&
+    i + 1 < str.length &&
+    APOSTROPHE_LETTERS.includes(str[i + 1])
+  ) {
+    return [i + 1, "'" + str[i + 1]]
+  } else if (
+    str[i] === '.' &&
+    i + 2 < str.length &&
+    str[i + 1] === '.' &&
+    str[i + 2] === '.'
+  ) {
+    return [i + 2, '...']
+  }
+  return [i, str[i]]
+}
+
+interface TextConfig {
+  padding: number | undefined
+}
+
 /* Renders changeable text to the screen. */
-export class Text {
+class Text {
   public x: number
   public y: number
   private padding: number | undefined
-  private stage: Container
-  private sprites: Sprite[]
+  private stage: PIXI.Container
+  private sprites: PIXI.Sprite[]
 
   // show text at (x, y) right aligned to padding
   constructor(
-    stage: Container,
+    stage: PIXI.Container,
     x: number,
     y: number,
     { padding = undefined }: TextConfig = { padding: undefined }
@@ -46,7 +68,7 @@ export class Text {
       const [j, sym] = special(i, str)
       i = j
 
-      const spr = new Sprite(font[sym])
+      const spr = new PIXI.Sprite(Graphics.font[sym])
       spr.x = this.x + chars * 8
       spr.y = this.y
       this.sprites.push(spr)
@@ -56,23 +78,6 @@ export class Text {
   }
 }
 
-function special(i: number, str: string): [number, string] {
-  if (
-    str[i] === "'" &&
-    i + 1 < str.length &&
-    APOSTROPHE_LETTERS.includes(str[i + 1])
-  ) {
-    return [i + 1, "'" + str[i + 1]]
-  } else if (
-    str[i] === '.' &&
-    i + 2 < str.length &&
-    str[i + 1] === '.' &&
-    str[i + 2] === '.'
-  ) {
-    return [i + 2, '...']
-  }
-  return [i, str[i]]
-}
-type TextConfig = {
-  padding: number | undefined
-}
+/* TODO: Text subclasses, like handling the level number and stuff... */
+
+export default Text

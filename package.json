@@ -17,7 +17,6 @@
   "dependencies": {
     "@convex-dev/react-query": "^0.0.0-alpha.8",
     "@pixi/filter-color-matrix": "^6.5.1",
-    "@pixi/react": "^7",
     "@pixi/sound": "^4.3.0",
     "@pkmn/sim": "0.5.11",
     "@tailwindcss/vite": "^4.1.6",

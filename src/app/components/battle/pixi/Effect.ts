@@ -1,6 +1,10 @@
-import { DeepEvent, Event, Events } from './Event'
-import { Sequence, Static } from './Particle'
-import { View } from './View'
+import * as PIXI from 'pixi.js-legacy'
+
+import { DeepEvent, Event, EventState, Events } from './Event'
+import * as Graphics from './Graphics'
+import { lerp } from './MathUtil'
+import * as Particle from './Particle'
+import View from './View'
 
 const TACKLE_DUR = 6
 
@@ -14,6 +18,27 @@ interface Effect {
   ply?: (view: View) => Event
   opp?: (view: View) => Event
 }
+
+/*
+const effects = {
+	RAGE: {
+		onSubmit: m => Do(() => m.raging = true),
+		onTurnEnd: (m, pre) =>
+			Do().If(() => m.hp < pre.hp && m.hp > 0,
+				Do(() => m.rage += 1)
+			 		.Text([`${enemy(m)}${m.name}'s`, "RAGE is building!"]))
+	},
+
+	"GIGA DRAIN": {
+		onSubmit: (m, dmg) => {
+			const o = other(m);
+		  return Do()
+				.DealDamage(m, -(dmg / 2))
+				.Text(["Sucked health from", `${enemy(o)}${o.name}!`]);
+		}
+	},
+};
+*/
 
 /*
  Move animations, defined as:
@@ -30,7 +55,7 @@ const metronome = (x: number, y: number) => (view: View) => {
   const g = (t: number) => Math.sin(t * 3 * 2 * Math.PI) * 2
   evt.push(
     view.particleV1(stage =>
-      new Static(stage, x, y + 8, 'HAND', DURATION)
+      new Particle.Static(stage, x, y + 8, 'HAND', DURATION)
         .offsetX(f)
         .offsetY(g)
         .priority()
@@ -40,7 +65,14 @@ const metronome = (x: number, y: number) => (view: View) => {
   for (let i = 0; i < 5; i++) {
     evt.push([
       view.particleV1(stage =>
-        new Sequence(stage, x, y, ['SPARKLE_2', 'SPARKLE_1'], 15, DURATION)
+        new Particle.Sequence(
+          stage,
+          x,
+          y,
+          ['SPARKLE_2', 'SPARKLE_1'],
+          15,
+          DURATION
+        )
           .offsetX(f)
           .transformY(24 / DURATION)
       ),
@@ -2154,3 +2186,5 @@ const effects: { [attack: string]: Effect } = {
       ]),
   },
 }
+
+export default effects

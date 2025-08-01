@@ -1,6 +1,31 @@
-import { type Status } from '../types'
+import Status from './Status'
 
-export namespace Events {
+interface EventState {
+  // used if a certain event has a flag for waiting
+  waiting: boolean
+  // used for health bar changes
+  hpStart: number
+  hpEnd: number
+  // used to wait until an event ends
+  duration: number
+  // store any reference here (NOT TYPE-CHECKED!)
+  object: any
+  // remember IDs for player/opponent
+  playerId?: string
+  opponentId?: string
+}
+
+interface Event {
+  init?: (() => void) | ((state: EventState) => void)
+  done?: (tick: number, state: EventState) => boolean
+  next?: Event
+  // reference to last event, this allows O(1) appending to list
+  last?: Event
+}
+
+type DeepEvent = (() => void) | Event | DeepEvent[] | undefined
+
+namespace Events {
   export function append(event: Event, next?: Event) {
     let evt = event.last || event
     while (evt.next != null) {
@@ -58,7 +83,7 @@ export namespace Events {
   }
 }
 
-export class EventDriver {
+class EventDriver {
   private current?: Event
 
   // count number of ticks passed in current event
@@ -114,27 +139,5 @@ export class EventDriver {
     event.init!(this.state)
   }
 }
-export type EventState = {
-  // used if a certain event has a flag for waiting
-  waiting: boolean
-  // used for health bar changes
-  hpStart: number
-  hpEnd: number
-  // used to wait until an event ends
-  duration: number
-  // store any reference here (NOT TYPE-CHECKED!)
-  object: any
-  // remember IDs for player/opponent
-  playerId?: string
-  opponentId?: string
-}
 
-export type Event = {
-  init?: (() => void) | ((state: EventState) => void)
-  done?: (tick: number, state: EventState) => boolean
-  next?: Event
-  // reference to last event, this allows O(1) appending to list
-  last?: Event
-}
-
-export type DeepEvent = (() => void) | Event | DeepEvent[] | undefined
+export { EventDriver, type EventState, type Event, type DeepEvent, Events }

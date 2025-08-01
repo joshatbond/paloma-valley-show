@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { run } from './pixi'
+import { run } from './run'
 
 export function BattleSimulator() {
   const parentEl = useRef<HTMLDivElement>(null)
@@ -8,7 +8,9 @@ export function BattleSimulator() {
 
   useEffect(() => {
     if (parentEl) {
-      run('battle-container')
+      setTimeout(() => {
+        appRef.current = run('battle-container')
+      }, 0.1e3)
     }
 
     return () => {
