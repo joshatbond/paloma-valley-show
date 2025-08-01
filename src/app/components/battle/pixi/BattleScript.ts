@@ -1,6 +1,6 @@
 import moveInfo from './MoveInfo'
 import { Script, Scripts } from './Script'
-import Status from './Status'
+import { type Status } from './types'
 import { type BattleInfo, type MemberObject } from './types'
 
 const convertPSStat: { [stat: string]: string } = {

@@ -7,6 +7,11 @@ export type IGame = {
   getOpponentTeamHealth(): number[]
   loadMove(move: string): Promise<void>
 }
+export type Status = {
+  maxHp: number
+  hp: number
+  condition: string
+}
 
 /**
  * Schematics for Battle JSON

@@ -10,10 +10,9 @@ import IView from './IView'
 import * as Input from './Input'
 import * as Particle from './Particle'
 import { HPStatsView, StatsView } from './StatsView'
-import Status from './Status'
 import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
 import Textbox from './Textbox'
-import { type AnimObject, type MemberObject } from './types'
+import { type AnimObject, type MemberObject, Status } from './types'
 
 function animate(
   sprite: PIXI.Sprite,

@@ -1,4 +1,4 @@
-import Status from './Status'
+import { type Status } from './types'
 
 interface EventState {
   // used if a certain event has a flag for waiting

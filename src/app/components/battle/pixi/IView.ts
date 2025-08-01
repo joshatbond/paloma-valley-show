@@ -1,7 +1,6 @@
 import { Event } from './Event'
 import { IResources, Music } from './IResources'
-import Status from './Status'
-import { type AnimObject, type MemberObject } from './types'
+import { type AnimObject, type MemberObject, type Status } from './types'
 
 interface IView {
   resources: IResources
