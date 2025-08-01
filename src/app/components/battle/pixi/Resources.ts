@@ -1,7 +1,6 @@
 import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
-import * as Context from './Context'
 import moveInfo from './MoveInfo'
 import { type Music, type Resource } from './types'
 
