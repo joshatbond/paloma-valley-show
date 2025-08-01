@@ -17,7 +17,6 @@ import { ObjectReadWriteStream } from '@pkmn/streams'
 
 import BattleScript from './BattleScript'
 import { EventDriver, Events } from './Event'
-import IGame from './IGame'
 import { IResources } from './IResources'
 import Interpreter from './Interpreter'
 import {
@@ -30,6 +29,7 @@ import {
   TeamView,
 } from './Menu'
 import View from './View'
+import { type IGame } from './types'
 import { type BattleInfo, type FighterObject, type MemberObject } from './types'
 
 function buildPSGender(gender: 'male' | 'female' | 'none'): string {
