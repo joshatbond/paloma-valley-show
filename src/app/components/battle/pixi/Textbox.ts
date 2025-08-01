@@ -3,11 +3,11 @@ import * as PIXI from 'pixi.js-legacy'
 
 import * as Graphics from './Graphics'
 import * as Input from './Input.js'
+import { textureTextbox } from './assets/textures'
 
 const APOSTROPHE_LETTERS = ['d', 'l', 'm', 'r', 's', 't', 'v']
 
-const textboxTexture = PIXI.Texture.from('textbox.png')
-const textboxSprite = new PIXI.Sprite(textboxTexture)
+const textboxSprite = new PIXI.Sprite(textureTextbox)
 const contArrowSprite = new PIXI.Sprite(Graphics.charTex(11, 5))
 
 enum State {

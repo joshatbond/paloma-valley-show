@@ -8,13 +8,14 @@ import * as Graphics from './Graphics'
 import * as Input from './Input.js'
 import { HPStatsView } from './StatsView'
 import Text from './Text'
+import {
+  textureMenu,
+  textureMessage,
+  textureMoves,
+  textureSwitchStats,
+} from './assets/textures'
 import { type DeepEvent } from './types'
 
-const menuTexture = PIXI.Texture.from('menu.png')
-const movesTexture = PIXI.Texture.from('moves.png')
-// const yesnoTexture = PIXI.Texture.from('yesno.png');
-const switchstatsTexture = PIXI.Texture.from('switchstats.png')
-const messageTexture = PIXI.Texture.from('message.png')
 const arrowTexture = Graphics.charTex(10, 5)
 const arrowTexture2 = Graphics.charTex(9, 5)
 
@@ -319,7 +320,7 @@ class Options extends Menu {
           )
       }
     })
-    this.menuSpr = new PIXI.Sprite(menuTexture)
+    this.menuSpr = new PIXI.Sprite(textureMenu)
     this.menuSpr.x = 64
     this.menuSpr.y = 96
   }
@@ -384,7 +385,7 @@ class Moves extends Menu {
     this.stateToSimulatedIndex = stateToSimulatedIndex
     this.state = state
     while (moves[this.state] === '') this.state = (this.state + 1) % 4
-    this.movesSpr = new PIXI.Sprite(movesTexture)
+    this.movesSpr = new PIXI.Sprite(textureMoves)
     this.movesSpr.x = 0
     this.movesSpr.y = 64
     this.type = new Text(this.stage, 16, 80)
@@ -578,7 +579,7 @@ class SwitchStats extends Menu {
       ]
     )
     this.index = index
-    this.switchstatsSpr = new PIXI.Sprite(switchstatsTexture)
+    this.switchstatsSpr = new PIXI.Sprite(textureSwitchStats)
     this.switchstatsSpr.x = 88
     this.switchstatsSpr.y = 88
   }
@@ -664,7 +665,7 @@ abstract class TeamView extends Menu {
     )
     this.message = message
 
-    this.messageSpr = new PIXI.Sprite(messageTexture)
+    this.messageSpr = new PIXI.Sprite(textureMessage)
     this.messageSpr.y = Graphics.GAMEBOY_HEIGHT - 32
     this.messageTxt = new Text(this.stage, 8, Graphics.GAMEBOY_HEIGHT - 16)
 

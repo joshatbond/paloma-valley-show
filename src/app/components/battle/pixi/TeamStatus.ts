@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js-legacy'
 
 import * as Graphics from './Graphics'
+import { textureStatsWindow } from './assets/textures'
 
 class TeamStatus {
   x: number
@@ -15,7 +16,7 @@ class TeamStatus {
     this.x = x
     this.y = y
     this.flip = flip
-    this.windowSpr = new PIXI.Sprite(Graphics.statsWindowTexture)
+    this.windowSpr = new PIXI.Sprite(textureStatsWindow)
     this.windowSpr.x = x
     this.windowSpr.y = y
     if (flip) this.windowSpr.scale.x = -1

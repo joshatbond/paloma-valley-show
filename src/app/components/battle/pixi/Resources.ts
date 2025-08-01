@@ -2,6 +2,7 @@ import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
 import moveInfo from './MoveInfo'
+import { textureDemoBack, textureDemoFront } from './assets/textures'
 import { type Music, type Resource } from './types'
 
 const SFX = [
@@ -19,8 +20,8 @@ export default class Resources implements Resource {
   uniforms: { [index: string]: { step: number } } = {}
   playingMusic: PIXI_SOUND.Sound | null = null
 
-  private readonly demoFrontTexture: PIXI.Texture
-  private readonly demoBackTexture: PIXI.Texture
+  private readonly demoFrontTexture = textureDemoFront
+  private readonly demoBackTexture = textureDemoBack
 
   private readonly loader = new PIXI.Loader()
 
@@ -30,9 +31,6 @@ export default class Resources implements Resource {
   private moveCache: Set<string> = new Set()
 
   constructor(moves: string[]) {
-    this.demoFrontTexture = PIXI.Texture.from('demofront.png')
-    this.demoBackTexture = PIXI.Texture.from('demoback.png')
-
     for (const sfx of SFX) {
       this.loader.add(sfx, sfx + '.wav')
     }

@@ -2,12 +2,12 @@ import * as PIXI from 'pixi.js-legacy'
 
 import * as Graphics from './Graphics'
 import Text from './Text'
+import { textureHPBar } from './assets/textures'
 import { type MemberObject, type Status } from './types'
 
 const levelTexture = Graphics.charTex(12, 6)
 const maleTexture = Graphics.charTex(14, 6)
 const femaleTexture = Graphics.charTex(13, 6)
-const hpbarTexture = PIXI.Texture.from('hpbar.png')
 
 interface Offsets {
   nameX?: number
@@ -80,7 +80,7 @@ class StatsView {
     this.levelSpr = new PIXI.Sprite(levelTexture)
     this.levelSpr.x = lvlX * 8 - 8
     this.levelSpr.y = lvlY * 8
-    this.hpbarSpr = new PIXI.Sprite(hpbarTexture)
+    this.hpbarSpr = new PIXI.Sprite(textureHPBar)
     this.hpbarSpr.x = hpbarX * 8
     this.hpbarSpr.y = hpbarY * 8
     if (genderX != null && genderY != null) {

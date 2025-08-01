@@ -10,6 +10,7 @@ import * as Particle from './Particle'
 import { HPStatsView, StatsView } from './StatsView'
 import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
 import Textbox from './Textbox'
+import { texturePlayerStats, textureStatsWindow } from './assets/textures'
 import {
   type AnimObject,
   type DeepEvent,
@@ -113,7 +114,7 @@ class View implements IView {
         statusX: -1,
         nameY: undefined,
       },
-      Graphics.playerStatsTexture
+      texturePlayerStats
     )
 
     this.opponentStats = new StatsView(
@@ -135,7 +136,7 @@ class View implements IView {
         hpTextX: undefined,
         hpTextY: undefined,
       },
-      Graphics.statsWindowTexture
+      textureStatsWindow
     )
 
     this.playerTeamStatus = new PlayerTeamStatus(this.stage)

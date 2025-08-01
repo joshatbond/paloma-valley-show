@@ -1,10 +1,10 @@
 import * as PIXI from 'pixi.js-legacy'
 
 import * as Graphics from './Graphics'
+import { textureOpen } from './assets/textures'
 import { Ease } from './util/math'
 
-const openTexture = PIXI.Texture.from('open.png')
-const openSheet = Graphics.tileHorizontal(openTexture, 40, 40, 4)
+const openSheet = Graphics.tileHorizontal(textureOpen, 40, 40, 4)
 
 const attackTex = {
   BOOM_SMALL: Graphics.attack(0, 0, 2, 2),
