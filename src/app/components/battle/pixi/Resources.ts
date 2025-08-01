@@ -2,8 +2,8 @@ import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
 import * as Context from './Context'
-import { IResources, Music } from './IResources'
 import moveInfo from './MoveInfo'
+import { type Music, type Resource } from './types'
 
 const SFX = [
   'pressab',
@@ -16,7 +16,7 @@ const SFX = [
 ]
 const SHADERS = ['oppAppear', 'plyAppear', 'faint']
 
-export default class Resources implements IResources {
+export default class Resources implements Resource {
   uniforms: { [index: string]: { step: number } } = {}
   playingMusic: PIXI_SOUND.Sound | null = null
 
@@ -45,7 +45,7 @@ export default class Resources implements IResources {
     this.loadMoves(moves)
   }
 
-  load(callback: (resources: IResources) => any) {
+  load(callback: (resources: Resource) => any) {
     this.loader.load((_, resources) => {
       this.createShaders(resources)
       callback(this)
@@ -53,7 +53,7 @@ export default class Resources implements IResources {
     })
   }
 
-  forceLoad(): Promise<IResources> {
+  forceLoad(): Promise<Resource> {
     return new Promise((resolve, reject) => {
       this.loader.onError.add(err => console.error(err))
       this.load(resolve)

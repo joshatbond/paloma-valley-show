@@ -17,7 +17,6 @@ import { ObjectReadWriteStream } from '@pkmn/streams'
 
 import BattleScript from './BattleScript'
 import { EventDriver, Events } from './Event'
-import { IResources } from './IResources'
 import Interpreter from './Interpreter'
 import {
   GeneralTeamView,
@@ -29,8 +28,13 @@ import {
   TeamView,
 } from './Menu'
 import View from './View'
-import { type IGame } from './types'
-import { type BattleInfo, type FighterObject, type MemberObject } from './types'
+import {
+  type BattleInfo,
+  type FighterObject,
+  type IGame,
+  type MemberObject,
+  type Resource,
+} from './types'
 
 function buildPSGender(gender: 'male' | 'female' | 'none'): string {
   switch (gender) {
@@ -77,7 +81,7 @@ class PlayerController extends RandomPlayerAI {
   }
 }
 
-type MoveLoader = (move: string) => Promise<IResources>
+type MoveLoader = (move: string) => Promise<Resource>
 class GameV2 implements IGame {
   private eventDriver: EventDriver
 

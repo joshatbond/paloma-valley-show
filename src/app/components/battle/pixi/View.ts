@@ -5,14 +5,19 @@ import * as PIXI from 'pixi.js-legacy'
 import effects from './Effect'
 import { DeepEvent, Event, Events } from './Event'
 import * as Graphics from './Graphics'
-import { IResources, Music } from './IResources'
 import IView from './IView'
 import * as Input from './Input'
 import * as Particle from './Particle'
 import { HPStatsView, StatsView } from './StatsView'
 import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
 import Textbox from './Textbox'
-import { type AnimObject, type MemberObject, Status } from './types'
+import {
+  type AnimObject,
+  type MemberObject,
+  type Music,
+  type Resource,
+  type Status,
+} from './types'
 
 function animate(
   sprite: PIXI.Sprite,
@@ -84,7 +89,7 @@ class View implements IView {
 
   constructor(
     public readonly app: PIXI.Application,
-    public resources: IResources,
+    public resources: Resource,
     private debug: boolean = false
   ) {
     this.playerStats = new HPStatsView(
