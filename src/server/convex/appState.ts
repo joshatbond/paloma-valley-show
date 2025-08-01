@@ -40,8 +40,7 @@ export const setActiveState = mutation({
     const tomorrow = new Date(now)
     tomorrow.setDate(now.getDate() + 1)
     tomorrow.setHours(0, 0, 0, 0)
-    const endOfDay = tomorrow.getTime() - now.getTime()
-    await ctx.scheduler.runAt(endOfDay, api.appState.setActiveState, {
+    await ctx.scheduler.runAt(tomorrow, api.appState.setActiveState, {
       id: args.id,
       state: null,
     })
