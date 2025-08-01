@@ -1,6 +1,8 @@
 import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
+import { type Event } from '../Event'
+
 export type IGame = {
   pass(): void
   showOptions(): void
@@ -10,6 +12,55 @@ export type IGame = {
   getOpponentTeamHealth(): number[]
   loadMove(move: string): Promise<void>
 }
+export type IView = {
+  resources: Resource
+
+  update(): void
+
+  getPlayerStatus(): Status
+  getOpponentStatus(): Status
+  setStatus(isPlayer: boolean, status: Partial<Status>): void
+
+  setPlayerTexture(id?: string): void
+  setOpponentTexture(id?: string): void
+
+  slideInTrainers(): Event
+  slideInOpponentTrainer(): Event
+  slideOutPlayerTrainer(): Event
+  slideOutOpponentTrainer(): Event
+  showPlayerTeamStatus(hp: number[]): Event
+  showOpponentTeamStatus(hp: number[]): Event
+  hidePlayerTeamStatus(): Event
+  hideOpponentTeamStatus(): Event
+  showPlayerStats(member?: MemberObject): Event
+  showOpponentStats(member?: MemberObject): Event
+  hidePlayerStats(): Event
+  hideOpponentStats(): Event
+  showPlayer(): Event
+  showOpponent(): Event
+  hidePlayer(): Event
+  hideOpponent(): Event
+  screenShake(): Event
+  invertColors(): Event
+  toggleGrayScale(): Event
+  clearTextbox(): Event
+  text(text: string[], auto?: boolean): Event
+  effect(name: string, isPlayer: boolean): Event | undefined
+  sfx(name: string, wait?: boolean, panning?: number): Event
+  cry(id: string, wait: boolean, isPlayer: boolean): Event
+  shader(
+    isPlayer: boolean,
+    name: string,
+    steps: number,
+    delay: number,
+    reverse: boolean
+  ): Event
+  particle(t: string, ...args: (number | string | string[])[]): Event
+  anim(id: string, anim: AnimObject): Event
+
+  startMusic(music: Music): void
+}
+export type Music = 'battle' | 'victory'
 export type Resource = {
   uniforms: { [index: string]: { step: number } }
   playingMusic: PIXI_SOUND.Sound | null
@@ -21,7 +72,6 @@ export type Resource = {
   getFront(id: string): PIXI.Texture[]
   getBack(id: string): PIXI.Texture
 }
-export type Music = 'battle' | 'victory'
 export type Status = {
   maxHp: number
   hp: number

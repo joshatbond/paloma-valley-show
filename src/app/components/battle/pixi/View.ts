@@ -5,7 +5,6 @@ import * as PIXI from 'pixi.js-legacy'
 import effects from './Effect'
 import { DeepEvent, Event, Events } from './Event'
 import * as Graphics from './Graphics'
-import IView from './IView'
 import * as Input from './Input'
 import * as Particle from './Particle'
 import { HPStatsView, StatsView } from './StatsView'
@@ -13,6 +12,7 @@ import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
 import Textbox from './Textbox'
 import {
   type AnimObject,
+  type IView,
   type MemberObject,
   type Music,
   type Resource,
