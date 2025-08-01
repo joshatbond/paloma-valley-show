@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import Ease from './Ease'
 import * as Graphics from './Graphics'
+import { Ease } from './util/math'
 
 const openTexture = PIXI.Texture.from('open.png')
 const openSheet = Graphics.tileHorizontal(openTexture, 40, 40, 4)

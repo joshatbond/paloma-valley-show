@@ -2,9 +2,9 @@ import * as PIXI from 'pixi.js-legacy'
 
 import { DeepEvent, Event, EventState, Events } from './Event'
 import * as Graphics from './Graphics'
-import { lerp } from './MathUtil'
 import * as Particle from './Particle'
 import View from './View'
+import { lerp } from './util/math'
 
 const TACKLE_DUR = 6
 
