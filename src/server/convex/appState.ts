@@ -36,11 +36,11 @@ export const setActiveState = mutation({
       currentPhase: args.state ? 0 : -1,
       pollStarted: null,
     })
+
     const now = new Date()
-    const tomorrow = new Date(now)
-    tomorrow.setDate(now.getDate() + 1)
-    tomorrow.setHours(0, 0, 0, 0)
-    const endOfDay = tomorrow.getTime() - now.getTime()
+    const endOfDay = new Date(now)
+    endOfDay.setDate(now.getDate() + 1)
+    endOfDay.setHours(0, 0, 0, 0)
     await ctx.scheduler.runAt(endOfDay, api.appState.setActiveState, {
       id: args.id,
       state: null,
