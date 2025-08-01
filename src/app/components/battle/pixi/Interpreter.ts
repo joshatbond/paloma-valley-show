@@ -1,11 +1,13 @@
-import { DeepEvent, Event, Events } from './Event'
+import { Events } from './Event'
 import moveStats from './MoveInfo'
 import { Script, Scripts } from './Script'
 import {
   type BattleInfo,
+  DeepEvent,
   type IGame,
   type IView,
   type MemberObject,
+  TEvent,
 } from './types'
 
 interface MembersOut {
@@ -38,7 +40,7 @@ class Interpreter {
     }
   }
 
-  private stepNoArgs(game: IGame | null, command: string): Event {
+  private stepNoArgs(game: IGame | null, command: string): TEvent {
     if (this.debug) {
       console.log('Interpreter.stepNoArgs:', JSON.stringify(command))
     }
@@ -229,11 +231,11 @@ class Interpreter {
     }
   }
 
-  public interpret(game: IGame | null, script?: Script): Event {
+  public interpret(game: IGame | null, script?: Script): TEvent {
     return Events.flatten(this.step(game, script))
   }
 
-  private moveSfx(moveName: string, isPlayer: boolean): Event {
+  private moveSfx(moveName: string, isPlayer: boolean): TEvent {
     const member = isPlayer ? this.membersOut.player : this.membersOut.opponent
     if (member == null) {
       throw new Error('Interpreter.moveSfx: member is null')

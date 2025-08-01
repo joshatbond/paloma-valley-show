@@ -2,12 +2,13 @@ import { sound as PIXI_SOUND } from '@pixi/sound'
 import { Pokemon } from '@pkmn/sim'
 import * as PIXI from 'pixi.js-legacy'
 
-import { DeepEvent, Events } from './Event'
+import { Events } from './Event'
 import GameV2 from './GameV2'
 import * as Graphics from './Graphics'
 import * as Input from './Input.js'
 import { HPStatsView } from './StatsView'
 import Text from './Text'
+import { type DeepEvent } from './types'
 
 const menuTexture = PIXI.Texture.from('menu.png')
 const movesTexture = PIXI.Texture.from('moves.png')

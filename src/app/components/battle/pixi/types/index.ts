@@ -1,7 +1,40 @@
 import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
-import { type Event } from '../Event'
+export type DeepEvent = (() => void) | TEvent | DeepEvent[] | undefined
+export type TEvent = {
+  init?: (() => void) | ((state: EventState) => void)
+  done?: (tick: number, state: EventState) => boolean
+  next?: TEvent
+  /**
+   * reference to last event, this allows O(1) appending to list
+   */
+  last?: TEvent
+}
+export type EventState = {
+  /**
+   * used if a certain event has a flag for waiting
+   */
+  waiting: boolean
+  /**
+   * used for health bar changes
+   */
+  hpStart: number
+  hpEnd: number
+  /**
+   * used to wait until an event ends
+   */
+  duration: number
+  /**
+   * store any reference here (NOT TYPE-CHECKED!)
+   */
+  object: any
+  /**
+   * remember IDs for player/opponent
+   */
+  playerId?: string
+  opponentId?: string
+}
 
 export type IGame = {
   pass(): void
@@ -24,39 +57,39 @@ export type IView = {
   setPlayerTexture(id?: string): void
   setOpponentTexture(id?: string): void
 
-  slideInTrainers(): Event
-  slideInOpponentTrainer(): Event
-  slideOutPlayerTrainer(): Event
-  slideOutOpponentTrainer(): Event
-  showPlayerTeamStatus(hp: number[]): Event
-  showOpponentTeamStatus(hp: number[]): Event
-  hidePlayerTeamStatus(): Event
-  hideOpponentTeamStatus(): Event
-  showPlayerStats(member?: MemberObject): Event
-  showOpponentStats(member?: MemberObject): Event
-  hidePlayerStats(): Event
-  hideOpponentStats(): Event
-  showPlayer(): Event
-  showOpponent(): Event
-  hidePlayer(): Event
-  hideOpponent(): Event
-  screenShake(): Event
-  invertColors(): Event
-  toggleGrayScale(): Event
-  clearTextbox(): Event
-  text(text: string[], auto?: boolean): Event
-  effect(name: string, isPlayer: boolean): Event | undefined
-  sfx(name: string, wait?: boolean, panning?: number): Event
-  cry(id: string, wait: boolean, isPlayer: boolean): Event
+  slideInTrainers(): TEvent
+  slideInOpponentTrainer(): TEvent
+  slideOutPlayerTrainer(): TEvent
+  slideOutOpponentTrainer(): TEvent
+  showPlayerTeamStatus(hp: number[]): TEvent
+  showOpponentTeamStatus(hp: number[]): TEvent
+  hidePlayerTeamStatus(): TEvent
+  hideOpponentTeamStatus(): TEvent
+  showPlayerStats(member?: MemberObject): TEvent
+  showOpponentStats(member?: MemberObject): TEvent
+  hidePlayerStats(): TEvent
+  hideOpponentStats(): TEvent
+  showPlayer(): TEvent
+  showOpponent(): TEvent
+  hidePlayer(): TEvent
+  hideOpponent(): TEvent
+  screenShake(): TEvent
+  invertColors(): TEvent
+  toggleGrayScale(): TEvent
+  clearTextbox(): TEvent
+  text(text: string[], auto?: boolean): TEvent
+  effect(name: string, isPlayer: boolean): TEvent | undefined
+  sfx(name: string, wait?: boolean, panning?: number): TEvent
+  cry(id: string, wait: boolean, isPlayer: boolean): TEvent
   shader(
     isPlayer: boolean,
     name: string,
     steps: number,
     delay: number,
     reverse: boolean
-  ): Event
-  particle(t: string, ...args: (number | string | string[])[]): Event
-  anim(id: string, anim: AnimObject): Event
+  ): TEvent
+  particle(t: string, ...args: (number | string | string[])[]): TEvent
+  anim(id: string, anim: AnimObject): TEvent
 
   startMusic(music: Music): void
 }

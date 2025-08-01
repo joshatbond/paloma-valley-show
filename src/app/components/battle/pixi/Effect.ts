@@ -1,9 +1,10 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import { DeepEvent, Event, EventState, Events } from './Event'
+import { Events } from './Event'
 import * as Graphics from './Graphics'
 import * as Particle from './Particle'
 import View from './View'
+import { type DeepEvent, type EventState, type TEvent } from './types'
 import { lerp } from './util/math'
 
 const TACKLE_DUR = 6
@@ -15,8 +16,8 @@ const ATTACK_PLY_X = 36
 const ATTACK_PLY_Y = 72
 
 interface Effect {
-  ply?: (view: View) => Event
-  opp?: (view: View) => Event
+  ply?: (view: View) => TEvent
+  opp?: (view: View) => TEvent
 }
 
 /*
@@ -465,13 +466,13 @@ const slideOut = (speed: number, isPlayer: boolean) => (view: View) => {
             return view.getOpponentSprite().x >= Graphics.GAMEBOY_WIDTH
           },
         }
-  ) as Event
+  ) as TEvent
 }
 
 const flamethrower =
   (x1: number, y1: number, x2: number, y2: number) => (view: View) => {
     const DURATION = 230
-    const e: Event[] = []
+    const e: TEvent[] = []
     for (let i = 0; i < 8; i++) {
       const l = lerp(i / 8)
       const d = l(2, 8)
@@ -539,7 +540,7 @@ const earthquake = (view: View) =>
 
 const gigaDrain =
   (x1: number, y1: number, x2: number, y2: number) => (view: View) => {
-    const e: Event[] = []
+    const e: TEvent[] = []
     for (let i = 0; i < 8; i++) {
       const deltaX = (t: number) => lerp(t)(x1, x2) - x1
       const deltaY = (t: number) => lerp(t)(y1, y2) - y1
@@ -566,7 +567,7 @@ const burned =
       'FIRE_BIG_1',
       'FIRE_BIG_2',
     ]
-    const e: Event[] = []
+    const e: TEvent[] = []
     for (let i = 0; i < 4; i++) {
       const theta = (t: number) => Math.PI + (Math.PI * 2 * t) / 3
       e.push(
@@ -608,7 +609,7 @@ const longTwinkle = (x: number, y: number) => (view: View) =>
 
 const fireBlast =
   (x1: number, y1: number, x2: number, y2: number) => (view: View) => {
-    const e: Event[] = []
+    const e: TEvent[] = []
     const lifespan1 = 40 + 8
     const lifespan2 = 135
     const lifespan3 = 4 * 8
@@ -696,7 +697,7 @@ const fireBlast =
     return Events.flatten(e)
   }
 
-function sinkPly(view: View, times: number = 1, duration: number = 30): Event {
+function sinkPly(view: View, times: number = 1, duration: number = 30): TEvent {
   return {
     done: t => {
       view.getPlayerSprite().y =
@@ -708,7 +709,7 @@ function sinkPly(view: View, times: number = 1, duration: number = 30): Event {
   }
 }
 
-function sinkOpp(view: View, times: number = 1, duration: number = 30): Event {
+function sinkOpp(view: View, times: number = 1, duration: number = 30): TEvent {
   return {
     init: state => {
       state.object = view.getOpponentSprite().texture
@@ -734,7 +735,7 @@ function sinkOpp(view: View, times: number = 1, duration: number = 30): Event {
 function tacklePly(
   view: View,
   tex: Particle.AttackTexture = 'BOOM_BIG'
-): Event {
+): TEvent {
   return Events.flatten([
     {
       done: t => {
@@ -759,7 +760,7 @@ function tacklePly(
 function tackleOpp(
   view: View,
   tex: Particle.AttackTexture = 'BOOM_BIG'
-): Event {
+): TEvent {
   return Events.flatten([
     {
       done: t => {
@@ -781,7 +782,7 @@ function tackleOpp(
   ])
 }
 
-function thunderbolt(x: number, y: number): (view: View) => Event {
+function thunderbolt(x: number, y: number): (view: View) => TEvent {
   const THUNDER_FLICKER_1 = 2
   const THUNDER_FLICKER_2 = 8
   return view =>
@@ -950,7 +951,7 @@ function thunderbolt(x: number, y: number): (view: View) => Event {
     ])
 }
 
-function thunder(x: number, y: number): (view: View) => Event {
+function thunder(x: number, y: number): (view: View) => TEvent {
   const STRIKE = 12
   const LIFE = 42
   const area = (w: number) => (t: number) =>

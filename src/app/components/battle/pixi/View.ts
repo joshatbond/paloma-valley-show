@@ -3,7 +3,7 @@ import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
 import effects from './Effect'
-import { DeepEvent, Event, Events } from './Event'
+import { Events } from './Event'
 import * as Graphics from './Graphics'
 import * as Input from './Input'
 import * as Particle from './Particle'
@@ -12,18 +12,20 @@ import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
 import Textbox from './Textbox'
 import {
   type AnimObject,
+  type DeepEvent,
   type IView,
   type MemberObject,
   type Music,
   type Resource,
   type Status,
+  type TEvent,
 } from './types'
 
 function animate(
   sprite: PIXI.Sprite,
   textures: PIXI.Texture[],
   animData: AnimObject = { ref: [0], delay: [0] }
-): Event {
+): TEvent {
   const { ref, delay } = animData
   // I think this was to fix animation data I scraped?
   delay[delay.length - 1] = 0
@@ -235,7 +237,7 @@ class View implements IView {
     return this.fullStage
   }
 
-  invertColors(): Event {
+  invertColors(): TEvent {
     return {
       init: () => {
         this.matrixFilter.negative(true)
@@ -248,7 +250,7 @@ class View implements IView {
     }
   }
 
-  toggleGrayScale(): Event {
+  toggleGrayScale(): TEvent {
     return {
       init: () => {
         if (this.grayScale) {
@@ -261,7 +263,7 @@ class View implements IView {
     }
   }
 
-  darken(): Event {
+  darken(): TEvent {
     return {
       init: () => {
         this.matrixFilter.brightness(0.5, false)
@@ -270,7 +272,7 @@ class View implements IView {
     }
   }
 
-  brighten(): Event {
+  brighten(): TEvent {
     return {
       init: () => {
         this.matrixFilter.brightness(2, false)
@@ -279,7 +281,7 @@ class View implements IView {
     }
   }
 
-  resetMatrixFilter(): Event {
+  resetMatrixFilter(): TEvent {
     return {
       init: () => this.matrixFilter.reset(),
     }
@@ -316,27 +318,27 @@ class View implements IView {
     }
   }
 
-  showPlayerTeamStatus(hp: number[]): Event {
+  showPlayerTeamStatus(hp: number[]): TEvent {
     return {
       init: () => this.playerTeamStatus.show(hp),
     }
   }
 
-  showOpponentTeamStatus(hp: number[]): Event {
+  showOpponentTeamStatus(hp: number[]): TEvent {
     return {
       init: () => this.opponentTeamStatus.show(hp),
     }
   }
 
-  hidePlayerTeamStatus(): Event {
+  hidePlayerTeamStatus(): TEvent {
     return { init: () => this.playerTeamStatus.hide() }
   }
 
-  hideOpponentTeamStatus(): Event {
+  hideOpponentTeamStatus(): TEvent {
     return { init: () => this.opponentTeamStatus.hide() }
   }
 
-  showPlayerStats(member?: MemberObject): Event {
+  showPlayerStats(member?: MemberObject): TEvent {
     let showMember: MemberObject
     if (member == null) {
       if (this.playerMember == null) {
@@ -350,7 +352,7 @@ class View implements IView {
     return { init: () => this.playerStats.show(showMember, this.playerStatus) }
   }
 
-  showOpponentStats(member?: MemberObject): Event {
+  showOpponentStats(member?: MemberObject): TEvent {
     let showMember: MemberObject
     if (member == null) {
       if (this.opponentMember == null) {
@@ -366,11 +368,11 @@ class View implements IView {
     }
   }
 
-  hidePlayerStats(): Event {
+  hidePlayerStats(): TEvent {
     return { init: () => this.playerStats.hide() }
   }
 
-  hideOpponentStats(): Event {
+  hideOpponentStats(): TEvent {
     return { init: () => this.opponentStats.hide() }
   }
 
@@ -413,7 +415,7 @@ class View implements IView {
     return this.opponentStatus
   }
 
-  slideInTrainers(): Event {
+  slideInTrainers(): TEvent {
     const SLIDE_IN_LIMIT = 75
     return {
       init: () => {
@@ -432,7 +434,7 @@ class View implements IView {
     }
   }
 
-  slideInOpponentTrainer(): Event {
+  slideInOpponentTrainer(): TEvent {
     const OPP_SLIDE_OUT_LIMIT = 18
     return Events.flatten([
       {
@@ -449,7 +451,7 @@ class View implements IView {
     ])
   }
 
-  slideOutPlayerTrainer(): Event {
+  slideOutPlayerTrainer(): TEvent {
     const PLY_SLIDE_OUT_LIMIT = 16
     return Events.flatten([
       {
@@ -464,7 +466,7 @@ class View implements IView {
     ])
   }
 
-  slideOutOpponentTrainer(): Event {
+  slideOutOpponentTrainer(): TEvent {
     const OPP_SLIDE_OUT_LIMIT = 18
     return Events.flatten([
       {
@@ -481,19 +483,19 @@ class View implements IView {
     ])
   }
 
-  showPlayer(): Event {
+  showPlayer(): TEvent {
     return { init: () => this.stage.addChild(this.memberSprites.player) }
   }
 
-  showOpponent(): Event {
+  showOpponent(): TEvent {
     return { init: () => this.stage.addChild(this.memberSprites.opponent) }
   }
 
-  hidePlayer(): Event {
+  hidePlayer(): TEvent {
     return { init: () => this.stage.removeChild(this.memberSprites.player) }
   }
 
-  hideOpponent(): Event {
+  hideOpponent(): TEvent {
     return { init: () => this.stage.removeChild(this.memberSprites.opponent) }
   }
 
@@ -524,14 +526,14 @@ class View implements IView {
   }
 
   /* Old-style particle rendering. Try to avoid this. */
-  particleV1(particle: (stage: PIXI.Container) => Particle.Particle): Event {
+  particleV1(particle: (stage: PIXI.Container) => Particle.Particle): TEvent {
     return { init: () => this.particles.push(particle(this.particleStage)) }
   }
 
   particle(
     t: string,
     ...args: (number | Particle.AttackTexture | Particle.AttackTexture[])[]
-  ): Event {
+  ): TEvent {
     const Type: new (
       stage: PIXI.Container,
       ...args: any[]
@@ -545,7 +547,7 @@ class View implements IView {
     }
   }
 
-  saveParticle(t: string, ...args: any[]): Event {
+  saveParticle(t: string, ...args: any[]): TEvent {
     const Type: new (
       stage: PIXI.Container,
       ...args: any[]
@@ -559,7 +561,7 @@ class View implements IView {
     }
   }
 
-  clearParticles(): Event {
+  clearParticles(): TEvent {
     return {
       init: () => {
         for (const p of this.particles) p.die()
@@ -567,11 +569,11 @@ class View implements IView {
     }
   }
 
-  static waitForParticle(): Event {
+  static waitForParticle(): TEvent {
     return { done: (_, state) => (state.object as Particle.Particle).dead }
   }
 
-  effect(name: string, isPlayer: boolean): Event | undefined {
+  effect(name: string, isPlayer: boolean): TEvent | undefined {
     const anim = effects[name]
     if (isPlayer) {
       return anim?.ply && anim.ply(this)
@@ -584,7 +586,7 @@ class View implements IView {
     delay: number = 4,
     magnitude: number = 2,
     y: boolean = true
-  ): Event {
+  ): TEvent {
     return Events.flatten([
       {
         done: t => {
@@ -608,7 +610,7 @@ class View implements IView {
     name: string | undefined,
     wait: boolean = false,
     panning: number = 0
-  ): Event {
+  ): TEvent {
     if (name == null) return {}
     return {
       init: state => {
@@ -644,7 +646,7 @@ class View implements IView {
     }
   }
 
-  cry(id: string, wait: boolean, isPlayer: boolean): Event {
+  cry(id: string, wait: boolean, isPlayer: boolean): TEvent {
     if (this.debug) {
       console.log(`View.cry: id=${id} wait=${wait} isPlayer=${isPlayer}`)
     }
@@ -680,7 +682,7 @@ class View implements IView {
     this.stage.filters = this.stage.filters?.filter(f => f !== filter) ?? null
   }
 
-  shaderBothMembers(name: string, steps: number): Event {
+  shaderBothMembers(name: string, steps: number): TEvent {
     const playerSprite = this.memberSprites.player
     const opponentSprite = this.memberSprites.opponent
     return Events.flatten([
@@ -716,7 +718,7 @@ class View implements IView {
     steps: number,
     delay: number,
     reverse: boolean = false
-  ): Event {
+  ): TEvent {
     const sprite = this.getMemberSprite(isPlayer)
     const script: DeepEvent = [
       {
@@ -752,7 +754,7 @@ class View implements IView {
     return this.textbox
   }
 
-  clearTextbox(): Event {
+  clearTextbox(): TEvent {
     return { init: () => this.textbox.clear() }
   }
 
@@ -763,7 +765,7 @@ class View implements IView {
     }
   }
 
-  anim(id: string, anim: AnimObject): Event {
+  anim(id: string, anim: AnimObject): TEvent {
     return animate(this.getOpponentSprite(), this.resources.getFront(id), anim)
   }
 
@@ -775,7 +777,7 @@ class View implements IView {
     return this.memberSprites.opponent
   }
 
-  public screenWiggle(): Event {
+  public screenWiggle(): TEvent {
     return Events.flatten([
       {
         done: t => {

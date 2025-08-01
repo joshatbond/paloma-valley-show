@@ -1,32 +1,7 @@
-import { type Status } from './types'
+import { DeepEvent, EventState, type Status, type TEvent } from './types'
 
-interface EventState {
-  // used if a certain event has a flag for waiting
-  waiting: boolean
-  // used for health bar changes
-  hpStart: number
-  hpEnd: number
-  // used to wait until an event ends
-  duration: number
-  // store any reference here (NOT TYPE-CHECKED!)
-  object: any
-  // remember IDs for player/opponent
-  playerId?: string
-  opponentId?: string
-}
-
-interface Event {
-  init?: (() => void) | ((state: EventState) => void)
-  done?: (tick: number, state: EventState) => boolean
-  next?: Event
-  // reference to last event, this allows O(1) appending to list
-  last?: Event
-}
-
-type DeepEvent = (() => void) | Event | DeepEvent[] | undefined
-
-namespace Events {
-  export function append(event: Event, next?: Event) {
+export namespace Events {
+  export function append(event: TEvent, next?: TEvent) {
     let evt = event.last || event
     while (evt.next != null) {
       evt = evt.next
@@ -35,13 +10,13 @@ namespace Events {
     event.last = next?.last || event.last || next
   }
 
-  export function flatten(script: DeepEvent): Event {
+  export function flatten(script: DeepEvent): TEvent {
     if (script == null) return {}
     if (typeof script === 'function') {
       return { init: script as () => void }
     }
     if (!Array.isArray(script)) {
-      return script as Event
+      return script as TEvent
     }
     const events = (script as DeepEvent[]).map(flatten)
     if (events.length === 0) return {}
@@ -51,7 +26,7 @@ namespace Events {
     return events[0]!
   }
 
-  export function wait(frames: number): Event {
+  export function wait(frames: number): TEvent {
     return { done: t => t >= frames }
   }
 
@@ -59,7 +34,7 @@ namespace Events {
     status: Status,
     hpEnd: number,
     skipAnimation?: boolean
-  ): Event {
+  ): TEvent {
     if (skipAnimation) {
       return {
         init: () => {
@@ -83,8 +58,8 @@ namespace Events {
   }
 }
 
-class EventDriver {
-  private current?: Event
+export class EventDriver {
+  private current?: TEvent
 
   // count number of ticks passed in current event
   private ticks: number = 0
@@ -115,7 +90,7 @@ class EventDriver {
     }
   }
 
-  setEvent(event?: Event) {
+  setEvent(event?: TEvent) {
     this.current = event
     this.ticks = 0
     if (event?.init != null) {
@@ -123,7 +98,7 @@ class EventDriver {
     }
   }
 
-  append(event?: Event) {
+  append(event?: TEvent) {
     if (this.current == null) {
       this.setEvent(event)
     } else {
@@ -135,9 +110,7 @@ class EventDriver {
     return this.current != null
   }
 
-  force(event: Event) {
+  force(event: TEvent) {
     event.init!(this.state)
   }
 }
-
-export { EventDriver, type EventState, type Event, type DeepEvent, Events }
