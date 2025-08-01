@@ -15,7 +15,6 @@ import {
 } from '@pkmn/sim'
 import { ObjectReadWriteStream } from '@pkmn/streams'
 
-import { BattleInfo, FighterObject, MemberObject } from './BattleObjects'
 import BattleScript from './BattleScript'
 import { EventDriver, Events } from './Event'
 import IGame from './IGame'
@@ -31,6 +30,7 @@ import {
   TeamView,
 } from './Menu'
 import View from './View'
+import { type BattleInfo, type FighterObject, type MemberObject } from './types'
 
 function buildPSGender(gender: 'male' | 'female' | 'none'): string {
   switch (gender) {

@@ -2,7 +2,6 @@ import { ColorMatrixFilter } from '@pixi/filter-color-matrix'
 import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
-import { AnimObject, MemberObject } from './BattleObjects'
 import effects from './Effect'
 import { DeepEvent, Event, Events } from './Event'
 import * as Graphics from './Graphics'
@@ -14,6 +13,7 @@ import { HPStatsView, StatsView } from './StatsView'
 import Status from './Status'
 import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
 import Textbox from './Textbox'
+import { type AnimObject, type MemberObject } from './types'
 
 function animate(
   sprite: PIXI.Sprite,

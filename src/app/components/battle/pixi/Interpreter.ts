@@ -1,9 +1,9 @@
-import { BattleInfo, MemberObject } from './BattleObjects'
 import { DeepEvent, Event, Events } from './Event'
 import IGame from './IGame'
 import IView from './IView'
 import moveStats from './MoveInfo'
 import { Script, Scripts } from './Script'
+import { type BattleInfo, type MemberObject } from './types'
 
 interface MembersOut {
   player?: MemberObject

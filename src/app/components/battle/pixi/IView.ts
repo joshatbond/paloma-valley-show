@@ -1,7 +1,7 @@
-import { AnimObject, MemberObject } from './BattleObjects'
 import { Event } from './Event'
 import { IResources, Music } from './IResources'
 import Status from './Status'
+import { type AnimObject, type MemberObject } from './types'
 
 interface IView {
   resources: IResources

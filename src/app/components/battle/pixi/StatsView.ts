@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import { MemberObject } from './BattleObjects'
 import * as Graphics from './Graphics'
 import Status from './Status'
 import Text from './Text'
+import { type MemberObject } from './types'
 
 const levelTexture = Graphics.charTex(12, 6)
 const maleTexture = Graphics.charTex(14, 6)
