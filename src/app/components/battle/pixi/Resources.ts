@@ -23,7 +23,7 @@ export default class Resources implements Resource {
   private readonly demoFrontTexture: PIXI.Texture
   private readonly demoBackTexture: PIXI.Texture
 
-  private readonly loader = Context.createPIXILoader()
+  private readonly loader = new PIXI.Loader()
 
   private filters: Map<string, PIXI.Filter> = new Map()
   private shaderNames: Set<string> = new Set()
