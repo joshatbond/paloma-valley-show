@@ -65,6 +65,9 @@ const FONT_STR =
   'ÄÖÜäöü          ' +
   "'  -?!.&é   * /," +
   '$0123456789     '
+/**
+ * An object containing font textures
+ */
 export const font = Array(FONT_STR.length)
   .fill(0)
   .map((_, i) => [FONT_STR[i], i % 16, Math.floor(i / 16)] as const)
