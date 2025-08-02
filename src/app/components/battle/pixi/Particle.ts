@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js-legacy'
 
 import * as Graphics from './Graphics'
 import { textureOpen } from './assets/textures'
+import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from './constants'
 import { Ease } from './util/math'
 
 const openSheet = Graphics.tileHorizontal(textureOpen, 40, 40, 4)
@@ -582,8 +583,8 @@ class Note extends Particle {
     if (
       this.x < 0 ||
       this.y < 0 ||
-      this.x >= Graphics.GAMEBOY_WIDTH ||
-      this.y >= Graphics.GAMEBOY_HEIGHT
+      this.x >= GAMEBOY_WIDTH ||
+      this.y >= GAMEBOY_HEIGHT
     )
       this.die()
   }

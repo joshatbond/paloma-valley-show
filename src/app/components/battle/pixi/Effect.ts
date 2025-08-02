@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js-legacy'
 
 import { Events } from './Event'
-import * as Graphics from './Graphics'
 import * as Particle from './Particle'
 import View from './View'
+import { GAMEBOY_WIDTH, OPPONENT, PLAYER } from './constants'
 import { type DeepEvent, type EventState, type TEvent } from './types'
 import { lerp } from './util/math'
 
@@ -375,8 +375,8 @@ const WIGGLE = {
   ply: (view: View) => ({
     done: (t: number) => {
       const offset = Math.round(Math.sin((Math.PI * t) / (40.0 / 15.0)) * 1.5)
-      view.getOpponentSprite().x = Graphics.OPPONENT_SPRITE_X + offset
-      view.getOpponentStatsStage().x = Graphics.OPPONENT_STATS_X + offset
+      view.getOpponentSprite().x = OPPONENT.SPRITE.X + offset
+      view.getOpponentStatsStage().x = OPPONENT.STATS.X + offset
       return t >= 40
     },
   }),
@@ -463,7 +463,7 @@ const slideOut = (speed: number, isPlayer: boolean) => (view: View) => {
       : {
           done: _ => {
             view.getOpponentSprite().x += speed
-            return view.getOpponentSprite().x >= Graphics.GAMEBOY_WIDTH
+            return view.getOpponentSprite().x >= GAMEBOY_WIDTH
           },
         }
   ) as TEvent
@@ -545,8 +545,7 @@ const gigaDrain =
       const deltaX = (t: number) => lerp(t)(x1, x2) - x1
       const deltaY = (t: number) => lerp(t)(y1, y2) - y1
       const theta = (t: number) => 2 * Math.PI * 3 * t + (2 * Math.PI * i) / 8
-      const r = (t: number) =>
-        (Math.sin(1 * Math.PI * t) * Graphics.GAMEBOY_WIDTH) / 2
+      const r = (t: number) => (Math.sin(1 * Math.PI * t) * GAMEBOY_WIDTH) / 2
       e.push(
         view.particleV1(stage =>
           new Particle.Static(stage, x1, y1, 'BUBBLE_1', 60 * 3)
@@ -701,9 +700,7 @@ function sinkPly(view: View, times: number = 1, duration: number = 30): TEvent {
   return {
     done: t => {
       view.getPlayerSprite().y =
-        Graphics.PLAYER_SPRITE_Y +
-        16 -
-        16 * Math.cos(2 * Math.PI * (t / duration))
+        PLAYER.SPRITE.Y + 16 - 16 * Math.cos(2 * Math.PI * (t / duration))
       return t >= duration * times
     },
   }
@@ -722,11 +719,11 @@ function sinkOpp(view: View, times: number = 1, duration: number = 30): TEvent {
         new PIXI.Rectangle(
           0,
           0,
-          Graphics.OPPONENT_SPRITE_WIDTH,
-          Graphics.OPPONENT_SPRITE_HEIGHT - offset
+          OPPONENT.SPRITE.WIDTH,
+          OPPONENT.SPRITE.HEIGHT - offset
         )
       )
-      view.getOpponentSprite().y = Graphics.OPPONENT_SPRITE_Y + offset
+      view.getOpponentSprite().y = OPPONENT.SPRITE.Y + offset
       return t >= duration * times
     },
   }
@@ -740,8 +737,8 @@ function tacklePly(
     {
       done: t => {
         view.getPlayerSprite().x =
-          (1 - t / TACKLE_DUR) * Graphics.PLAYER_SPRITE_X +
-          (t / TACKLE_DUR) * (Graphics.PLAYER_SPRITE_X + 12)
+          (1 - t / TACKLE_DUR) * PLAYER.SPRITE.X +
+          (t / TACKLE_DUR) * (PLAYER.SPRITE.X + 12)
         return t >= TACKLE_DUR
       },
     },
@@ -749,8 +746,8 @@ function tacklePly(
     {
       done: t => {
         view.getPlayerSprite().x =
-          (t / TACKLE_DUR) * Graphics.PLAYER_SPRITE_X +
-          (1 - t / TACKLE_DUR) * (Graphics.PLAYER_SPRITE_X + 12)
+          (t / TACKLE_DUR) * PLAYER.SPRITE.X +
+          (1 - t / TACKLE_DUR) * (PLAYER.SPRITE.X + 12)
         return t >= TACKLE_DUR
       },
     },
@@ -765,8 +762,8 @@ function tackleOpp(
     {
       done: t => {
         view.getOpponentSprite().x =
-          (1 - t / TACKLE_DUR) * Graphics.OPPONENT_SPRITE_X +
-          (t / TACKLE_DUR) * (Graphics.OPPONENT_SPRITE_X - 12)
+          (1 - t / TACKLE_DUR) * OPPONENT.SPRITE.X +
+          (t / TACKLE_DUR) * (OPPONENT.SPRITE.X - 12)
         return t >= TACKLE_DUR
       },
     },
@@ -774,8 +771,8 @@ function tackleOpp(
     {
       done: t => {
         view.getOpponentSprite().x =
-          (t / TACKLE_DUR) * Graphics.OPPONENT_SPRITE_X +
-          (1 - t / TACKLE_DUR) * (Graphics.OPPONENT_SPRITE_X - 12)
+          (t / TACKLE_DUR) * OPPONENT.SPRITE.X +
+          (1 - t / TACKLE_DUR) * (OPPONENT.SPRITE.X - 12)
         return t >= TACKLE_DUR
       },
     },
@@ -1126,9 +1123,7 @@ const weather =
     const lifespan = 16
     for (let i = 0; i < count; i++) {
       const dx = Math.random() * spread * 2 - spread
-      const x =
-        Math.random() * (Graphics.GAMEBOY_WIDTH * 1.5) -
-        Graphics.GAMEBOY_WIDTH * 0.5
+      const x = Math.random() * (GAMEBOY_WIDTH * 1.5) - GAMEBOY_WIDTH * 0.5
       evt.push(
         view.particleV1(stage =>
           new Particle.Static(stage, x, 0, texture, lifespan)
@@ -1553,7 +1548,7 @@ const effects: { [attack: string]: Effect } = {
         {
           done: t => {
             view.getPlayerSprite().x =
-              Graphics.PLAYER_SPRITE_X + Math.sin((4 * Math.PI * t) / 36) * 8
+              PLAYER.SPRITE.X + Math.sin((4 * Math.PI * t) / 36) * 8
             return t >= 36
           },
         },
@@ -1568,7 +1563,7 @@ const effects: { [attack: string]: Effect } = {
         {
           done: t => {
             view.getOpponentSprite().x =
-              Graphics.OPPONENT_SPRITE_X + Math.sin((4 * Math.PI * t) / 36) * 8
+              OPPONENT.SPRITE.X + Math.sin((4 * Math.PI * t) / 36) * 8
             return t >= 36
           },
         },
@@ -1610,14 +1605,14 @@ const effects: { [attack: string]: Effect } = {
         {
           done: t => {
             view.getPlayerSprite().x =
-              Graphics.PLAYER_SPRITE_X + lerp(t / TACKLE_DUR)(0, 12)
+              PLAYER.SPRITE.X + lerp(t / TACKLE_DUR)(0, 12)
             return t >= TACKLE_DUR
           },
         },
         {
           done: t => {
             view.getPlayerSprite().x =
-              Graphics.PLAYER_SPRITE_X + lerp(t / TACKLE_DUR)(12, 0)
+              PLAYER.SPRITE.X + lerp(t / TACKLE_DUR)(12, 0)
             return t >= TACKLE_DUR
           },
         },
@@ -1638,14 +1633,14 @@ const effects: { [attack: string]: Effect } = {
         {
           done: t => {
             view.getOpponentSprite().x =
-              Graphics.OPPONENT_SPRITE_X + lerp(t / TACKLE_DUR)(0, -12)
+              OPPONENT.SPRITE.X + lerp(t / TACKLE_DUR)(0, -12)
             return t >= TACKLE_DUR
           },
         },
         {
           done: t => {
             view.getOpponentSprite().x =
-              Graphics.OPPONENT_SPRITE_X + lerp(t / TACKLE_DUR)(-12, 0)
+              OPPONENT.SPRITE.X + lerp(t / TACKLE_DUR)(-12, 0)
             return t >= TACKLE_DUR
           },
         },
@@ -1731,7 +1726,7 @@ const effects: { [attack: string]: Effect } = {
     opp: view => ({
       done: t => {
         view.getOpponentSprite().x =
-          Graphics.OPPONENT_SPRITE_X +
+          OPPONENT.SPRITE.X +
           Math.floor(7 * Math.sin((2 * Math.PI * t * 2) / 30))
         return t >= 30
       },
@@ -1739,8 +1734,7 @@ const effects: { [attack: string]: Effect } = {
     ply: view => ({
       done: t => {
         view.getPlayerSprite().x =
-          Graphics.PLAYER_SPRITE_X +
-          Math.floor(7 * Math.sin((2 * Math.PI * t * 2) / 30))
+          PLAYER.SPRITE.X + Math.floor(7 * Math.sin((2 * Math.PI * t * 2) / 30))
         return t >= 30
       },
     }),
@@ -2086,8 +2080,8 @@ const effects: { [attack: string]: Effect } = {
         {
           init: (state?: EventState) => {
             view.setPlayerTexture(state!.playerId)
-            view.getPlayerSprite().x = Graphics.PLAYER_SPRITE_X
-            view.getPlayerSprite().y = Graphics.PLAYER_SPRITE_Y
+            view.getPlayerSprite().x = PLAYER.SPRITE.X
+            view.getPlayerSprite().y = PLAYER.SPRITE.Y
           },
         },
         Events.wait(15),
@@ -2097,15 +2091,15 @@ const effects: { [attack: string]: Effect } = {
         {
           done: t => {
             view.getOpponentSprite().x += 4
-            return view.getOpponentSprite().x >= Graphics.GAMEBOY_WIDTH
+            return view.getOpponentSprite().x >= GAMEBOY_WIDTH
           },
         },
         Events.wait(30),
         {
           init: state => {
             view.setOpponentTexture(state.opponentId)
-            view.getOpponentSprite().x = Graphics.OPPONENT_SPRITE_X
-            view.getOpponentSprite().y = Graphics.OPPONENT_SPRITE_Y
+            view.getOpponentSprite().x = OPPONENT.SPRITE.X
+            view.getOpponentSprite().y = OPPONENT.SPRITE.Y
           },
         },
         Events.wait(15),
@@ -2171,8 +2165,8 @@ const effects: { [attack: string]: Effect } = {
         slideOut(2, false)(view),
         view.hideOpponent(),
         () => {
-          view.getOpponentSprite().x = Graphics.OPPONENT_SPRITE_X
-          view.getOpponentSprite().y = Graphics.OPPONENT_SPRITE_Y
+          view.getOpponentSprite().x = OPPONENT.SPRITE.X
+          view.getOpponentSprite().y = OPPONENT.SPRITE.Y
         },
       ]),
     opp: view =>
@@ -2181,8 +2175,8 @@ const effects: { [attack: string]: Effect } = {
         slideOut(2, true)(view),
         view.hidePlayer(),
         () => {
-          view.getPlayerSprite().x = Graphics.PLAYER_SPRITE_X
-          view.getPlayerSprite().y = Graphics.PLAYER_SPRITE_Y
+          view.getPlayerSprite().x = PLAYER.SPRITE.X
+          view.getPlayerSprite().y = PLAYER.SPRITE.Y
         },
       ]),
   },

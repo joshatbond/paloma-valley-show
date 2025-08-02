@@ -7,20 +7,6 @@ import {
   textureTeamStatus,
 } from './assets/textures'
 
-const GAMEBOY_WIDTH = 160
-const GAMEBOY_HEIGHT = 144
-
-const OPPONENT_SPRITE_WIDTH = 56
-const OPPONENT_SPRITE_HEIGHT = 56
-
-const PLAYER_SPRITE_X = 12
-const PLAYER_SPRITE_Y = 40
-
-const OPPONENT_SPRITE_X = 96
-const OPPONENT_SPRITE_Y = 0
-
-const OPPONENT_STATS_X = 8
-
 /* Create font textures from spritesheet. */
 
 const FONT_STR =
@@ -85,14 +71,6 @@ for (let i = 0; i < 37; i++) {
   ])
 }
 
-function tileHorizontal(tex: PIXI.Texture, w: number, h: number, n: number) {
-  const list = []
-  for (let i = 0; i < n; i++) {
-    list.push(new PIXI.Texture(tex as any, new PIXI.Rectangle(i * w, 0, w, h)))
-  }
-  return list
-}
-
 const removeAlpha = new PIXI.Filter(
   undefined,
   `
@@ -109,21 +87,4 @@ const removeAlpha = new PIXI.Filter(
 `
 )
 
-export {
-  GAMEBOY_WIDTH,
-  GAMEBOY_HEIGHT,
-  PLAYER_SPRITE_X,
-  PLAYER_SPRITE_Y,
-  OPPONENT_SPRITE_X,
-  OPPONENT_SPRITE_Y,
-  OPPONENT_STATS_X,
-  charTex,
-  font,
-  teamStatus,
-  icons,
-  tileHorizontal,
-  attack,
-  OPPONENT_SPRITE_WIDTH,
-  OPPONENT_SPRITE_HEIGHT,
-  removeAlpha,
-}
+export { charTex, font, teamStatus, icons, attack, removeAlpha }

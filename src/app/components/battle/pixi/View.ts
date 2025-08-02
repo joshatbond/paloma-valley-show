@@ -11,6 +11,7 @@ import { HPStatsView, StatsView } from './StatsView'
 import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
 import Textbox from './Textbox'
 import { texturePlayerStats, textureStatsWindow } from './assets/textures'
+import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH, OPPONENT, PLAYER } from './constants'
 import {
   type AnimObject,
   type DeepEvent,
@@ -157,11 +158,11 @@ class View implements IView {
     this.memberSprites.player.filters = []
     this.memberSprites.opponent.filters = [Graphics.removeAlpha]
 
-    this.memberSprites.player.x = Graphics.PLAYER_SPRITE_X
-    this.memberSprites.player.y = Graphics.PLAYER_SPRITE_Y
+    this.memberSprites.player.x = PLAYER.SPRITE.X
+    this.memberSprites.player.y = PLAYER.SPRITE.Y
 
-    this.memberSprites.opponent.x = Graphics.OPPONENT_SPRITE_X
-    this.memberSprites.opponent.y = Graphics.OPPONENT_SPRITE_Y
+    this.memberSprites.opponent.x = OPPONENT.SPRITE.X
+    this.memberSprites.opponent.y = OPPONENT.SPRITE.Y
 
     this.fullStage.addChild(this.textboxStage)
     this.fullStage.addChild(this.stage)
@@ -171,8 +172,8 @@ class View implements IView {
     this.stage.filterArea = new PIXI.Rectangle(
       0,
       0,
-      Graphics.GAMEBOY_WIDTH,
-      Graphics.GAMEBOY_HEIGHT
+      GAMEBOY_WIDTH,
+      GAMEBOY_HEIGHT
     )
     this.stage.sortableChildren = true
     this.fullStage.sortableChildren = true
@@ -427,9 +428,9 @@ class View implements IView {
       done: t => {
         const progress = t / SLIDE_IN_LIMIT
         this.trainerSprites.player.x =
-          (1.0 - progress) * Graphics.GAMEBOY_WIDTH + progress * 16
+          (1.0 - progress) * GAMEBOY_WIDTH + progress * 16
         this.trainerSprites.opponent.x =
-          (1.0 - progress) * -56 + progress * Graphics.OPPONENT_SPRITE_X
+          (1.0 - progress) * -56 + progress * OPPONENT.SPRITE.X
         return t >= SLIDE_IN_LIMIT
       },
     }
@@ -443,8 +444,7 @@ class View implements IView {
         done: t => {
           const progress = t / OPP_SLIDE_OUT_LIMIT
           const x =
-            progress * Graphics.OPPONENT_SPRITE_X +
-            (1.0 - progress) * Graphics.GAMEBOY_WIDTH
+            progress * OPPONENT.SPRITE.X + (1.0 - progress) * GAMEBOY_WIDTH
           this.trainerSprites.opponent.x = Math.floor(x / 8) * 8
           return t >= OPP_SLIDE_OUT_LIMIT
         },
@@ -474,8 +474,7 @@ class View implements IView {
         done: t => {
           const progress = t / OPP_SLIDE_OUT_LIMIT
           const x =
-            (1.0 - progress) * Graphics.OPPONENT_SPRITE_X +
-            progress * Graphics.GAMEBOY_WIDTH
+            (1.0 - progress) * OPPONENT.SPRITE.X + progress * GAMEBOY_WIDTH
           this.trainerSprites.opponent.x = Math.floor(x / 8) * 8
           return t >= OPP_SLIDE_OUT_LIMIT
         },

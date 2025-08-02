@@ -4,6 +4,7 @@ import * as PIXI from 'pixi.js-legacy'
 import * as Graphics from './Graphics'
 import * as Input from './Input.js'
 import { textureTextbox } from './assets/textures'
+import { GAMEBOY_HEIGHT } from './constants'
 
 const APOSTROPHE_LETTERS = ['d', 'l', 'm', 'r', 's', 't', 'v']
 
@@ -88,7 +89,7 @@ class Textbox {
 
   update() {
     //console.log(this.state, this.ticks);
-    textboxSprite.y = Graphics.GAMEBOY_HEIGHT - textboxSprite.height
+    textboxSprite.y = GAMEBOY_HEIGHT - textboxSprite.height
     contArrowSprite.x = textboxSprite.x + 18 * 8
     contArrowSprite.y = textboxSprite.y + 5 * 8
     contArrowSprite.visible = this.showArrow

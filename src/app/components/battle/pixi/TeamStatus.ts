@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js-legacy'
 
 import * as Graphics from './Graphics'
 import { textureStatsWindow } from './assets/textures'
+import { GAMEBOY_WIDTH } from './constants'
 
 class TeamStatus {
   x: number
@@ -52,7 +53,7 @@ class TeamStatus {
 
 class PlayerTeamStatus extends TeamStatus {
   constructor(stage: PIXI.Container) {
-    super(stage, Graphics.GAMEBOY_WIDTH - 8, 80, true)
+    super(stage, GAMEBOY_WIDTH - 8, 80, true)
   }
 }
 

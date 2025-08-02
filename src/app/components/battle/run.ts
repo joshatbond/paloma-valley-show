@@ -1,10 +1,10 @@
 import * as PIXI from 'pixi.js-legacy'
 
 import GameV2 from './pixi/GameV2'
-import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from './pixi/Graphics'
 import * as Input from './pixi/Input'
 import Resources from './pixi/Resources'
 import View from './pixi/View'
+import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from './pixi/constants'
 import {
   type BattleInfo,
   type MemberObject,
@@ -41,12 +41,10 @@ function calculateDimensions(elementId: string) {
   ) {
     scale -= 0.5
   }
-  console.log(scale)
   return { height: GAMEBOY_HEIGHT * scale, width: GAMEBOY_WIDTH * scale }
 }
 function scaffoldApp(elementId: string) {
   const { width, height } = calculateDimensions(elementId)
-  console.log(width, height)
   app = new PIXI.Application({ width, height, backgroundColor: 0xf8f8f8 })
   renderTexture = PIXI.RenderTexture.create({
     width: GAMEBOY_WIDTH,

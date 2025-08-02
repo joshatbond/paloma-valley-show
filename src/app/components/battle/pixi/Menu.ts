@@ -14,6 +14,7 @@ import {
   textureMoves,
   textureSwitchStats,
 } from './assets/textures'
+import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from './constants'
 import { type DeepEvent } from './types'
 
 const arrowTexture = Graphics.charTex(10, 5)
@@ -49,9 +50,7 @@ abstract class Menu {
     this.arrowSpr = new PIXI.Sprite(arrowTexture)
     this.reset(trans, arrowPos, onStateChange)
     this.states = arrowPos.length
-    const scale = Math.floor(
-      game.view.app.renderer.width / Graphics.GAMEBOY_WIDTH
-    )
+    const scale = Math.floor(game.view.app.renderer.width / GAMEBOY_WIDTH)
     let i = 0
     for (const area of touchAreas) {
       if (area == null) continue
@@ -666,8 +665,8 @@ abstract class TeamView extends Menu {
     this.message = message
 
     this.messageSpr = new PIXI.Sprite(textureMessage)
-    this.messageSpr.y = Graphics.GAMEBOY_HEIGHT - 32
-    this.messageTxt = new Text(this.stage, 8, Graphics.GAMEBOY_HEIGHT - 16)
+    this.messageSpr.y = GAMEBOY_HEIGHT - 32
+    this.messageTxt = new Text(this.stage, 8, GAMEBOY_HEIGHT - 16)
 
     this.canCancel = canCancel
     this.state = 0
