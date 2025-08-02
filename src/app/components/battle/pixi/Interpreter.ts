@@ -1,6 +1,6 @@
 import { Events } from './Event'
-import moveStats from './MoveInfo'
 import { Script, Scripts } from './Script'
+import { moveInfo } from './constants/moves'
 import {
   type BattleInfo,
   DeepEvent,
@@ -240,11 +240,11 @@ class Interpreter {
     if (member == null) {
       throw new Error('Interpreter.moveSfx: member is null')
     }
-    const move = moveStats[moveName]
+    const move = moveInfo[moveName]
     if (move == null) {
       throw new Error(`Interpreter.moveSfx: move ${moveName} does not exist`)
     }
-    if (move.noSfx) {
+    if ('noSfx' in move) {
       return {}
     }
     const sfx = move?.sfx

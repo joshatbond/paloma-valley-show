@@ -1,5 +1,5 @@
-import moveInfo from './MoveInfo'
 import { Script, Scripts } from './Script'
+import { moveInfo } from './constants/moves'
 import { type Status } from './types'
 import { type BattleInfo, type MemberObject } from './types'
 
@@ -371,7 +371,10 @@ class BattleScript {
           // move, consider that a failure.
           (this.stream[0][1] === 'move' && this.stream[0][2] !== action[2])
 
-    const text = (moveInfo as any)[actualMove]?.text || `used ${move}`
+    const text =
+      'text' in moveInfo[actualMove]
+        ? (moveInfo[actualMove].text as string)
+        : `used ${move}`
     return [
       { do: 'TEXT', text: [name, `${text}!`], auto: true },
       miss
