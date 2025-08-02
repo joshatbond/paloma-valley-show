@@ -1,7 +1,6 @@
 import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
-import * as Graphics from './Graphics'
 import * as Input from './Input.js'
 import { charTex, font, textureTextbox } from './assets/textures'
 import { GAMEBOY_HEIGHT } from './constants'

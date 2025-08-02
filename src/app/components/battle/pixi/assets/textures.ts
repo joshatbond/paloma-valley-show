@@ -89,6 +89,17 @@ export const font = Array(FONT_STR.length)
     {} as Record<string, PIXI.Texture>
   )
 
+const iconBase = textureFrom(textureIcon)
+/**
+ * A list containing icon frame textures
+ */
+export const icons = new Array(37)
+  .fill(0)
+  .map(
+    (_, i) =>
+      [iconBase(0, i * 16, 16, 16), iconBase(16, i * 16, 16, 16)] as const
+  )
+
 const teamStatusTexture = textureFrom(textureTeamStatus)
 /**
  * A list of textures representing the textures for a team member status ball

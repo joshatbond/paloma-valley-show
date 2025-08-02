@@ -4,12 +4,12 @@ import * as PIXI from 'pixi.js-legacy'
 
 import { Events } from './Event'
 import GameV2 from './GameV2'
-import * as Graphics from './Graphics'
 import * as Input from './Input.js'
 import { HPStatsView } from './StatsView'
 import Text from './Text'
 import {
   charTex,
+  icons,
   textureMenu,
   textureMessage,
   textureMoves,
@@ -704,7 +704,7 @@ abstract class TeamView extends Menu {
         condition: member.status,
       })
 
-      const iconGraphic = Graphics.icons[icon]
+      const iconGraphic = icons[icon]
       if (iconGraphic == null) {
         throw new Error(`TeamView.generateGraphics: bad icon, icon=${icon}`)
       }
@@ -769,7 +769,7 @@ abstract class TeamView extends Menu {
         i * 16 +
         (this.state === i && this.game.getFrames() % jtime < jswitch ? -2 : 0)
 
-      const iconGraphic = Graphics.icons[icon]
+      const iconGraphic = icons[icon]
       if (iconGraphic == null) {
         throw new Error(`TeamView.update: bad icon, icon=${icon}`)
       }

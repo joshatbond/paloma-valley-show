@@ -1,21 +1,5 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import { textureIcon } from './assets/textures'
-
-/* Create textures for icon frames. */
-
-const icons: [PIXI.Texture, PIXI.Texture][] = []
-
-for (let i = 0; i < 37; i++) {
-  icons.push([
-    new PIXI.Texture(textureIcon as any, new PIXI.Rectangle(0, i * 16, 16, 16)),
-    new PIXI.Texture(
-      textureIcon as any,
-      new PIXI.Rectangle(16, i * 16, 16, 16)
-    ),
-  ])
-}
-
 const removeAlpha = new PIXI.Filter(
   undefined,
   `
@@ -32,4 +16,4 @@ const removeAlpha = new PIXI.Filter(
 `
 )
 
-export { icons, removeAlpha }
+export { removeAlpha }

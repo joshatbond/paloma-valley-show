@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import * as Graphics from './Graphics'
 import { font } from './assets/textures'
 
 const APOSTROPHE_LETTERS = ['d', 'l', 'm', 'r', 's', 't', 'v']
