@@ -57,6 +57,34 @@ export const tileHorizontal = (
     .fill(0)
     .map((_, i) => subTexture(i * w, 0, w, h))
 }
+const FONT_STR =
+  'ABCDEFGHIJKLMNOP' +
+  'QRSTUVWXYZ():;[]' +
+  'abcdefghijklmnop' +
+  'qrstuvwxyz      ' +
+  'ÄÖÜäöü          ' +
+  "'  -?!.&é   * /," +
+  '$0123456789     '
+export const font = Array(FONT_STR.length)
+  .fill(0)
+  .map((_, i) => [FONT_STR[i], i % 16, Math.floor(i / 16)] as const)
+  .concat([
+    ["'d", 6, 4],
+    ["'l", 7, 4],
+    ["'m", 8, 4],
+    ["'r", 9, 4],
+    ["'s", 10, 4],
+    ["'t", 11, 4],
+    ["'v", 12, 4],
+    ['...', 11, 6],
+  ])
+  .reduce(
+    (a, [char, ...v]) => {
+      a[char] = charTex(...v)
+      return a
+    },
+    {} as Record<string, PIXI.Texture>
+  )
 
 /**
  *

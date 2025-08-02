@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js-legacy'
 
 import * as Graphics from './Graphics'
+import { font } from './assets/textures'
 
 const APOSTROPHE_LETTERS = ['d', 'l', 'm', 'r', 's', 't', 'v']
 
@@ -68,7 +69,7 @@ class Text {
       const [j, sym] = special(i, str)
       i = j
 
-      const spr = new PIXI.Sprite(Graphics.font[sym])
+      const spr = new PIXI.Sprite(font[sym])
       spr.x = this.x + chars * 8
       spr.y = this.y
       this.sprites.push(spr)

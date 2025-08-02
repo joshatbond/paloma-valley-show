@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js-legacy'
 
 import * as Graphics from './Graphics'
 import * as Input from './Input.js'
-import { charTex, textureTextbox } from './assets/textures'
+import { charTex, font, textureTextbox } from './assets/textures'
 import { GAMEBOY_HEIGHT } from './constants'
 
 const APOSTROPHE_LETTERS = ['d', 'l', 'm', 'r', 's', 't', 'v']
@@ -116,7 +116,7 @@ class Textbox {
           let c = current[this.idx]!
           c = this.ellipse(this.apostrophe(c))
           // add single character to line
-          const tex = Graphics.font[c]
+          const tex = font[c]
           const spr = new PIXI.Sprite(tex)
           spr.x = 8 + (this.idx - this.offset) * 8
           spr.y = textboxSprite.y + 16 + this.line * 16

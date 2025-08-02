@@ -1,40 +1,6 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import {
-  charTex,
-  textureAttack,
-  textureFont,
-  textureIcon,
-  textureTeamStatus,
-} from './assets/textures'
-
-/* Create font textures from spritesheet. */
-
-const FONT_STR =
-  'ABCDEFGHIJKLMNOP' +
-  'QRSTUVWXYZ():;[]' +
-  'abcdefghijklmnop' +
-  'qrstuvwxyz      ' +
-  'ÄÖÜäöü          ' +
-  "'  -?!.&é   * /," +
-  '$0123456789     '
-
-const font: { [char: string]: PIXI.Texture } = {}
-
-for (let i = 0; i < FONT_STR.length; i++) {
-  const x = i % 16
-  const y = Math.floor(i / 16)
-  font[FONT_STR[i]!] = charTex(x, y)
-}
-
-font["'d"] = charTex(6, 4)
-font["'l"] = charTex(7, 4)
-font["'m"] = charTex(8, 4)
-font["'r"] = charTex(9, 4)
-font["'s"] = charTex(10, 4)
-font["'t"] = charTex(11, 4)
-font["'v"] = charTex(12, 4)
-font['...'] = charTex(11, 6)
+import { charTex, textureIcon, textureTeamStatus } from './assets/textures'
 
 /* Create textures for team member status balls. */
 
@@ -79,4 +45,4 @@ const removeAlpha = new PIXI.Filter(
 `
 )
 
-export { font, teamStatus, icons, removeAlpha }
+export { teamStatus, icons, removeAlpha }
