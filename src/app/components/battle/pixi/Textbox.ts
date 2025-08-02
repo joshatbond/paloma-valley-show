@@ -3,13 +3,13 @@ import * as PIXI from 'pixi.js-legacy'
 
 import * as Graphics from './Graphics'
 import * as Input from './Input.js'
-import { textureTextbox } from './assets/textures'
+import { charTex, textureTextbox } from './assets/textures'
 import { GAMEBOY_HEIGHT } from './constants'
 
 const APOSTROPHE_LETTERS = ['d', 'l', 'm', 'r', 's', 't', 'v']
 
 const textboxSprite = new PIXI.Sprite(textureTextbox)
-const contArrowSprite = new PIXI.Sprite(Graphics.charTex(11, 5))
+const contArrowSprite = new PIXI.Sprite(charTex(11, 5))
 
 enum State {
   SHOW,

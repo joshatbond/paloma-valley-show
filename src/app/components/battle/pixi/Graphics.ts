@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js-legacy'
 
 import {
+  charTex,
   textureAttack,
   textureFont,
   textureIcon,
@@ -19,15 +20,6 @@ const FONT_STR =
   '$0123456789     '
 
 const font: { [char: string]: PIXI.Texture } = {}
-
-const charTex = (i: number, j: number) =>
-  new PIXI.Texture(textureFont as any, new PIXI.Rectangle(i * 8, j * 8, 8, 8))
-
-const attack = (i: number, j: number, w: number, h: number) =>
-  new PIXI.Texture(
-    textureAttack as any,
-    new PIXI.Rectangle(i * 8, j * 8, 8 * w, 8 * h)
-  )
 
 for (let i = 0; i < FONT_STR.length; i++) {
   const x = i % 16
@@ -87,4 +79,4 @@ const removeAlpha = new PIXI.Filter(
 `
 )
 
-export { charTex, font, teamStatus, icons, attack, removeAlpha }
+export { font, teamStatus, icons, removeAlpha }

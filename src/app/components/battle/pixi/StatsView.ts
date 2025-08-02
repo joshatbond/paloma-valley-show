@@ -2,12 +2,12 @@ import * as PIXI from 'pixi.js-legacy'
 
 import * as Graphics from './Graphics'
 import Text from './Text'
-import { textureHPBar } from './assets/textures'
+import { charTex, textureHPBar } from './assets/textures'
 import { type MemberObject, type Status } from './types'
 
-const levelTexture = Graphics.charTex(12, 6)
-const maleTexture = Graphics.charTex(14, 6)
-const femaleTexture = Graphics.charTex(13, 6)
+const levelTexture = charTex(12, 6)
+const maleTexture = charTex(14, 6)
+const femaleTexture = charTex(13, 6)
 
 interface Offsets {
   nameX?: number

@@ -9,6 +9,7 @@ import * as Input from './Input.js'
 import { HPStatsView } from './StatsView'
 import Text from './Text'
 import {
+  charTex,
   textureMenu,
   textureMessage,
   textureMoves,
@@ -17,8 +18,8 @@ import {
 import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from './constants'
 import { type DeepEvent } from './types'
 
-const arrowTexture = Graphics.charTex(10, 5)
-const arrowTexture2 = Graphics.charTex(9, 5)
+const arrowTexture = charTex(10, 5)
+const arrowTexture2 = charTex(9, 5)
 
 type Dir = 'down' | 'right'
 
