@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import * as Graphics from './Graphics'
-import { textureStatsWindow } from './assets/textures'
+import { StatusTexture, textureStatsWindow } from './assets/textures'
 import { GAMEBOY_WIDTH } from './constants'
 
 class TeamStatus {
@@ -37,7 +36,7 @@ class TeamStatus {
       } else {
         j = 3
       }
-      const spr = new PIXI.Sprite(Graphics.teamStatus[j])
+      const spr = new PIXI.Sprite(StatusTexture[j])
       spr.x = this.flip ? this.x - 64 + 8 * i : this.x + 56 - 8 * i
       spr.y = this.y
       this.balls.push(spr)

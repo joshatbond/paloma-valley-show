@@ -1,19 +1,6 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import { charTex, textureIcon, textureTeamStatus } from './assets/textures'
-
-/* Create textures for team member status balls. */
-
-const teamStatus = []
-
-for (let i = 0; i < 4; i++) {
-  teamStatus.push(
-    new PIXI.Texture(
-      textureTeamStatus as any,
-      new PIXI.Rectangle(0, i * 8, 8, 8)
-    )
-  )
-}
+import { textureIcon } from './assets/textures'
 
 /* Create textures for icon frames. */
 
@@ -45,4 +32,4 @@ const removeAlpha = new PIXI.Filter(
 `
 )
 
-export { teamStatus, icons, removeAlpha }
+export { icons, removeAlpha }

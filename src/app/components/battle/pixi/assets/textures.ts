@@ -89,6 +89,14 @@ export const font = Array(FONT_STR.length)
     {} as Record<string, PIXI.Texture>
   )
 
+const teamStatusTexture = textureFrom(textureTeamStatus)
+/**
+ * A list of textures representing the textures for a team member status ball
+ */
+export const StatusTexture = new Array(4)
+  .fill(0)
+  .map((_, i) => teamStatusTexture(0, i * 8, 8, 8))
+
 /**
  *
  * @param fileName The base name of the file. Don't include any paths or extensions
