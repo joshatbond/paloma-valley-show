@@ -4,12 +4,12 @@ import * as PIXI from 'pixi.js-legacy'
 
 import effects from './Effect'
 import { Events } from './Event'
-import * as Graphics from './Graphics'
 import * as Input from './Input'
 import * as Particle from './Particle'
 import { HPStatsView, StatsView } from './StatsView'
 import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
 import Textbox from './Textbox'
+import { removeAlpha } from './assets/filters'
 import { texturePlayerStats, textureStatsWindow } from './assets/textures'
 import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH, OPPONENT, PLAYER } from './constants'
 import {
@@ -156,7 +156,7 @@ class View implements IView {
     }
 
     this.memberSprites.player.filters = []
-    this.memberSprites.opponent.filters = [Graphics.removeAlpha]
+    this.memberSprites.opponent.filters = [removeAlpha]
 
     this.memberSprites.player.x = PLAYER.SPRITE.X
     this.memberSprites.player.y = PLAYER.SPRITE.Y

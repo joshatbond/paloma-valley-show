@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import * as Graphics from './Graphics'
 import Text from './Text'
+import { removeAlpha } from './assets/filters'
 import { charTex, textureHPBar } from './assets/textures'
 import { type MemberObject, type Status } from './types'
 
@@ -65,7 +65,7 @@ class StatsView {
   ) {
     this.stage = stage
     this.myStage = new PIXI.Container()
-    this.myStage.filters = [Graphics.removeAlpha]
+    this.myStage.filters = [removeAlpha]
     this.myStage.zIndex = -1
     this.myStage.sortableChildren = true
     this.myStage.x = x

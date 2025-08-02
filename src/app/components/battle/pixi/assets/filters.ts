@@ -1,6 +1,9 @@
 import * as PIXI from 'pixi.js-legacy'
 
-const removeAlpha = new PIXI.Filter(
+/**
+ * A shader that will remove any alpha layers from a texture
+ */
+export const removeAlpha = new PIXI.Filter(
   undefined,
   `
   varying vec2 vTextureCoord;
@@ -15,5 +18,3 @@ const removeAlpha = new PIXI.Filter(
   }
 `
 )
-
-export { removeAlpha }
