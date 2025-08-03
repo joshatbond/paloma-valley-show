@@ -56,7 +56,7 @@ export function StartMenu(props: {
               },
             }
           : undefined,
-        location.pathname !== '/battle'
+        import.meta.env.DEV && location.pathname !== '/battle'
           ? {
               label: 'BATTLE',
               desc: 'Go to the battle page',
