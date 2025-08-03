@@ -271,7 +271,7 @@ export const machine = setup({
         },
         phase2: {
           states: {
-            playVideo: {
+            battle: {
               on: { next: { target: 'epilogue' } },
             },
             epilogue: {
@@ -287,7 +287,7 @@ export const machine = setup({
               initial: 'screen1',
             },
           },
-          initial: 'playVideo',
+          initial: 'battle',
         },
       },
       initial: 'phase0',

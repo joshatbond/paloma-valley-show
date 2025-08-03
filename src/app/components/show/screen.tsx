@@ -1,5 +1,5 @@
 import { clsx } from 'clsx'
-import { type PropsWithChildren, useEffect } from 'react'
+import { type HTMLProps, type PropsWithChildren, useEffect } from 'react'
 
 import { useTypewriter } from '~/app/hooks/useTypewriter'
 
@@ -8,8 +8,11 @@ import { useStore } from './store'
 export function ScreenContainer(props: PropsWithChildren) {
   return <div className="relative">{props.children}</div>
 }
-export function ScreenBackground(props: { url: string }) {
-  return <img src={props.url} className="render-pixelated" />
+export function ScreenBackground({
+  className,
+  ...props
+}: HTMLProps<HTMLImageElement>) {
+  return <img className={clsx('render-pixelated', className)} {...props} />
 }
 export function MidLayer(props: PropsWithChildren) {
   return <div className="absolute inset-0">{props.children}</div>

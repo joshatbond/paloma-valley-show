@@ -37,7 +37,7 @@ function calculateDimensions(elementId: string) {
     GAMEBOY_HEIGHT * scale > box.height ||
     GAMEBOY_WIDTH * scale > box.width
   ) {
-    scale -= 0.5
+    scale -= 0.1
   }
   return { height: GAMEBOY_HEIGHT * scale, width: GAMEBOY_WIDTH * scale }
 }
