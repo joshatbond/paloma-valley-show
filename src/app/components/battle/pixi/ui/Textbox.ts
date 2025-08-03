@@ -1,9 +1,9 @@
 import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
-import { getInstance } from './Interactions'
-import { charTex, font, textureTextbox } from './assets/textures'
-import { GAMEBOY_HEIGHT } from './constants'
+import { charTex, font, textureTextbox } from '../assets/textures'
+import { getInstance } from '../classes/Interactions'
+import { GAMEBOY_HEIGHT } from '../constants'
 
 const APOSTROPHE_LETTERS = ['d', 'l', 'm', 'r', 's', 't', 'v']
 

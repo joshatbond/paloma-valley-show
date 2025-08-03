@@ -1,9 +1,9 @@
 import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
-import { textureDemoBack, textureDemoFront } from './assets/textures'
-import { moveInfo } from './constants/moves'
-import { type Music, type Resource } from './types'
+import { textureDemoBack, textureDemoFront } from '../assets/textures'
+import { moveInfo } from '../constants/moves'
+import { type Music, type Resource } from '../types'
 
 const SFX = [
   'pressab',

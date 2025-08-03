@@ -1,15 +1,15 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import GameV2 from './pixi/GameV2'
-import { getInstance } from './pixi/Interactions'
-import Resources from './pixi/Resources'
-import View from './pixi/View'
+import GameV2 from './pixi/classes/GameV2'
+import { getInstance } from './pixi/classes/Interactions'
+import Resources from './pixi/classes/Resources'
 import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from './pixi/constants'
 import {
   type BattleInfo,
   type MemberObject,
   type TeamObject,
 } from './pixi/types'
+import View from './pixi/ui/View'
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
 

@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import { attack, textureOpen, tileHorizontal } from './assets/textures'
-import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from './constants'
-import { Ease } from './util/math'
+import { attack, textureOpen, tileHorizontal } from '../assets/textures'
+import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from '../constants'
+import { Ease } from '../util/math'
 
 const openSheet = tileHorizontal(textureOpen, 40, 40, 4)
 

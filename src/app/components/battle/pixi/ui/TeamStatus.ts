@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import { StatusTexture, textureStatsWindow } from './assets/textures'
-import { GAMEBOY_WIDTH } from './constants'
+import { StatusTexture, textureStatsWindow } from '../assets/textures'
+import { GAMEBOY_WIDTH } from '../constants'
 
 class TeamStatus {
   x: number

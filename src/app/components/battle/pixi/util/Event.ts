@@ -1,4 +1,4 @@
-import { DeepEvent, EventState, type Status, type TEvent } from './types'
+import { DeepEvent, EventState, type Status, type TEvent } from '../types'
 
 export namespace Events {
   export function append(event: TEvent, next?: TEvent) {

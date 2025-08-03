@@ -1,6 +1,4 @@
-import { Events } from './Event'
-import { Script, Scripts } from './Script'
-import { moveInfo } from './constants/moves'
+import { moveInfo } from '../constants/moves'
 import {
   type BattleInfo,
   DeepEvent,
@@ -8,7 +6,9 @@ import {
   type IView,
   type MemberObject,
   TEvent,
-} from './types'
+} from '../types'
+import { Events } from '../util/Event'
+import { Script, Scripts } from '../util/Script'
 
 interface MembersOut {
   player?: MemberObject

@@ -2,16 +2,10 @@ import { ColorMatrixFilter } from '@pixi/filter-color-matrix'
 import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
-import effects from './Effect'
-import { Events } from './Event'
-import { getInstance } from './Interactions'
-import * as Particle from './Particle'
-import { HPStatsView, StatsView } from './StatsView'
-import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
-import Textbox from './Textbox'
-import { removeAlpha } from './assets/filters'
-import { texturePlayerStats, textureStatsWindow } from './assets/textures'
-import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH, OPPONENT, PLAYER } from './constants'
+import { removeAlpha } from '../assets/filters'
+import { texturePlayerStats, textureStatsWindow } from '../assets/textures'
+import { getInstance } from '../classes/Interactions'
+import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH, OPPONENT, PLAYER } from '../constants'
 import {
   type AnimObject,
   type DeepEvent,
@@ -21,7 +15,13 @@ import {
   type Resource,
   type Status,
   type TEvent,
-} from './types'
+} from '../types'
+import { Events } from '../util/Event'
+import effects from './Effect'
+import * as Particle from './Particle'
+import { HPStatsView, StatsView } from './StatsView'
+import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
+import Textbox from './Textbox'
 
 function animate(
   sprite: PIXI.Sprite,

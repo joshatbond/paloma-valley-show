@@ -1,7 +1,6 @@
+import { moveInfo } from '../constants/moves'
+import { type BattleInfo, type MemberObject, type Status } from '../types'
 import { Script, Scripts } from './Script'
-import { moveInfo } from './constants/moves'
-import { type Status } from './types'
-import { type BattleInfo, type MemberObject } from './types'
 
 const convertPSStat: { [stat: string]: string } = {
   accuracy: 'ACCURACY',

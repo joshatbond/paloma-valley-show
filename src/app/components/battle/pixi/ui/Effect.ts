@@ -1,11 +1,11 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import { Events } from './Event'
+import { GAMEBOY_WIDTH, OPPONENT, PLAYER } from '../constants'
+import { type DeepEvent, type EventState, type TEvent } from '../types'
+import { Events } from '../util/Event'
+import { lerp } from '../util/math'
 import * as Particle from './Particle'
 import View from './View'
-import { GAMEBOY_WIDTH, OPPONENT, PLAYER } from './constants'
-import { type DeepEvent, type EventState, type TEvent } from './types'
-import { lerp } from './util/math'
 
 const TACKLE_DUR = 6
 

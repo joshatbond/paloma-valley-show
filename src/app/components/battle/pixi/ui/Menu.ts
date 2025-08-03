@@ -2,11 +2,6 @@ import { sound as PIXI_SOUND } from '@pixi/sound'
 import { Pokemon } from '@pkmn/sim'
 import * as PIXI from 'pixi.js-legacy'
 
-import { Events } from './Event'
-import GameV2 from './GameV2'
-import { getInstance } from './Interactions'
-import { HPStatsView } from './StatsView'
-import Text from './Text'
 import {
   charTex,
   icons,
@@ -14,9 +9,14 @@ import {
   textureMessage,
   textureMoves,
   textureSwitchStats,
-} from './assets/textures'
-import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from './constants'
-import { type DeepEvent } from './types'
+} from '../assets/textures'
+import GameV2 from '../classes/GameV2'
+import { getInstance } from '../classes/Interactions'
+import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from '../constants'
+import { type DeepEvent } from '../types'
+import { Events } from '../util/Event'
+import { HPStatsView } from './StatsView'
+import Text from './Text'
 
 const arrowTexture = charTex(10, 5)
 const arrowTexture2 = charTex(9, 5)

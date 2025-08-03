@@ -15,9 +15,13 @@ import {
 } from '@pkmn/sim'
 import { ObjectReadWriteStream } from '@pkmn/streams'
 
-import BattleScript from './BattleScript'
-import { EventDriver, Events } from './Event'
-import Interpreter from './Interpreter'
+import {
+  type BattleInfo,
+  type FighterObject,
+  type IGame,
+  type MemberObject,
+  type Resource,
+} from '../types'
 import {
   GeneralTeamView,
   Menu,
@@ -26,15 +30,11 @@ import {
   SwitchStats,
   SwitchoutTeamView,
   TeamView,
-} from './Menu'
-import View from './View'
-import {
-  type BattleInfo,
-  type FighterObject,
-  type IGame,
-  type MemberObject,
-  type Resource,
-} from './types'
+} from '../ui/Menu'
+import View from '../ui/View'
+import BattleScript from '../util/BattleScript'
+import { EventDriver, Events } from '../util/Event'
+import Interpreter from './Interpreter'
 
 function buildPSGender(gender: 'male' | 'female' | 'none'): string {
   switch (gender) {

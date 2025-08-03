@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js-legacy'
 
+import { removeAlpha } from '../assets/filters'
+import { charTex, textureHPBar } from '../assets/textures'
+import { type MemberObject, type Status } from '../types'
 import Text from './Text'
-import { removeAlpha } from './assets/filters'
-import { charTex, textureHPBar } from './assets/textures'
-import { type MemberObject, type Status } from './types'
 
 const levelTexture = charTex(12, 6)
 const maleTexture = charTex(14, 6)
