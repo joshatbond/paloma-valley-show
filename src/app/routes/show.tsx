@@ -5,6 +5,7 @@ import { PropsWithChildren, useEffect, useMemo, useRef } from 'react'
 
 import { api } from '~/server/convex/_generated/api'
 
+import { BattleSimulator } from '../components/battle'
 import { getLines } from '../components/show/lines'
 import { Poll } from '../components/show/poll'
 import {
@@ -49,8 +50,10 @@ function RouteComponent() {
   const menuHasFocus = useStore(state => state.menu.show)
   const haptics = useHaptic()
 
+  const inBattle = state?.includes('battle') ?? false
+
   useButton('a', {
-    cond: () => !menuHasFocus,
+    cond: () => !menuHasFocus || !inBattle,
     onPress: () => {
       if (typingState === 'typing') {
         typingStateAssign('userOverride')
@@ -72,7 +75,7 @@ function RouteComponent() {
     },
   })
   useButton('b', {
-    cond: () => !menuHasFocus,
+    cond: () => !menuHasFocus || !inBattle,
     onPress: () => {
       if (state?.includes('confirmChoice')) {
         send({ type: 'back' })
@@ -82,7 +85,7 @@ function RouteComponent() {
     },
   })
   useButton('left', {
-    cond: () => !menuHasFocus,
+    cond: () => !menuHasFocus || !inBattle,
     onPress: () => {
       if (state?.includes('starter') && state.includes('introduction')) {
         send({ type: 'navLeft' })
@@ -92,6 +95,7 @@ function RouteComponent() {
     },
   })
   useButton('right', {
+    cond: () => !menuHasFocus || !inBattle,
     onPress: () => {
       if (state?.includes('starter') && state.includes('introduction')) {
         send({ type: 'navRight' })
@@ -101,11 +105,11 @@ function RouteComponent() {
     },
   })
   useButton('up', {
-    cond: () => !menuHasFocus,
+    cond: () => !menuHasFocus || !inBattle,
     onPress: () => haptics.pulse({ count: 2, gap: 10 }),
   })
   useButton('down', {
-    cond: () => !menuHasFocus,
+    cond: () => !menuHasFocus || !inBattle,
     onPress: () => haptics.pulse({ count: 2, gap: 10 }),
   })
 
@@ -133,9 +137,14 @@ function RouteComponent() {
 
   return (
     <GameBoyFrame>
-      <div className="relative grid place-content-center rounded bg-black">
+      <div
+        className={`relative grid ${!inBattle ? 'place-content-center' : ''} rounded bg-black`}
+      >
         <ScreenContainer>
-          <ScreenBackground url={`/images/${bgImg}`} />
+          <ScreenBackground
+            src={`/images/${bgImg}`}
+            className={inBattle ? 'opacity-0' : ''}
+          />
 
           <MidLayer>
             <Overlay state={state}>
@@ -149,7 +158,7 @@ function RouteComponent() {
             </Overlay>
           </MidLayer>
 
-          {state?.includes('starter') ? null : (
+          {state?.includes('starter') || state?.includes('battle') ? null : (
             <TextContainer isWaiting={state === 'phase0.waitingPhase1'}>
               <Text
                 text={lines}
@@ -188,6 +197,8 @@ function Overlay(props: PropsWithChildren & { state: State }) {
       return <Starter type="charmander" state={props.state} />
     case 'phase1.poll':
       return props.children
+    case 'phase2.battle':
+      return <BattleSimulator />
     default:
       return null
   }

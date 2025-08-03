@@ -46,6 +46,36 @@ export function StartMenu(props: {
               },
             }
           : undefined,
+        location.pathname !== '/program'
+          ? {
+              label: 'PROGRAM',
+              desc: 'Go to the program page',
+              action: () => {
+                toggleMenu()
+                navigate({ to: '/program' })
+              },
+            }
+          : undefined,
+        import.meta.env.DEV && location.pathname !== '/battle'
+          ? {
+              label: 'BATTLE',
+              desc: 'Go to the battle page',
+              action: () => {
+                toggleMenu()
+                navigate({ to: '/battle' })
+              },
+            }
+          : undefined,
+        location.pathname !== '/show' && props.showId
+          ? {
+              label: 'SHOW',
+              desc: 'Go to the show page',
+              action: () => {
+                toggleMenu()
+                navigate({ to: '/show' })
+              },
+            }
+          : undefined,
         {
           label: 'EXIT',
           desc: 'Close this MENU window',

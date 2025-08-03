@@ -40,7 +40,7 @@ const states = {
     rivalSelect: null,
   },
   phase2: {
-    playVideo: null,
+    battle: null,
     epilogue: {
       screen1: null,
       screen2: null,

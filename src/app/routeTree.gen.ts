@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as ShowImport } from './routes/show'
 import { Route as ProgramImport } from './routes/program'
+import { Route as BattleImport } from './routes/battle'
 import { Route as AdminImport } from './routes/admin'
 import { Route as IndexImport } from './routes/index'
 
@@ -27,6 +28,12 @@ const ShowRoute = ShowImport.update({
 const ProgramRoute = ProgramImport.update({
   id: '/program',
   path: '/program',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const BattleRoute = BattleImport.update({
+  id: '/battle',
+  path: '/battle',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminImport
       parentRoute: typeof rootRoute
     }
+    '/battle': {
+      id: '/battle'
+      path: '/battle'
+      fullPath: '/battle'
+      preLoaderRoute: typeof BattleImport
+      parentRoute: typeof rootRoute
+    }
     '/program': {
       id: '/program'
       path: '/program'
@@ -82,6 +96,7 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/battle': typeof BattleRoute
   '/program': typeof ProgramRoute
   '/show': typeof ShowRoute
 }
@@ -89,6 +104,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/battle': typeof BattleRoute
   '/program': typeof ProgramRoute
   '/show': typeof ShowRoute
 }
@@ -97,22 +113,24 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/battle': typeof BattleRoute
   '/program': typeof ProgramRoute
   '/show': typeof ShowRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/program' | '/show'
+  fullPaths: '/' | '/admin' | '/battle' | '/program' | '/show'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/program' | '/show'
-  id: '__root__' | '/' | '/admin' | '/program' | '/show'
+  to: '/' | '/admin' | '/battle' | '/program' | '/show'
+  id: '__root__' | '/' | '/admin' | '/battle' | '/program' | '/show'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  BattleRoute: typeof BattleRoute
   ProgramRoute: typeof ProgramRoute
   ShowRoute: typeof ShowRoute
 }
@@ -120,6 +138,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  BattleRoute: BattleRoute,
   ProgramRoute: ProgramRoute,
   ShowRoute: ShowRoute,
 }
@@ -136,6 +155,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/admin",
+        "/battle",
         "/program",
         "/show"
       ]
@@ -145,6 +165,9 @@ export const routeTree = rootRoute
     },
     "/admin": {
       "filePath": "admin.tsx"
+    },
+    "/battle": {
+      "filePath": "battle.tsx"
     },
     "/program": {
       "filePath": "program.tsx"
