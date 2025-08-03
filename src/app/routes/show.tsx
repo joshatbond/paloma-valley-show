@@ -138,7 +138,7 @@ function RouteComponent() {
   return (
     <GameBoyFrame>
       <div
-        className={`relative grid ${!inBattle ? 'place-content-center' : ''} rounded bg-black`}
+        className={`relative grid ${!inBattle || state?.includes('waiting') ? 'place-content-center' : ''} rounded bg-black`}
       >
         <ScreenContainer>
           <ScreenBackground
