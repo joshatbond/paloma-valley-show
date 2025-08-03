@@ -69,14 +69,14 @@ function createResources() {
     id: 'demo1',
     level: 36,
     gender: 'none',
-    moves: ['METRONOME'],
+    moves: ['TACKLE', 'BITE', 'WATER GUN', 'TAIL WHIP'],
     name: 'BLASTOISE',
   }
   const exampleMember2: MemberObject = {
     id: 'demo2',
     level: 25,
     gender: 'none',
-    moves: ['METRONOME'],
+    moves: ['LICK', 'CONFUSE RAY', 'MEAN LOOK', 'CURSE'],
     name: 'GENGAR',
   }
   const battleInfo: BattleInfo = {
