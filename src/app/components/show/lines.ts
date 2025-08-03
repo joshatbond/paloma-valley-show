@@ -53,7 +53,7 @@ const lines = {
       'and taken your first steps into...',
     ],
     epilogue3: [
-      'a much larger workd. The road',
+      'a much larger world. The road',
       'ahead is filled with challenges...',
     ],
     epilogue4: [
