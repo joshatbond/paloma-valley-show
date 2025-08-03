@@ -4,7 +4,7 @@ import * as PIXI from 'pixi.js-legacy'
 
 import effects from './Effect'
 import { Events } from './Event'
-import * as Input from './Input'
+import { getInstance } from './Interactions'
 import * as Particle from './Particle'
 import { HPStatsView, StatsView } from './StatsView'
 import { OpponentTeamStatus, PlayerTeamStatus } from './TeamStatus'
@@ -83,6 +83,7 @@ class View implements IView {
     player: PIXI.Sprite
     opponent: PIXI.Sprite
   }
+  private Input = getInstance()
   private readonly memberSprites: { player: PIXI.Sprite; opponent: PIXI.Sprite }
 
   private readonly playerStatus: Status = { maxHp: 0, hp: 0, condition: '' }
@@ -181,11 +182,11 @@ class View implements IView {
     this.particleStage.sortableChildren = true
 
     app.stage.on('click', () => {
-      Input.forceBack()
+      this.Input.forceBack()
       this.textbox.advance()
     })
     app.stage.on('tap', () => {
-      Input.forceBack()
+      this.Input.forceBack()
       this.textbox.advance()
     })
     this.textbox.show()

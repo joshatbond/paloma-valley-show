@@ -1,7 +1,7 @@
 import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
-import * as Input from './Input.js'
+import { getInstance } from './Interactions'
 import { charTex, font, textureTextbox } from './assets/textures'
 import { GAMEBOY_HEIGHT } from './constants'
 
@@ -31,6 +31,7 @@ class Textbox {
   auto = false
   ticks = 0
   private readonly stage: PIXI.Container
+  private Input = getInstance()
 
   constructor(stage: PIXI.Container) {
     this.stage = stage
@@ -95,13 +96,13 @@ class Textbox {
 
     switch (this.state) {
       case State.SHOW:
-        if (this.ticks >= (Input.advance() ? 0 : 1)) {
+        if (this.ticks >= (this.Input.advance ? 0 : 1)) {
           // Finish page
           if (this.line >= 2) {
             this.showArrow = true
             this.state = State.WAIT
-            Input.releaseSelect()
-            Input.releaseBack()
+            this.Input.releaseSelect()
+            this.Input.releaseBack()
             return
           }
           const current = this.currentLine()
@@ -135,11 +136,11 @@ class Textbox {
           this.ticks = 0
         }
 
-        if (Input.advance() || doAuto || this.forceAdvance) {
-          if (Input.advance() || this.forceAdvance) {
+        if (this.Input.advance || doAuto || this.forceAdvance) {
+          if (this.Input.advance || this.forceAdvance) {
             if (!doAuto) PIXI_SOUND.sound.play('pressab')
-            Input.releaseSelect()
-            Input.releaseBack()
+            this.Input.releaseSelect()
+            this.Input.releaseBack()
           }
           if (this.showArrow) {
             contArrowSprite.visible = false

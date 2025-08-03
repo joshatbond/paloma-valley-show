@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js-legacy'
 
-import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from '../Graphics'
-import * as Input from '../Input'
+import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from '../constants'
 
 /**
  * Manages the PixiJS application instance, including its initialization,
@@ -90,7 +89,6 @@ class App {
       width,
       backgroundColor: 0xf8f8f8,
     })
-    console.log(this.pixiApp)
     this.parentElement.appendChild(this.pixiApp.view)
 
     if (!this.pixiRenderTexture) {
@@ -100,29 +98,12 @@ class App {
       })
     }
 
-    // if (!this.keyboardInput) {
-    //   this.keyboardInput = new KeyboardInputManager()
-    // }
-
     const sprite = new PIXI.Sprite(this.pixiRenderTexture)
     sprite.height = height
     sprite.width = width
 
     this.pixiApp.stage.addChild(sprite)
     this.pixiApp.stage.interactive = true
-
-    // this.keyboardInput.focus()
-    Input.focus()
-    document.addEventListener(
-      'keydown',
-      // this.keyboardInput.keyDown.bind(this.keyboardInput)
-      Input.keyDown
-    )
-    document.addEventListener(
-      'keyup',
-      // this.keyboardInput.keyUp.bind(this.keyboardInput)
-      Input.keyUp
-    )
 
     this.cleanupFunction = () => {
       if (this.pixiApp) {
@@ -131,19 +112,6 @@ class App {
       }
       this.pixiRenderTexture = null
       this.parentElement = null
-      document.removeEventListener('keydown', Input.keyDown)
-      document.removeEventListener('keyup', Input.keyUp)
-      // if (this.keyboardInput) {
-      //   document.removeEventListener(
-      //     'keydown',
-      //     this.keyboardInput.keyDown.bind(this.keyboardInput)
-      //   )
-      //   document.removeEventListener(
-      //     'keyup',
-      //     this.keyboardInput.keyUp.bind(this.keyboardInput)
-      //   )
-      //   this.keyboardInput = null
-      // }
       App.instance = null
     }
   }

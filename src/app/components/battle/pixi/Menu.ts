@@ -4,7 +4,7 @@ import * as PIXI from 'pixi.js-legacy'
 
 import { Events } from './Event'
 import GameV2 from './GameV2'
-import * as Input from './Input.js'
+import { getInstance } from './Interactions'
 import { HPStatsView } from './StatsView'
 import Text from './Text'
 import {
@@ -30,13 +30,15 @@ type Transition = [number, number, Dir]
 /* Finite-State-Machine representing menu actions. */
 abstract class Menu {
   public state: number = 0
+
   protected states: number
-  private arrowPos: ArrowPos[] = []
-  private machine: Machine = {}
+  protected Input = getInstance()
   protected arrowSpr: PIXI.Sprite
   protected stage: PIXI.Container
-  private touchContainers: PIXI.Container[] = []
 
+  private arrowPos: ArrowPos[] = []
+  private machine: Machine = {}
+  private touchContainers: PIXI.Container[] = []
   private showing: boolean = false
 
   constructor(
@@ -65,14 +67,14 @@ abstract class Menu {
       container.cursor = 'pointer'
       const state = i
       const fn = (event: any) => {
-        Input.releaseBack()
+        this.Input.releaseBack()
         if (this.game.currentMenu() != this) {
           return
         }
         event.stopPropagation()
         if (this != null) {
           this.state = state
-          Input.forceAdvance()
+          this.Input.forceAdvance()
         } else {
           console.warn('Menu: this == null on touch container event')
         }
@@ -105,26 +107,26 @@ abstract class Menu {
     for (const [s0, s1, dir] of trans) {
       if (dir === 'down') {
         this.compose(s0, () => {
-          if (Input.down() && !Input.up()) {
+          if (this.Input.down && !this.Input.up) {
             this.state = s1
             onStateChange()
           }
         })
         this.compose(s1, () => {
-          if (Input.up()) {
+          if (this.Input.up) {
             this.state = s0
             onStateChange()
           }
         })
       } else if (dir === 'right') {
         this.compose(s0, () => {
-          if (Input.right() && !Input.left()) {
+          if (this.Input.right && !this.Input.left) {
             this.state = s1
             onStateChange()
           }
         })
         this.compose(s1, () => {
-          if (Input.left()) {
+          if (this.Input.left) {
             this.state = s0
             onStateChange()
           }
@@ -251,9 +253,9 @@ class Options extends Menu {
       ]
     )
     this.compose(0, () => {
-      if (Input.selected()) {
-        Input.releaseSelect()
-        Input.releaseBack()
+      if (this.Input.selected) {
+        this.Input.releaseSelect()
+        this.Input.releaseBack()
         const player = game.getInterpreter().getMembersOut().player
         if (player == null) {
           throw new Error('Options.constructor: member player is null')
@@ -279,15 +281,15 @@ class Options extends Menu {
       }
     })
     this.compose(1, () => {
-      if (Input.selected()) {
-        Input.releaseSelect()
+      if (this.Input.selected) {
+        this.Input.releaseSelect()
         PIXI_SOUND.play('pressab')
         game.showGeneralTeamView()
       }
     })
     this.compose(2, () => {
-      if (Input.selected()) {
-        Input.releaseSelect()
+      if (this.Input.selected) {
+        this.Input.releaseSelect()
         PIXI_SOUND.play('pressab')
         this.hide()
         // TODO: pack items
@@ -304,8 +306,8 @@ class Options extends Menu {
       }
     })
     this.compose(3, () => {
-      if (Input.selected()) {
-        Input.releaseSelect()
+      if (this.Input.selected) {
+        this.Input.releaseSelect()
         PIXI_SOUND.play('pressab')
         this.hide()
         game
@@ -373,7 +375,7 @@ class Moves extends Menu {
       ],
       () => {
         this.updateMoveInfo()
-        Input.releaseArrows()
+        this.Input.releaseArrows()
       },
       [
         exists[0] && new PIXI.Rectangle(34, 99, 126, 12),
@@ -406,12 +408,12 @@ class Moves extends Menu {
         `Moves.listen: bad state, state=${this.state} states=${this.states} moves=${JSON.stringify(this.moves)}`
       )
     }
-    if (Input.back()) {
-      Input.releaseBack()
+    if (this.Input.back) {
+      this.Input.releaseBack()
       PIXI_SOUND.play('pressab')
       this.game.popMenu()
-    } else if (Input.selected()) {
-      Input.releaseSelect()
+    } else if (this.Input.selected) {
+      this.Input.releaseSelect()
       PIXI_SOUND.play('pressab')
       const player = this.game.getSimulatedPlayer()
       const move = player.moveSlots[moveIndex]
@@ -571,7 +573,7 @@ class SwitchStats extends Menu {
         [96, 112],
         [96, 128],
       ],
-      () => Input.releaseArrows(),
+      () => this.Input.releaseArrows(),
       [
         new PIXI.Rectangle(89, 91, 71, 17),
         new PIXI.Rectangle(89, 108, 71, 16),
@@ -586,11 +588,11 @@ class SwitchStats extends Menu {
 
   listen() {
     const member = this.game.getSimulatedPlayerMember(this.index)
-    if (Input.back()) {
-      Input.releaseBack()
+    if (this.Input.back) {
+      this.Input.releaseBack()
       this.game.popMenu()
-    } else if (Input.selected()) {
-      Input.releaseSelect()
+    } else if (this.Input.selected) {
+      this.Input.releaseSelect()
       PIXI_SOUND.play('pressab')
       if (this.state === 0) {
         if (member.hp <= 0) {
@@ -656,13 +658,7 @@ abstract class TeamView extends Menu {
   constructor(game: GameV2, message: string, canCancel = true) {
     const teamLength = game.battleInfo.info.player.team.length
     const [trans, pos] = createTeamViewTransitions(teamLength)
-    super(
-      game,
-      trans,
-      pos,
-      Input.releaseArrows,
-      createTeamViewTouchAreas(teamLength)
-    )
+    super(game, trans, pos, () => {}, createTeamViewTouchAreas(teamLength))
     this.message = message
 
     this.messageSpr = new PIXI.Sprite(textureMessage)
@@ -778,7 +774,7 @@ abstract class TeamView extends Menu {
   }
 
   protected deny() {
-    Input.releaseBack()
+    this.Input.releaseBack()
     this.game.getEventDriver().append(
       Events.flatten([
         () => (this.arrowSpr.texture = arrowTexture2),
@@ -797,16 +793,16 @@ abstract class TeamView extends Menu {
   }
 
   listen() {
-    if (Input.back()) {
+    if (this.Input.back) {
       if (this.canCancel) {
         PIXI_SOUND.play('pressab')
-        Input.releaseBack()
+        this.Input.releaseBack()
         this.exit()
       } else {
         this.deny()
       }
-    } else if (Input.selected()) {
-      Input.releaseSelect()
+    } else if (this.Input.selected) {
+      this.Input.releaseSelect()
       if (this.state === this.states - 1) {
         if (this.canCancel) {
           PIXI_SOUND.play('pressab')

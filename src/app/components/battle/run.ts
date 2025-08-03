@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js-legacy'
 
 import GameV2 from './pixi/GameV2'
-import * as Input from './pixi/Input'
+import { getInstance } from './pixi/Interactions'
 import Resources from './pixi/Resources'
 import View from './pixi/View'
 import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from './pixi/constants'
@@ -23,8 +23,6 @@ export function run(elementId: string) {
 
   return () => {
     app?.destroy()
-    document.removeEventListener('keydown', Input.keyDown)
-    document.removeEventListener('keyup', Input.keyUp)
   }
 }
 
@@ -51,6 +49,7 @@ function scaffoldApp(elementId: string) {
     height: GAMEBOY_HEIGHT,
   })
   createResources()
+  getInstance()
 
   const sprite = new PIXI.Sprite(renderTexture)
   sprite.width = width
@@ -58,11 +57,7 @@ function scaffoldApp(elementId: string) {
 
   app.stage.addChild(sprite)
 
-  Input.focus()
-
   document.getElementById(elementId)?.appendChild(app.view)
-  document.addEventListener('keydown', Input.keyDown)
-  document.addEventListener('keyup', Input.keyUp)
 }
 function createResources() {
   const exampleMember1: MemberObject = {

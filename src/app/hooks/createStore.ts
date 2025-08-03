@@ -5,7 +5,7 @@ export function createStore<T>() {
     let state = stateCreator(setState, getState)
     const listeners = new Set<(state: T, prevState: T) => void>()
 
-    return { useStore, getState }
+    return { useStore, getState, subscribe }
     function useStore<U>(
       selector: (state: T) => U = state => state as unknown as U,
       equalityFn: (a: U, b: U) => boolean = Object.is

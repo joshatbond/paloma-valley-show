@@ -1,6 +1,6 @@
 import { createStore } from '~/app/hooks/createStore'
 
-export const { useStore, getState } = createStore<Store>()(set => ({
+export const { useStore, getState, subscribe } = createStore<Store>()(set => ({
   buttons: {
     a: 'ready',
     b: 'ready',
