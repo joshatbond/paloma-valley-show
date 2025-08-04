@@ -3,8 +3,20 @@ import * as PIXI from 'pixi.js-legacy'
 import { basePath } from '.'
 
 export const textureAttack = factory('attacks')
+
 export const textureDemoBack = factory('demoback')
 export const textureDemoFront = factory('demofront')
+
+export const texture001Front = factory('001_front')
+export const texture001Back = factory('001_back')
+export const texture004Front = factory('004_front')
+export const texture004Back = factory('004_back')
+export const texture007Front = factory('007_front')
+export const texture007Back = factory('007_back')
+
+export const texturePlayer = factory('ethan')
+export const textureOpponent = factory('blue')
+
 export const textureFont = factory('font')
 export const textureHPBar = factory('hpbar')
 export const textureIcon = factory('icons')
