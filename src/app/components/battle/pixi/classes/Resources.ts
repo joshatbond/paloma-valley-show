@@ -6,12 +6,11 @@ import {
   texture001Front,
   texture004Back,
   texture004Front,
-  textureDemoBack,
-  textureDemoFront,
+  texture007Back,
+  texture007Front,
   textureOpponent,
   texturePlayer,
 } from '../assets/textures'
-import { moveInfo } from '../constants/moves'
 import { type Music, type Resource } from '../types'
 
 const SFX = [
@@ -30,8 +29,18 @@ export default class Resources implements Resource {
   uniforms: { [index: string]: { step: number } } = {}
   playingMusic: PIXI_SOUND.Sound | null = null
 
-  private readonly demoFrontTexture = texture004Front
-  private readonly demoBackTexture = texture001Back
+  private readonly frontTexture = {
+    '001': [texture001Front],
+    '004': [texture004Front],
+    '007': [texture007Front],
+    blue: [textureOpponent],
+  } as Record<string, PIXI.Texture[]>
+  private readonly backTexture = {
+    '001': texture001Back,
+    '004': texture004Back,
+    '007': texture007Back,
+    ethan: texturePlayer,
+  } as Record<string, PIXI.Texture>
 
   private readonly loader = new PIXI.Loader()
 
@@ -41,20 +50,8 @@ export default class Resources implements Resource {
   private moveCache: Set<string> = new Set()
 
   constructor(moves: string[]) {
-    PIXI_SOUND.Sound.from({
-      url: '/battle/sfx_sprite.mp3',
-      sprites: {
-        ballpoof: { start: 0, end: 2 },
-        brn: { start: 2.1, end: 4.1 },
-        faint: { start: 4.2, end: 6.2 },
-        hit: { start: 6.3, end: 8.3 },
-        hitresisted: { start: 8.4, end: 10.4 },
-        hitsupereffective: { start: 10.5, end: 12.5 },
-        pressab: { start: 12.6, end: 14.6 },
-      },
-    })
     for (const sfx of SFX) {
-      this.loader.add(sfx, `/battle/audio/${sfx}` + '.wav')
+      this.loader.add(sfx, `/battle/audio/${sfx}.wav`)
     }
 
     for (const fs of SHADERS) {
@@ -128,9 +125,9 @@ export default class Resources implements Resource {
     return texturePlayer
   }
   getFront(id: string): PIXI.Texture<PIXI.Resource>[] {
-    return [this.demoFrontTexture]
+    return this.frontTexture[id]
   }
   getBack(id: string): PIXI.Texture<PIXI.Resource> {
-    return this.demoBackTexture
+    return this.backTexture[id]
   }
 }
