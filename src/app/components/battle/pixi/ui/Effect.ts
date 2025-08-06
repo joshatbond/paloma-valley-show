@@ -1404,6 +1404,10 @@ const effects: { [attack: string]: Effect } = {
     ply: surf,
     opp: surf,
   },
+  BUBBLE: {
+    ply: surf,
+    opp: surf,
+  },
 
   BLIZZARD: {
     ply: view =>
@@ -1508,6 +1512,10 @@ const effects: { [attack: string]: Effect } = {
         Events.wait(20),
         () => (view.getFullStage().x = 0),
       ]),
+  },
+  'HORN ATTACK': {
+    ply: mudslap(54, 80),
+    opp: mudslap(102, 36, -1),
   },
 
   'MUD-SLAP': {
@@ -1704,6 +1712,10 @@ const effects: { [attack: string]: Effect } = {
   BURNED: {
     ply: burned(46, 76, -1),
     opp: burned(112, 28),
+  },
+  EMBER: {
+    ply: flamethrower(56, 76, 136, 28),
+    opp: flamethrower(106, 32, 28, 80),
   },
 
   FLAMETHROWER: {

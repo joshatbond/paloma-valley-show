@@ -9,6 +9,7 @@ export const moveInfo = {
   GROWL: {
     pan: -1,
   },
+  'HORN ATTACK': {},
   SCRATCH: {
     sfx: 'Scratch',
     pan: 1,

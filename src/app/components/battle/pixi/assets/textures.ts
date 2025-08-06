@@ -13,6 +13,8 @@ export const texture004Front = factory('004_front')
 export const texture004Back = factory('004_back')
 export const texture007Front = factory('007_front')
 export const texture007Back = factory('007_back')
+export const texture032Front = factory('032_front')
+export const texture032Back = factory('032_back')
 
 export const texturePlayer = factory('ethan')
 export const textureOpponent = factory('blue')
@@ -92,6 +94,7 @@ export const font = Array(FONT_STR.length)
     ["'t", 11, 4],
     ["'v", 12, 4],
     ['...', 11, 6],
+    ['♂', 14, 6],
   ])
   .reduce(
     (a, [char, ...v]) => {

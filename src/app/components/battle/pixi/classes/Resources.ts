@@ -8,6 +8,8 @@ import {
   texture004Front,
   texture007Back,
   texture007Front,
+  texture032Back,
+  texture032Front,
   textureOpponent,
   texturePlayer,
 } from '../assets/textures'
@@ -25,7 +27,7 @@ const SFX = [
 ]
 const SHADERS = ['oppAppear', 'plyAppear', 'faint']
 const music = ['']
-const CRIES = ['001', '004', '007']
+const CRIES = ['001', '004', '007', '032']
 
 export default class Resources implements Resource {
   uniforms: { [index: string]: { step: number } } = {}
@@ -35,12 +37,14 @@ export default class Resources implements Resource {
     '001': [texture001Front],
     '004': [texture004Front],
     '007': [texture007Front],
+    '032': [texture032Front],
     blue: [textureOpponent],
   } as Record<string, PIXI.Texture[]>
   private readonly backTexture = {
     '001': texture001Back,
     '004': texture004Back,
     '007': texture007Back,
+    '032': texture032Back,
     ethan: texturePlayer,
   } as Record<string, PIXI.Texture>
 

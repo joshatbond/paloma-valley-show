@@ -68,11 +68,11 @@ function createResources() {
     name: 'BULBASAUR',
   }
   const exampleMember2: MemberObject = {
-    id: '007',
+    id: '032',
     level: 12,
     gender: 'none',
-    moves: ['TACKLE', 'GROWL', 'BUBBLE'],
-    name: 'SQUIRTLE',
+    moves: ['TACKLE', 'TAIL WHIP', 'HORN ATTACK'],
+    name: 'NIDORAN♂',
   }
   const battleInfo: BattleInfo = {
     info: {
@@ -124,11 +124,25 @@ function createResources() {
         baseSpAtk: 50,
         baseSpDef: 64,
         baseSpd: 43,
-        cry: '',
+        cry: '007.mp3',
         front: '007_front.png',
         back: '007_back.png',
         name: 'SQUIRTLE',
         types: ['WATER'],
+        anim: { delay: [0], ref: [0] },
+      },
+      '032': {
+        baseAtk: 57,
+        baseDef: 40,
+        baseHp: 43,
+        baseSpAtk: 40,
+        baseSpDef: 40,
+        baseSpd: 50,
+        cry: '032.mp3',
+        front: '032_front.png',
+        back: '032_back.png',
+        name: 'nidoranm',
+        types: ['POISON'],
         anim: { delay: [0], ref: [0] },
       },
     },
