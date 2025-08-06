@@ -65,7 +65,7 @@ export type Store = {
   buttons: {
     [K in 'a' | 'b' | 'up' | 'down' | 'left' | 'right' | 'start']: ButtonState
   }
-  battle: 'init' | 'loaded' | 'start' | 'done'
+  battle: 'init' | 'done' | 'exit'
   menu: { show: boolean }
   starter: 'charmander' | 'squirtle' | 'bulbasaur' | null
   typing: Typing | TypingDisabled | TypingReady

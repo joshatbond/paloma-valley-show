@@ -7,6 +7,7 @@ export function BattleSimulator({ next }: { next: () => void }) {
   const parentEl = useRef<HTMLDivElement>(null)
   const appRef = useRef<ReturnType<typeof run>>()
   const battleState = useStore(state => state.battle)
+  const battleStateAssign = useStore(state => state.updateBattleState)
 
   useEffect(() => {
     if (parentEl) {
@@ -16,12 +17,13 @@ export function BattleSimulator({ next }: { next: () => void }) {
     }
     if (battleState === 'done') {
       setTimeout(next, 10e3)
+      battleStateAssign('exit')
     }
 
     return () => {
       appRef.current?.()
     }
-  }, [parentEl.current, battleState, next])
+  }, [parentEl.current, battleState, battleStateAssign, next])
 
   return (
     <div

@@ -51,7 +51,7 @@ function RouteComponent() {
   const haptics = useHaptic()
   const battleState = useStore(state => state.battle)
 
-  const inBattle = state?.includes('battle') && battleState !== 'done'
+  const inBattle = state?.includes('battle') && battleState !== 'exit'
 
   useButton('a', {
     cond: () => !menuHasFocus || !inBattle,
