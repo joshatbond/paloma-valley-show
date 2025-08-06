@@ -10,6 +10,7 @@ export const { useStore, getState, subscribe } = createStore<Store>()(set => ({
     right: 'ready',
     start: 'ready',
   },
+  battle: 'init',
   menu: {
     show: false,
   },
@@ -55,12 +56,16 @@ export const { useStore, getState, subscribe } = createStore<Store>()(set => ({
       typing: s,
     }))
   },
+  updateBattleState: battleState => {
+    set(state => ({ ...state, battle: battleState }))
+  },
 }))
 
 export type Store = {
   buttons: {
     [K in 'a' | 'b' | 'up' | 'down' | 'left' | 'right' | 'start']: ButtonState
   }
+  battle: 'init' | 'loaded' | 'start' | 'done'
   menu: { show: boolean }
   starter: 'charmander' | 'squirtle' | 'bulbasaur' | null
   typing: Typing | TypingDisabled | TypingReady
@@ -73,6 +78,7 @@ export type Store = {
   typingStateAssign: (s: Store['typing']) => void
   showQAMode: (f?: boolean) => void
   showMenu: (f?: boolean) => void
+  updateBattleState: (s: Store['battle']) => void
 }
 type ButtonState = 'ready' | 'pressed' | 'disabled'
 /** this state is when the system is currently rendering the typewriter effect */

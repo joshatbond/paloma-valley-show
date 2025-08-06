@@ -30,6 +30,7 @@ class InputManager {
 
     subscribe((newState, oldState) => {
       if (newState.menu.show) return
+      if (oldState.battle === 'done') return
 
       for (const button of Object.keys(
         newState.buttons

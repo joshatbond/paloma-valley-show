@@ -22,7 +22,7 @@ export function run(elementId: string) {
   }
 
   return () => {
-    app?.destroy()
+    // app?.destroy()
   }
 }
 
@@ -68,11 +68,11 @@ function createResources() {
     name: 'BULBASAUR',
   }
   const exampleMember2: MemberObject = {
-    id: '004',
+    id: '007',
     level: 12,
     gender: 'none',
-    moves: ['SCRATCH', 'GROWL', 'EMBER'],
-    name: 'CHARMANDER',
+    moves: ['TACKLE', 'GROWL', 'BUBBLE'],
+    name: 'SQUIRTLE',
   }
   const battleInfo: BattleInfo = {
     info: {
@@ -86,6 +86,7 @@ function createResources() {
         trainer: 'blue.png',
         team: [exampleMember2],
       },
+      winMessage: 'GARY: What?! I picked the wrong pokémon!',
     },
     data: {
       '001': {
@@ -114,6 +115,20 @@ function createResources() {
         back: '004_back.png',
         name: 'CHARMANDER',
         types: ['FIRE'],
+        anim: { delay: [0], ref: [0] },
+      },
+      '007': {
+        baseAtk: 48,
+        baseDef: 65,
+        baseHp: 44,
+        baseSpAtk: 50,
+        baseSpDef: 64,
+        baseSpd: 43,
+        cry: '',
+        front: '007_front.png',
+        back: '007_back.png',
+        name: 'SQUIRTLE',
+        types: ['WATER'],
         anim: { delay: [0], ref: [0] },
       },
     },

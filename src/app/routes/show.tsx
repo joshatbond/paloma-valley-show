@@ -49,8 +49,9 @@ function RouteComponent() {
   const starterAssign = useStore(s => s.starterAssign)
   const menuHasFocus = useStore(state => state.menu.show)
   const haptics = useHaptic()
+  const battleState = useStore(state => state.battle)
 
-  const inBattle = state?.includes('battle') ?? false
+  const inBattle = state?.includes('battle') && battleState !== 'done'
 
   useButton('a', {
     cond: () => !menuHasFocus || !inBattle,
@@ -147,7 +148,7 @@ function RouteComponent() {
           />
 
           <MidLayer>
-            <Overlay state={state}>
+            <Overlay state={state} next={() => send({ type: 'next' })}>
               <Poll
                 duration={ref.getSnapshot().context.pollDuration}
                 end={data.pollEnded}
@@ -179,7 +180,9 @@ function RouteComponent() {
   )
 }
 
-function Overlay(props: PropsWithChildren & { state: State }) {
+function Overlay(
+  props: PropsWithChildren & { state: State; next: () => void }
+) {
   switch (props.state) {
     case 'phase0.waitingPhase1':
       return <WaitingScreen />
@@ -198,7 +201,7 @@ function Overlay(props: PropsWithChildren & { state: State }) {
     case 'phase1.poll':
       return props.children
     case 'phase2.battle':
-      return <BattleSimulator />
+      return <BattleSimulator next={props.next} />
     default:
       return null
   }
