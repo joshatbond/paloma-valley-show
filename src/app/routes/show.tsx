@@ -25,11 +25,12 @@ import { State, useGameMachine } from '../hooks/useGameMachine'
 import { useHaptic } from '../hooks/useHaptic'
 
 export const Route = createFileRoute('/show')({
+  ssr: false,
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const navigation = useNavigate()
+  const navigate = useNavigate()
   const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
   const { mutate: confirmStarter } = useMutation({
     mutationFn: useConvexMutation(api.appState.selectStarter),
@@ -71,6 +72,12 @@ function RouteComponent() {
           selection: selection[0],
         })
         starterAssign(selection[1])
+      }
+      if (
+        typingState === 'userOverride' &&
+        state === 'phase2.epilogue.screen7'
+      ) {
+        navigate({ to: '/program' })
       }
       send({ type: 'next' })
     },
@@ -134,7 +141,7 @@ function RouteComponent() {
     }
   }, [data])
 
-  if (!data.showId) navigation({ to: '/' })
+  if (!data.showId) navigate({ to: '/' })
 
   return (
     <GameBoyFrame>
@@ -148,7 +155,7 @@ function RouteComponent() {
           />
 
           <MidLayer>
-            <Overlay state={state} next={() => send({ type: 'next' })}>
+            <Overlay state={state}>
               <Poll
                 duration={ref.getSnapshot().context.pollDuration}
                 end={data.pollEnded}
@@ -180,9 +187,7 @@ function RouteComponent() {
   )
 }
 
-function Overlay(
-  props: PropsWithChildren & { state: State; next: () => void }
-) {
+function Overlay(props: PropsWithChildren & { state: State }) {
   switch (props.state) {
     case 'phase0.waitingPhase1':
       return <WaitingScreen />
@@ -201,7 +206,7 @@ function Overlay(
     case 'phase1.poll':
       return props.children
     case 'phase2.battle':
-      return <BattleSimulator next={props.next} />
+      return <BattleSimulator />
     default:
       return null
   }

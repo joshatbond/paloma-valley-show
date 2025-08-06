@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 import { useStore } from '../show/store'
 import { run } from './run'
 
-export function BattleSimulator({ next }: { next: () => void }) {
+export function BattleSimulator() {
   const parentEl = useRef<HTMLDivElement>(null)
   const appRef = useRef<ReturnType<typeof run>>()
   const battleState = useStore(state => state.battle)
@@ -16,14 +16,15 @@ export function BattleSimulator({ next }: { next: () => void }) {
       }, 0.1e3)
     }
     if (battleState === 'done') {
-      setTimeout(next, 10e3)
-      battleStateAssign('exit')
+      setTimeout(() => {
+        battleStateAssign('exit')
+      }, 9e3)
     }
 
     return () => {
       appRef.current?.()
     }
-  }, [parentEl.current, battleState, battleStateAssign, next])
+  }, [parentEl.current, battleState, battleStateAssign])
 
   return (
     <div
