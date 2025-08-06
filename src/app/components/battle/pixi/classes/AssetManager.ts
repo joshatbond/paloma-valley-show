@@ -1,6 +1,5 @@
+import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
-
-import { GAMEBOY_HEIGHT, GAMEBOY_WIDTH } from '../constants'
 
 /**
  * Manages all assets, implemented as a singleton to ensure only one render
@@ -11,39 +10,29 @@ class AssetManager {
    * The single instance of the RenderTexture class
    */
   private static instance: AssetManager | null = null
+  private readonly basePath = '/battle'
   /**
-   * The texture instance
+   * A reference to the Pixi Loader
    */
-  private _texture: PIXI.RenderTexture | null = null
+  private readonly _loader = new PIXI.Loader()
   /**
-   * The sprite based on the render texture
+   * Stores the loaded textures
    */
-  private _sprite: PIXI.Sprite | null = null
+  private _textures = {} as Record<string, PIXI.Texture>
+  private _audio = {} as Record<string, PIXI_SOUND.Sound>
 
   /**
    * A private constructor to prevent direct instantiation of the class
    */
   private constructor() {}
-
-  /**
-   * The current render texture
-   * @throws If accessed before `getInstance()` is called
-   */
-  get texture() {
-    if (!this._texture)
-      throw new Error('Render texture used before initialized')
-
-    return this._texture
+  private _loadTextures() {}
+  private _loadSfx() {
+    this._loader.add('sfxSpriteData', `${this.basePath}/sfx_sprite.json`)
+    this._loader.add('sfxSprite', `${this.basePath}/sfx_sprite.mp3`)
   }
-  /**
-   * The current render texture sprite
-   * @throws If accessed before `getInstance()` is called
-   */
-  get sprite() {
-    if (!this._sprite)
-      throw new Error('render texture sprite called before initialized')
-    return this._sprite
-  }
+  private _loadFilters() {}
+  private _loadShaders() {}
+  private _compileLoads() {}
 
   /**
    * Provides the global access point to the single instance of the RenderTexture.
@@ -58,27 +47,42 @@ class AssetManager {
     return AssetManager.instance
   }
   /**
-   * Initializes the render texture and associated sprite
-   * @param height The height of the canvas we are rendering into
-   * @param width The width of the canvas we are rendering into
-   */
-  public init(height: number, width: number) {
-    this._texture = PIXI.RenderTexture.create({
-      height: GAMEBOY_HEIGHT,
-      width: GAMEBOY_WIDTH,
-    })
-    this._sprite = new PIXI.Sprite(this._texture)
-    this._sprite.height = height
-    this._sprite.width = width
-  }
-  /**
    * Destroys the render texture in memory.
    * Call this when the render texture is no longer needed
    */
   public destroy() {
-    this._sprite = null
-    this._texture = null
     AssetManager.instance = null
+  }
+
+  /**
+   * Get a specific texture
+   * @param id the of the texture to get
+   * @returns The texture associated with the id, if it exists
+   * @throws If the texture doesn't exist
+   */
+  public texture(id: string) {
+    if (this._textures[id]) return this._textures[id]
+    throw new Error(`Texture ${id} does not exist!`)
+  }
+
+  /**
+   * A function to load all assets.
+   * @returns A promise that will resolve once all assets are loaded are loaded
+   */
+  public loadAssets() {
+    return new Promise<void>((resolve, reject) => {
+      this._loader.onError.add(reject)
+      this._loader.load((_, resources) => {
+        for (const name in resources) {
+          if ('texture' in resources[name] && resources[name].texture) {
+            this._textures[name] = resources[name].texture
+          }
+          if ('sound' in resources[name]) {
+          }
+        }
+        resolve()
+      })
+    })
   }
 }
 
