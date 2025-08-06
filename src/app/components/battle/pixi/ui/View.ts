@@ -194,12 +194,12 @@ class View implements IView {
 
   startMusic(musicType: Music) {
     this.stopMusic()
-    const music = this.resources.getMusic(musicType)
-    if (music != null) {
-      music.stop()
-      music.play({ loop: true, volume: 0.1 })
-      this.resources.playingMusic = music
-    }
+    // const music = this.resources.getMusic(musicType)
+    // if (music != null) {
+    //   music.stop()
+    //   music.play({ loop: true, volume: 0.1 })
+    //   this.resources.playingMusic = music
+    // }
   }
 
   stopMusic() {
