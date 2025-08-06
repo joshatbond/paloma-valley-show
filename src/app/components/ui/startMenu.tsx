@@ -56,16 +56,6 @@ export function StartMenu(props: {
               },
             }
           : undefined,
-        import.meta.env.DEV && location.pathname !== '/battle'
-          ? {
-              label: 'BATTLE',
-              desc: 'Go to the battle page',
-              action: () => {
-                toggleMenu()
-                navigate({ to: '/battle' })
-              },
-            }
-          : undefined,
         location.pathname !== '/show' && props.showId
           ? {
               label: 'SHOW',
