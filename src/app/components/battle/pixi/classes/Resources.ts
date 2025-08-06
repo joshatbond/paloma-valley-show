@@ -11,6 +11,7 @@ import {
   textureOpponent,
   texturePlayer,
 } from '../assets/textures'
+import { moveInfo } from '../constants/moves'
 import { type Music, type Resource } from '../types'
 
 const SFX = [
@@ -24,6 +25,7 @@ const SFX = [
 ]
 const SHADERS = ['oppAppear', 'plyAppear', 'faint']
 const music = ['']
+const CRIES = ['001', '004', '007']
 
 export default class Resources implements Resource {
   uniforms: { [index: string]: { step: number } } = {}
@@ -47,11 +49,17 @@ export default class Resources implements Resource {
   private filters: Map<string, PIXI.Filter> = new Map()
   private shaderNames: Set<string> = new Set()
 
+  private cryNames: Set<string> = new Set()
+
   private moveCache: Set<string> = new Set()
 
   constructor(moves: string[]) {
     for (const sfx of SFX) {
       this.loader.add(sfx, `/battle/audio/${sfx}.wav`)
+    }
+    for (const cry of CRIES) {
+      this.cryNames.add(cry)
+      this.loader.add(cry, `/battle/audio/${cry}.mp3`)
     }
 
     for (const fs of SHADERS) {
@@ -81,11 +89,11 @@ export default class Resources implements Resource {
       if (this.moveCache.has(move)) continue
       this.moveCache.add(move)
 
-      // const moveData = moveInfo[move]
-      // if (moveData.sfx) {
-      //   console.log(`Loading sfx "${moveData.sfx}"`)
-      //   this.loader.add(moveData.sfx, `attacksfx/${moveData.sfx}.wav`)
-      // }
+      const moveData = moveInfo[move]
+      if (moveData.sfx) {
+        console.log(`Loading sfx "${moveData.sfx}"`)
+        this.loader.add(moveData.sfx, `battle/audio/${moveData.sfx}.wav`)
+      }
     }
   }
 
@@ -116,7 +124,7 @@ export default class Resources implements Resource {
     return this.filters.get(name)!
   }
   getCry(id: string): string | undefined {
-    return undefined
+    return this.cryNames.has(id) ? id : undefined
   }
   getOpponentTrainerTexture(): PIXI.Texture<PIXI.Resource> | undefined {
     return textureOpponent
