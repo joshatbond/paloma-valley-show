@@ -27,9 +27,13 @@ class InputManager {
   private constructor() {}
   private initializeButtonListener() {
     const buttonStateAssign = getState().buttonStateAssign
+    let unsubscribe: ReturnType<typeof subscribe> | null = null
 
-    subscribe((newState, oldState) => {
+    unsubscribe = subscribe((newState, oldState) => {
       if (newState.menu.show) return
+      if (oldState.battle === 'exit') {
+        unsubscribe?.()
+      }
 
       for (const button of Object.keys(
         newState.buttons

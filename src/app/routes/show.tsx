@@ -25,11 +25,12 @@ import { State, useGameMachine } from '../hooks/useGameMachine'
 import { useHaptic } from '../hooks/useHaptic'
 
 export const Route = createFileRoute('/show')({
+  ssr: false,
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const navigation = useNavigate()
+  const navigate = useNavigate()
   const { data } = useSuspenseQuery(convexQuery(api.appState.get, {}))
   const { mutate: confirmStarter } = useMutation({
     mutationFn: useConvexMutation(api.appState.selectStarter),
@@ -49,8 +50,9 @@ function RouteComponent() {
   const starterAssign = useStore(s => s.starterAssign)
   const menuHasFocus = useStore(state => state.menu.show)
   const haptics = useHaptic()
+  const battleState = useStore(state => state.battle)
 
-  const inBattle = state?.includes('battle') ?? false
+  const inBattle = state?.includes('battle') && battleState !== 'exit'
 
   useButton('a', {
     cond: () => !menuHasFocus || !inBattle,
@@ -70,6 +72,12 @@ function RouteComponent() {
           selection: selection[0],
         })
         starterAssign(selection[1])
+      }
+      if (
+        typingState === 'userOverride' &&
+        state === 'phase2.epilogue.screen7'
+      ) {
+        navigate({ to: '/program' })
       }
       send({ type: 'next' })
     },
@@ -133,7 +141,7 @@ function RouteComponent() {
     }
   }, [data])
 
-  if (!data.showId) navigation({ to: '/' })
+  if (!data.showId) navigate({ to: '/' })
 
   return (
     <GameBoyFrame>
@@ -158,17 +166,21 @@ function RouteComponent() {
             </Overlay>
           </MidLayer>
 
-          {state?.includes('starter') || state?.includes('battle') ? null : (
-            <TextContainer isWaiting={state === 'phase0.waitingPhase1'}>
-              <Text
-                text={lines}
-                hasEllipses={
-                  state === 'phase0.waitingPhase1' || state === 'phase1.poll'
-                }
-              />
-            </TextContainer>
-          )}
+          <TextContainer
+            isWaiting={state === 'phase0.waitingPhase1'}
+            hide={
+              (state?.includes('starter') || state?.includes('battle')) ?? false
+            }
+          >
+            <Text
+              text={lines}
+              hasEllipses={
+                state === 'phase0.waitingPhase1' || state === 'phase1.poll'
+              }
+            />
+          </TextContainer>
         </ScreenContainer>
+
         <div className="absolute inset-0">
           <div className="relative grid h-full w-full">
             <StartMenu send={send} id={data._id} showId={data.showId} />

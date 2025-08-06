@@ -1,38 +1,65 @@
 import * as PIXI_SOUND from '@pixi/sound'
 import * as PIXI from 'pixi.js-legacy'
 
-import { textureDemoBack, textureDemoFront } from '../assets/textures'
+import {
+  texture001Back,
+  texture001Front,
+  texture004Back,
+  texture004Front,
+  texture007Back,
+  texture007Front,
+  textureOpponent,
+  texturePlayer,
+} from '../assets/textures'
 import { moveInfo } from '../constants/moves'
 import { type Music, type Resource } from '../types'
 
 const SFX = [
-  'pressab',
-  'psn',
   'ballpoof',
+  'faint',
   'hit',
   'hitresisted',
   'hitsupereffective',
-  'faint',
+  'pressab',
+  'psn',
 ]
 const SHADERS = ['oppAppear', 'plyAppear', 'faint']
+const music = ['']
+const CRIES = ['001', '004', '007']
 
 export default class Resources implements Resource {
   uniforms: { [index: string]: { step: number } } = {}
   playingMusic: PIXI_SOUND.Sound | null = null
 
-  private readonly demoFrontTexture = textureDemoFront
-  private readonly demoBackTexture = textureDemoBack
+  private readonly frontTexture = {
+    '001': [texture001Front],
+    '004': [texture004Front],
+    '007': [texture007Front],
+    blue: [textureOpponent],
+  } as Record<string, PIXI.Texture[]>
+  private readonly backTexture = {
+    '001': texture001Back,
+    '004': texture004Back,
+    '007': texture007Back,
+    ethan: texturePlayer,
+  } as Record<string, PIXI.Texture>
 
   private readonly loader = new PIXI.Loader()
 
   private filters: Map<string, PIXI.Filter> = new Map()
   private shaderNames: Set<string> = new Set()
 
+  private cryNames: Set<string> = new Set()
+
   private moveCache: Set<string> = new Set()
 
   constructor(moves: string[]) {
     for (const sfx of SFX) {
-      this.loader.add(sfx, sfx + '.wav')
+      this.loader.add(sfx, `/battle/audio/${sfx}.wav`)
+    }
+    for (const cry of CRIES) {
+      this.cryNames.add(cry)
+      this.loader.add(cry, `/battle/audio/${cry}.mp3`)
     }
 
     for (const fs of SHADERS) {
@@ -42,7 +69,7 @@ export default class Resources implements Resource {
     this.loadMoves(moves)
   }
 
-  load(callback: (resources: Resource) => any) {
+  load(callback: (resources: Resource) => void) {
     this.loader.load((_, resources) => {
       this.createShaders(resources)
       callback(this)
@@ -50,8 +77,8 @@ export default class Resources implements Resource {
     })
   }
 
-  forceLoad(): Promise<Resource> {
-    return new Promise((resolve, reject) => {
+  forceLoad() {
+    return new Promise<Resource>((resolve, reject) => {
       this.loader.onError.add(err => console.error(err))
       this.load(resolve)
     })
@@ -61,27 +88,16 @@ export default class Resources implements Resource {
     for (const move of moves) {
       if (this.moveCache.has(move)) continue
       this.moveCache.add(move)
-      const moveStill = move + '_STILL'
-      if (moveInfo[moveStill] != null) {
-        moves.push(moveStill)
-      }
+
       const moveData = moveInfo[move]
       if (moveData.sfx) {
         console.log(`Loading sfx "${moveData.sfx}"`)
-        this.loader.add(moveData.sfx, `attacksfx/${moveData.sfx}.wav`)
-      }
-      if (moveData.shaders) {
-        moveData.shaders.forEach(s => {
-          const file = `shaders/${s}.fs`
-          console.log(`Trying to load shader "${s}" at "${file}"`)
-          this.loader.add(file)
-          this.shaderNames.add(s)
-        })
+        this.loader.add(moveData.sfx, `battle/audio/${moveData.sfx}.wav`)
       }
     }
   }
 
-  private createShaders(resources: any) {
+  private createShaders(resources: PIXI.utils.Dict<PIXI.LoaderResource>) {
     this.shaderNames.forEach(s => {
       if (this.filters.get(s) != null) return
       console.log(`Created filter for ${s}`)
@@ -108,18 +124,18 @@ export default class Resources implements Resource {
     return this.filters.get(name)!
   }
   getCry(id: string): string | undefined {
-    return undefined
+    return this.cryNames.has(id) ? id : undefined
   }
   getOpponentTrainerTexture(): PIXI.Texture<PIXI.Resource> | undefined {
-    return undefined
+    return textureOpponent
   }
   getPlayerTrainerTexture(): PIXI.Texture<PIXI.Resource> | undefined {
-    return undefined
+    return texturePlayer
   }
   getFront(id: string): PIXI.Texture<PIXI.Resource>[] {
-    return [this.demoFrontTexture]
+    return this.frontTexture[id]
   }
   getBack(id: string): PIXI.Texture<PIXI.Resource> {
-    return this.demoBackTexture
+    return this.backTexture[id]
   }
 }

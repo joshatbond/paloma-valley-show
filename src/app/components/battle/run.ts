@@ -22,7 +22,7 @@ export function run(elementId: string) {
   }
 
   return () => {
-    app?.destroy()
+    // app?.destroy()
   }
 }
 
@@ -61,66 +61,74 @@ function scaffoldApp(elementId: string) {
 }
 function createResources() {
   const exampleMember1: MemberObject = {
-    id: 'demo1',
-    level: 36,
+    id: '001',
+    level: 12,
     gender: 'none',
-    moves: ['TACKLE', 'BITE', 'WATER GUN', 'TAIL WHIP'],
-    name: 'BLASTOISE',
+    moves: ['TACKLE', 'GROWL', 'VINE WHIP'],
+    name: 'BULBASAUR',
   }
   const exampleMember2: MemberObject = {
-    id: 'demo2',
-    level: 25,
+    id: '007',
+    level: 12,
     gender: 'none',
-    moves: ['LICK', 'CONFUSE RAY', 'MEAN LOOK', 'CURSE'],
-    name: 'GENGAR',
+    moves: ['TACKLE', 'GROWL', 'BUBBLE'],
+    name: 'SQUIRTLE',
   }
   const battleInfo: BattleInfo = {
     info: {
       player: {
         name: 'PLAYER',
-        trainer: 'demoback.png',
-        team: [
-          exampleMember1,
-          exampleMember1,
-          exampleMember1,
-          exampleMember1,
-          exampleMember1,
-          exampleMember1,
-        ],
+        trainer: 'ethan.png',
+        team: [exampleMember1],
       },
       opponent: {
         name: 'OPPONENT',
-        trainer: 'demofront.png',
-        team: [exampleMember2, exampleMember2, exampleMember2, exampleMember2],
+        trainer: 'blue.png',
+        team: [exampleMember2],
       },
+      winMessage: 'GARY: What?! I picked the wrong pokémon!',
     },
     data: {
-      demo1: {
-        baseAtk: 5,
-        baseDef: 5,
-        baseHp: 5,
-        baseSpAtk: 5,
-        baseSpDef: 5,
-        baseSpd: 5,
-        cry: '',
-        front: 'demofront.png',
-        back: 'demoback.png',
-        name: 'BLASTOISE',
-        types: ['NORMAL'],
+      '001': {
+        baseAtk: 49,
+        baseDef: 49,
+        baseHp: 45,
+        baseSpAtk: 65,
+        baseSpDef: 65,
+        baseSpd: 45,
+        cry: '001.mp3',
+        front: '001_front.png',
+        back: '001_back.png',
+        name: 'bulbasaur',
+        types: ['GRASS', 'POISON'],
         anim: { delay: [0], ref: [0] },
       },
-      demo2: {
-        baseAtk: 5,
-        baseDef: 5,
-        baseHp: 5,
-        baseSpAtk: 5,
-        baseSpDef: 5,
-        baseSpd: 5,
+      '004': {
+        baseAtk: 52,
+        baseDef: 43,
+        baseHp: 39,
+        baseSpAtk: 60,
+        baseSpDef: 50,
+        baseSpd: 65,
+        cry: '004.mp3',
+        front: '004_front.png',
+        back: '004_back.png',
+        name: 'CHARMANDER',
+        types: ['FIRE'],
+        anim: { delay: [0], ref: [0] },
+      },
+      '007': {
+        baseAtk: 48,
+        baseDef: 65,
+        baseHp: 44,
+        baseSpAtk: 50,
+        baseSpDef: 64,
+        baseSpd: 43,
         cry: '',
-        front: 'demofront.png',
-        back: 'demoback.png',
-        name: 'MEW',
-        types: ['NORMAL'],
+        front: '007_front.png',
+        back: '007_back.png',
+        name: 'SQUIRTLE',
+        types: ['WATER'],
         anim: { delay: [0], ref: [0] },
       },
     },

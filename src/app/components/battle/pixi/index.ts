@@ -109,7 +109,7 @@ const battleInfo: BattleInfo = {
   info: {
     player: {
       name: 'PLAYER',
-      trainer: 'demoback.png',
+      trainer: 'ethan.png',
       team: [
         exampleMember1,
         exampleMember1,
@@ -121,7 +121,7 @@ const battleInfo: BattleInfo = {
     },
     opponent: {
       name: 'OPPONENT',
-      trainer: 'demofront.png',
+      trainer: 'blue.png',
       team: [exampleMember2, exampleMember2, exampleMember2, exampleMember2],
     },
   },

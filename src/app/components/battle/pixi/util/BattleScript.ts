@@ -1,3 +1,5 @@
+import { getState } from '~/app/components/show/store'
+
 import { moveInfo } from '../constants/moves'
 import { type BattleInfo, type MemberObject, type Status } from '../types'
 import { Script, Scripts } from './Script'
@@ -535,6 +537,8 @@ class BattleScript {
   }
 
   private handleWin(action: string[]): Script {
+    const updateState = getState().updateBattleState
+    updateState('done')
     if (action[2] === this.playerState.trainerName) {
       return [
         'PLAY_VICTORY_MUSIC',
