@@ -18,13 +18,14 @@ export function MidLayer(props: PropsWithChildren) {
   return <div className="absolute inset-0">{props.children}</div>
 }
 export function TextContainer(
-  props: PropsWithChildren & { isWaiting?: boolean }
+  props: PropsWithChildren & { isWaiting?: boolean; hide: boolean }
 ) {
   return (
     <div
       className={clsx(
         'absolute inset-x-0',
-        props.isWaiting ? 'top-full' : 'bottom-0'
+        props.isWaiting ? 'top-full' : 'bottom-0',
+        props.hide && 'opacity-0'
       )}
     >
       <div className="relative px-[2%] pb-[1%]">

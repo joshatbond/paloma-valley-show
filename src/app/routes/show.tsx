@@ -166,17 +166,21 @@ function RouteComponent() {
             </Overlay>
           </MidLayer>
 
-          {state?.includes('starter') || state?.includes('battle') ? null : (
-            <TextContainer isWaiting={state === 'phase0.waitingPhase1'}>
-              <Text
-                text={lines}
-                hasEllipses={
-                  state === 'phase0.waitingPhase1' || state === 'phase1.poll'
-                }
-              />
-            </TextContainer>
-          )}
+          <TextContainer
+            isWaiting={state === 'phase0.waitingPhase1'}
+            hide={
+              (state?.includes('starter') || state?.includes('battle')) ?? false
+            }
+          >
+            <Text
+              text={lines}
+              hasEllipses={
+                state === 'phase0.waitingPhase1' || state === 'phase1.poll'
+              }
+            />
+          </TextContainer>
         </ScreenContainer>
+
         <div className="absolute inset-0">
           <div className="relative grid h-full w-full">
             <StartMenu send={send} id={data._id} showId={data.showId} />

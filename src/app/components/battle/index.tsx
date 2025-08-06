@@ -8,6 +8,8 @@ export function BattleSimulator() {
   const appRef = useRef<ReturnType<typeof run>>()
   const battleState = useStore(state => state.battle)
   const battleStateAssign = useStore(state => state.updateBattleState)
+  const typingStateAssign = useStore(state => state.typingStateAssign)
+  const typingState = useStore(state => state.typing)
 
   useEffect(() => {
     if (parentEl) {
@@ -18,6 +20,7 @@ export function BattleSimulator() {
     if (battleState === 'done') {
       setTimeout(() => {
         battleStateAssign('exit')
+        appRef.current?.()
       }, 9e3)
     }
 
@@ -25,6 +28,12 @@ export function BattleSimulator() {
       appRef.current?.()
     }
   }, [parentEl.current, battleState, battleStateAssign])
+
+  useEffect(() => {
+    if (typingState === 'userOverride') {
+      typingStateAssign('ready')
+    }
+  }, [typingState, typingStateAssign])
 
   return (
     <div
