@@ -157,21 +157,20 @@ class InputManager {
 }
 export const getInstance = InputManager.getInstance.bind(InputManager)
 
-const hapticElement = document.getElementById(
-  'haptic-label'
-) as HTMLLabelElement
 /**
  * Triggers a single haptic feedback event
  * @param duration Duration in milliseconds for the haptic feedback.
  */
 function triggerHaptic(duration = 100) {
+  const hapticElement = document.getElementById(
+    'haptic-label'
+  ) as HTMLLabelElement
+  console.log(hapticElement)
+
   const isIOS = detectiOS()
 
   if (!isIOS && 'vibrate' in navigator) {
     navigator.vibrate(duration)
-  } else if (isIOS && 'webkit' in navigator) {
-    // iOS uses webkit for haptic feedback
-    ;(navigator as any).webkitVibrate(duration)
   } else {
     hapticElement.click()
   }
