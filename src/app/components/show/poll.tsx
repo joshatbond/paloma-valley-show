@@ -1,6 +1,7 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
+import { useRef } from 'react'
 
 import { useTimer } from '~/app/hooks/useTimer'
 import { api } from '~/server/convex/_generated/api'
@@ -12,6 +13,9 @@ export function Poll(props: {
   start: number | null
   onNext: () => void
 }) {
+  const transitionDuration = useRef(
+    ((props.start ?? Date.now()) + props.duration - Date.now()) / 1000
+  )
   const timeLeft = useTimer({
     duration: props.duration,
     startTime: props.start,
@@ -45,17 +49,8 @@ export function Poll(props: {
       <div className="relative col-span-3 col-start-1 row-start-2 flex justify-center px-[2%] py-1">
         <div className="relative h-2 w-[80%] rounded border border-black bg-black">
           <div
-            className={clsx(
-              'absolute inset-y-0 left-0',
-              percentTimeLeft < 50
-                ? 'bg-green-500'
-                : percentTimeLeft < 75
-                  ? 'bg-amber-600'
-                  : 'bg-red-600'
-            )}
-            style={{
-              right: `${percentTimeLeft}%`,
-            }}
+            className="animate-drain absolute inset-y-0 left-0 transition-all"
+            style={{ '--duration': `${transitionDuration.current}s` }}
           ></div>
         </div>
       </div>
