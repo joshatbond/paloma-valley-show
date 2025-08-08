@@ -81,6 +81,31 @@ export const updatePhaseState = mutation({
         pollEnded: Date.now(),
       })
     }
+    await ctx.db.patch(
+      args.id,
+      args.state < 0
+        ? {
+            currentPhase: -1,
+            showId: null,
+            pollStarted: null,
+          }
+        : args.state === 0
+          ? {
+              currentPhase: args.state,
+              pollStarted: null,
+              pollEnded: undefined,
+            }
+          : args.state === 1
+            ? {
+                currentPhase: args.state,
+                pollStarted: Date.now(),
+                pollEnded: undefined,
+              }
+            : {
+                currentPhase: args.state,
+                pollEnded: Date.now(),
+              }
+    )
   },
 })
 export const assignPollStarter = mutation({
