@@ -1,5 +1,6 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { useQuery } from '@tanstack/react-query'
+import clsx from 'clsx'
 
 import { useTimer } from '~/app/hooks/useTimer'
 import { api } from '~/server/convex/_generated/api'
@@ -16,7 +17,7 @@ export function Poll(props: {
     startTime: props.start,
     endTime: props.end,
   })
-
+  const percentTimeLeft = 100 - Math.floor((timeLeft / props.duration) * 1e5)
   const { data } = useQuery(
     convexQuery(api.appState.pollState, { showId: props.id })
   )
@@ -25,7 +26,7 @@ export function Poll(props: {
   if (props.end || timeLeft <= 0) props.onNext()
 
   return (
-    <div className="grid h-full grid-cols-[1fr_auto_1fr] grid-rows-[1fr_auto] bg-black/30 backdrop-blur-xs">
+    <div className="grid h-full grid-cols-[1fr_auto_1fr] grid-rows-[1fr_auto_auto] bg-black/30 backdrop-blur-xs">
       <div className="col-start-2 row-start-1 grid grid-flow-col place-items-center gap-2 px-8">
         <PollItem
           type="bulbasaur"
@@ -41,7 +42,25 @@ export function Poll(props: {
         />
       </div>
 
-      <div className="col-span-3 col-start-1 row-start-2 px-[2%] pb-[1%]">
+      <div className="relative col-span-3 col-start-1 row-start-2 flex justify-center px-[2%] py-1">
+        <div className="relative h-2 w-[80%] rounded border border-black bg-black">
+          <div
+            className={clsx(
+              'absolute inset-y-0 left-0',
+              percentTimeLeft < 50
+                ? 'bg-green-500'
+                : percentTimeLeft < 75
+                  ? 'bg-amber-600'
+                  : 'bg-red-600'
+            )}
+            style={{
+              right: `${percentTimeLeft}%`,
+            }}
+          ></div>
+        </div>
+      </div>
+
+      <div className="col-span-3 col-start-1 row-start-3 px-[2%] pb-[1%]">
         <img src="/images/exposition.png" />
       </div>
     </div>

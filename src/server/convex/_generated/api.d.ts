@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as appState from "../appState.js";
+import type * as data from "../data.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -25,6 +26,7 @@ import type * as appState from "../appState.js";
  */
 declare const fullApi: ApiFromModules<{
   appState: typeof appState;
+  data: typeof data;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

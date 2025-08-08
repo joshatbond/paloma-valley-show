@@ -1,6 +1,7 @@
 import { assign, setup } from 'xstate'
 
-export const pollDuration = 132e3 // 2 minutes, 12 seconds
+import { pollDuration } from '~/server/convex/data'
+
 export const machine = setup({
   types: {
     context: {} as Context,
@@ -254,8 +255,11 @@ export const machine = setup({
             },
             pollClosed: {
               on: {
-                next: { target: 'rivalSelect' },
+                next: { target: 'rivalIntro' },
               },
+            },
+            rivalIntro: {
+              on: { next: { target: 'rivalSelect' } },
             },
             rivalSelect: {
               on: {},
@@ -306,7 +310,7 @@ export const machine = setup({
 )
 
 function devMode<T extends Record<string, unknown>>(obj: T) {
-  if (!import.meta.env.DEV) return obj
+  if (import.meta.env.DEV) return obj
   if (!('states' in obj)) return obj
 
   const allPaths = getAllPaths(obj.states as T)

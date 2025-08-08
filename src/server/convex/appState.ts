@@ -2,6 +2,7 @@ import { v } from 'convex/values'
 
 import { api } from './_generated/api'
 import { mutation, query } from './_generated/server'
+import { pollDuration } from './data'
 import { selection as dbSelection } from './schema'
 
 export const get = query({
@@ -68,62 +69,48 @@ export const updatePhaseState = mutation({
         currentPhase: 1,
         pollStarted: Date.now(),
       })
+      ctx.scheduler.runAfter(pollDuration, api.appState.assignPollStarter, {
+        id: args.id,
+        showId: args.showId,
+      })
     }
     if (args.state === 2) {
-      const pollResults = await ctx.db
-        .query('poll')
-        .withIndex('by_show', q => q.eq('showId', args.showId))
-        .collect()
-
-      const groupSelection = pollResults.reduce<{
-        one: number
-        two: number
-        three: number
-        largest: 'one' | 'two' | 'three' | null
-      }>(
-        (a, v) => {
-          a[v.selection] = a[v.selection] + 1
-          a.largest =
-            a.largest === null || a[v.selection] > a[a.largest]
-              ? v.selection
-              : a.largest
-
-          return a
-        },
-        { one: 0, two: 0, three: 0, largest: null }
-      ).largest
-
       await ctx.db.patch(args.id, {
         currentPhase: 2,
         pollEnded: Date.now(),
-        pollChoice: groupSelection ?? 'one',
       })
     }
-    await ctx.db.patch(
-      args.id,
-      args.state < 0
-        ? {
-            currentPhase: -1,
-            showId: null,
-            pollStarted: null,
-          }
-        : args.state === 0
-          ? {
-              currentPhase: args.state,
-              pollStarted: null,
-              pollEnded: undefined,
-            }
-          : args.state === 1
-            ? {
-                currentPhase: args.state,
-                pollStarted: Date.now(),
-                pollEnded: undefined,
-              }
-            : {
-                currentPhase: args.state,
-                pollEnded: Date.now(),
-              }
-    )
+  },
+})
+export const assignPollStarter = mutation({
+  args: { id: v.id('appState'), showId: v.number() },
+  handler: async (ctx, args) => {
+    const pollResults = await ctx.db
+      .query('poll')
+      .withIndex('by_show', q => q.eq('showId', args.showId))
+      .collect()
+
+    const groupSelection = pollResults.reduce<{
+      one: number
+      two: number
+      three: number
+      largest: 'one' | 'two' | 'three' | null
+    }>(
+      (a, v) => {
+        a[v.selection] = a[v.selection] + 1
+        a.largest =
+          a.largest === null || a[v.selection] > a[a.largest]
+            ? v.selection
+            : a.largest
+
+        return a
+      },
+      { one: 0, two: 0, three: 0, largest: null }
+    ).largest
+
+    await ctx.db.patch(args.id, {
+      pollChoice: groupSelection ?? 'one',
+    })
   },
 })
 export const selectStarter = mutation({

@@ -6,8 +6,8 @@ import { PropsWithChildren, useState } from 'react'
 import { useHaptic } from '~/app/hooks/useHaptic'
 import { adminAuth } from '~/server/auth'
 import { api } from '~/server/convex/_generated/api'
+import { pollDuration } from '~/server/convex/data'
 
-import { pollDuration } from '../components/stateMachine'
 import { Button } from '../components/ui/button'
 import { useTimer } from '../hooks/useTimer'
 

@@ -36,10 +36,11 @@ const lines = {
     ],
     poll: (s: string) =>
       [`You chose ${s}! Let's see if the group agrees`, '...'] as const,
-    pollClosed: (s: string) =>
+    pollClosed: (s: string) => ['The poll has ended!', `The group chose ${s}!`],
+    rivalIntro: (s: string) =>
       [
         "GARY: Alright, I'll take this one, then!",
-        `Gary received the ${s}`,
+        `Gary received ${s}`,
       ] as const,
     rivalSelect: [
       "GARY: Let's check out our Pokémon!",
@@ -112,16 +113,20 @@ export function getLines(state: State, starter: string | null) {
       return lines.phase1.s3Confirm
 
     case 'phase1.poll':
-      return lines.phase1.poll(starter ?? '')
+      return lines.phase1.poll(starter?.toUpperCase() ?? '')
     case 'phase1.pollClosed':
+      console.log('STARTER: ', starter)
+      return lines.phase1.pollClosed(starter?.toUpperCase() ?? '')
+    case 'phase1.rivalIntro':
       const rivalChoices = {
         bulbasaur: 'charmander',
         squirtle: 'bulbasaur',
         charmander: 'squirtle',
       }
       if (starter === null) starter = 'bulbasaur'
-      return lines.phase1.pollClosed(
-        rivalChoices[starter as keyof typeof rivalChoices]
+      console.log(rivalChoices[starter as keyof typeof rivalChoices])
+      return lines.phase1.rivalIntro(
+        rivalChoices[starter as keyof typeof rivalChoices].toUpperCase()
       )
     case 'phase1.rivalSelect':
       return lines.phase1.rivalSelect

@@ -37,6 +37,7 @@ const states = {
     },
     poll: null,
     pollClosed: null,
+    rivalIntro: null,
     rivalSelect: null,
   },
   phase2: {

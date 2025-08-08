@@ -8,7 +8,7 @@ export function Starter(props: {
   state: State
 }) {
   return (
-    <div className="grid grid-cols-[1fr_auto_1fr] grid-rows-[1fr_auto] bg-black/30 backdrop-blur-xs">
+    <div className="grid h-full grid-cols-[1fr_auto_1fr] grid-rows-[1fr_auto] bg-black/30 backdrop-blur-xs">
       <div className="col-start-1 row-start-1 grid items-center justify-end">
         <img src="/images/arrow.png" className="w-8 rotate-90" />
       </div>
