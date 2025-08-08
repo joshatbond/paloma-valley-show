@@ -65,10 +65,8 @@ class Text {
 
     let chars = 0
     for (let i = 0; i < str.length; i++) {
-      console.log('rendering string character', str, str[i])
       const [j, sym] = special(i, str)
       i = j
-      console.log('after special check: ', i, sym, font[sym])
 
       const spr = new PIXI.Sprite(font[sym])
       spr.x = this.x + chars * 8

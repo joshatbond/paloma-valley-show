@@ -165,7 +165,6 @@ function triggerHaptic(duration = 100) {
   const hapticElement = document.getElementById(
     'haptic-label'
   ) as HTMLLabelElement
-  console.log(hapticElement)
 
   const isIOS = detectiOS()
 

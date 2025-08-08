@@ -49,7 +49,6 @@ export const machine = setup({
       return Date.now() > endTime ? true : false
     },
     isTargetingState: ({ event }, params: { path: string }) => {
-      console.log('isTargetingState guard', event.type, params)
       if (event.type !== 'DEV_JUMP_TO_STATE') return false
       return event.path === params.path
     },

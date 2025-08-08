@@ -95,18 +95,14 @@ export default class Resources implements Resource {
 
       const moveData = moveInfo[move]
       if (moveData.sfx) {
-        console.log(`Loading sfx "${moveData.sfx}"`)
         this.loader.add(moveData.sfx, `battle/audio/${moveData.sfx}.wav`)
       }
     }
   }
 
   private createShaders(resources: PIXI.utils.Dict<PIXI.LoaderResource>) {
-    console.log('shader: init')
     this.shaderNames.forEach(s => {
-      console.log('shader: creating shader', s)
       if (this.filters.get(s) != null) return
-      console.log(`Created filter for ${s}`)
       this.uniforms[s] = { step: 0 }
       this.filters.set(
         s,

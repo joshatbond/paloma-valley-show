@@ -88,7 +88,6 @@ class Textbox {
   }
 
   update() {
-    //console.log(this.state, this.ticks);
     textboxSprite.y = GAMEBOY_HEIGHT - textboxSprite.height
     contArrowSprite.x = textboxSprite.x + 18 * 8
     contArrowSprite.y = textboxSprite.y + 5 * 8

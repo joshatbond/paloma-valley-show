@@ -115,7 +115,6 @@ export function getLines(state: State, starter: string | null) {
     case 'phase1.poll':
       return lines.phase1.poll(starter?.toUpperCase() ?? '')
     case 'phase1.pollClosed':
-      console.log('STARTER: ', starter)
       return lines.phase1.pollClosed(starter?.toUpperCase() ?? '')
     case 'phase1.rivalIntro':
       const rivalChoices = {
@@ -124,7 +123,6 @@ export function getLines(state: State, starter: string | null) {
         charmander: 'squirtle',
       }
       if (starter === null) starter = 'bulbasaur'
-      console.log(rivalChoices[starter as keyof typeof rivalChoices])
       return lines.phase1.rivalIntro(
         rivalChoices[starter as keyof typeof rivalChoices].toUpperCase()
       )
