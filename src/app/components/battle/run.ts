@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js-legacy'
 
+import { Battle } from './pixi/classes/Battle'
 import GameV2 from './pixi/classes/GameV2'
 import { getInstance } from './pixi/classes/Interactions'
 import Resources from './pixi/classes/Resources'
@@ -19,10 +20,6 @@ let renderTexture: PIXI.RenderTexture | null = null
 export function run(elementId: string) {
   if (!app) {
     scaffoldApp(elementId)
-  }
-
-  return () => {
-    // app?.destroy()
   }
 }
 
@@ -60,107 +57,15 @@ function scaffoldApp(elementId: string) {
   document.getElementById(elementId)?.appendChild(app.view)
 }
 function createResources() {
-  const exampleMember1: MemberObject = {
-    id: '001',
-    level: 12,
-    gender: 'none',
-    moves: ['TACKLE', 'GROWL', 'VINE WHIP'],
-    name: 'BULBASAUR',
-  }
-  const exampleMember2: MemberObject = {
-    id: '032',
-    level: 12,
-    gender: 'none',
-    moves: ['TACKLE', 'TAIL WHIP', 'HORN ATTACK'],
-    name: 'NIDORAN♂',
-  }
-  const battleInfo: BattleInfo = {
-    info: {
-      player: {
-        name: 'PLAYER',
-        trainer: 'ethan.png',
-        team: [exampleMember1],
-      },
-      opponent: {
-        name: 'OPPONENT',
-        trainer: 'blue.png',
-        team: [exampleMember2],
-      },
-      winMessage: 'GARY: What?! I picked the wrong pokémon!',
-    },
-    data: {
-      '001': {
-        baseAtk: 49,
-        baseDef: 49,
-        baseHp: 45,
-        baseSpAtk: 65,
-        baseSpDef: 65,
-        baseSpd: 45,
-        cry: '001.mp3',
-        front: '001_front.png',
-        back: '001_back.png',
-        name: 'bulbasaur',
-        types: ['GRASS', 'POISON'],
-        anim: { delay: [0], ref: [0] },
-      },
-      '004': {
-        baseAtk: 52,
-        baseDef: 43,
-        baseHp: 39,
-        baseSpAtk: 60,
-        baseSpDef: 50,
-        baseSpd: 65,
-        cry: '004.mp3',
-        front: '004_front.png',
-        back: '004_back.png',
-        name: 'CHARMANDER',
-        types: ['FIRE'],
-        anim: { delay: [0], ref: [0] },
-      },
-      '007': {
-        baseAtk: 48,
-        baseDef: 65,
-        baseHp: 44,
-        baseSpAtk: 50,
-        baseSpDef: 64,
-        baseSpd: 43,
-        cry: '007.mp3',
-        front: '007_front.png',
-        back: '007_back.png',
-        name: 'SQUIRTLE',
-        types: ['WATER'],
-        anim: { delay: [0], ref: [0] },
-      },
-      '032': {
-        baseAtk: 57,
-        baseDef: 40,
-        baseHp: 43,
-        baseSpAtk: 40,
-        baseSpDef: 40,
-        baseSpd: 50,
-        cry: '032.mp3',
-        front: '032_front.png',
-        back: '032_back.png',
-        name: 'nidoranm',
-        types: ['POISON'],
-        anim: { delay: [0], ref: [0] },
-      },
-    },
-  }
-  const moves = new Set(
-    [
-      getMovesFromTeam(battleInfo.info.player),
-      getMovesFromTeam(battleInfo.info.opponent),
-    ].flat()
-  )
+  const battle = new Battle()
 
-  const resources = new Resources([...moves])
+  const resources = new Resources([...battle.moves])
   resources.load(() => {
     if (!app || !renderTexture) return
     const view = new View(app, resources, true)
     const game = new GameV2(
       view,
-      battleInfo,
+      battle.info,
       (move: string) => {
         console.log(`LOADING MOVE: ${move}`)
         resources.loadMoves([move])
