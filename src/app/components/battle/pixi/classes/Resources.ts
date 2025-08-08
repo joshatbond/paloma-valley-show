@@ -25,7 +25,7 @@ const SFX = [
   'pressab',
   'psn',
 ]
-const SHADERS = ['oppAppear', 'plyAppear', 'faint']
+const SHADERS = ['oppAppear', 'plyAppear', 'faint', 'surf']
 const music = ['']
 const CRIES = ['001', '004', '007', '032']
 
@@ -102,7 +102,9 @@ export default class Resources implements Resource {
   }
 
   private createShaders(resources: PIXI.utils.Dict<PIXI.LoaderResource>) {
+    console.log('shader: init')
     this.shaderNames.forEach(s => {
+      console.log('shader: creating shader', s)
       if (this.filters.get(s) != null) return
       console.log(`Created filter for ${s}`)
       this.uniforms[s] = { step: 0 }
