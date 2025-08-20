@@ -63,7 +63,7 @@ const lines = {
     ],
     epilogue5: ['I can already tell--', "you've got what it takes."],
     epilogue6: ['Now go on...', 'your adventure is just beginning!'],
-    epilogue7: ['Press A to view', "our show's program"],
+    epilogue7: ['Thank you for watching our show', ''],
   },
 } satisfies Record<
   string,

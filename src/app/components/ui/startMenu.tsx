@@ -46,16 +46,6 @@ export function StartMenu(props: {
               },
             }
           : undefined,
-        location.pathname !== '/program'
-          ? {
-              label: 'PROGRAM',
-              desc: 'Go to the program page',
-              action: () => {
-                toggleMenu()
-                navigate({ to: '/program' })
-              },
-            }
-          : undefined,
         location.pathname !== '/show' && props.showId
           ? {
               label: 'SHOW',

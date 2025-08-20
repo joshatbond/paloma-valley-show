@@ -101,11 +101,6 @@ function NavMenu() {
       disabled: true,
       action: () => navigate({ to: '/show' }),
     },
-    {
-      label: 'View Program',
-      disabled: false,
-      action: () => navigate({ to: '/program' }),
-    },
   ])
 
   useEffect(() => {
@@ -128,7 +123,7 @@ function NavMenu() {
       hasFocus={!startMenuFocus}
       onNavigation={selectedAssign}
     >
-      <div className="relative h-full w-fit p-2 pl-4">
+      <div className="relative w-fit p-2 pl-4">
         <MenuList className="relative m-0 list-none p-0">
           <MenuIndicator className="ease-accel absolute left-2 transition-all duration-100">
             <img src="/images/arrow.png" className="w-4 -rotate-90" />

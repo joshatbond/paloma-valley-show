@@ -12,7 +12,6 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as ShowImport } from './routes/show'
-import { Route as ProgramImport } from './routes/program'
 import { Route as AdminImport } from './routes/admin'
 import { Route as IndexImport } from './routes/index'
 
@@ -21,12 +20,6 @@ import { Route as IndexImport } from './routes/index'
 const ShowRoute = ShowImport.update({
   id: '/show',
   path: '/show',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ProgramRoute = ProgramImport.update({
-  id: '/program',
-  path: '/program',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,13 +53,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminImport
       parentRoute: typeof rootRoute
     }
-    '/program': {
-      id: '/program'
-      path: '/program'
-      fullPath: '/program'
-      preLoaderRoute: typeof ProgramImport
-      parentRoute: typeof rootRoute
-    }
     '/show': {
       id: '/show'
       path: '/show'
@@ -82,14 +68,12 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/program': typeof ProgramRoute
   '/show': typeof ShowRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/program': typeof ProgramRoute
   '/show': typeof ShowRoute
 }
 
@@ -97,30 +81,27 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/program': typeof ProgramRoute
   '/show': typeof ShowRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/program' | '/show'
+  fullPaths: '/' | '/admin' | '/show'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/program' | '/show'
-  id: '__root__' | '/' | '/admin' | '/program' | '/show'
+  to: '/' | '/admin' | '/show'
+  id: '__root__' | '/' | '/admin' | '/show'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
-  ProgramRoute: typeof ProgramRoute
   ShowRoute: typeof ShowRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
-  ProgramRoute: ProgramRoute,
   ShowRoute: ShowRoute,
 }
 
@@ -136,7 +117,6 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/admin",
-        "/program",
         "/show"
       ]
     },
@@ -145,9 +125,6 @@ export const routeTree = rootRoute
     },
     "/admin": {
       "filePath": "admin.tsx"
-    },
-    "/program": {
-      "filePath": "program.tsx"
     },
     "/show": {
       "filePath": "show.tsx"

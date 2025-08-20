@@ -38,8 +38,9 @@ export function Menu({
   /** whether or not the current menu should handle interactions */
   hasFocus?: boolean
 }>) {
+  const index = items.findIndex(i => !!!i.disabled)
   const [selectedItemIndex, selectedItemIndexAssign] = useState(
-    items.findIndex(i => !!!i.disabled)
+    index < 0 ? 0 : index
   )
   const previousItemIndex = useRef<number>(0)
 
@@ -83,7 +84,8 @@ export function Menu({
   useEffect(() => {
     if (JSON.stringify(items) === itemsMemo.current) return
     itemsMemo.current = JSON.stringify(items)
-    selectedItemIndexAssign(items.findIndex(i => !!!i.disabled))
+    const index = items.findIndex(i => !!!i.disabled)
+    selectedItemIndexAssign(index < 0 ? 0 : index)
   }, [items, selectedItemIndexAssign])
   useEffect(() => {
     if (!hasFocus) selectedItemIndexAssign(0)
@@ -143,7 +145,7 @@ const MenuIndicator = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
 
     return (
       <div
-        style={{ top: `${selectedItemIndex * 2.2 + 0.3}rem` }}
+        style={{ top: `${selectedItemIndex * 2.2 + 0.6}rem` }}
         aria-hidden="true"
         ref={ref}
         {...props}

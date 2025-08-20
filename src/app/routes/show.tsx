@@ -73,12 +73,7 @@ function RouteComponent() {
         })
         starterAssign(selection[1])
       }
-      if (
-        typingState === 'userOverride' &&
-        state === 'phase2.epilogue.screen7'
-      ) {
-        navigate({ to: '/program' })
-      }
+      
       send({ type: 'next' })
     },
   })
